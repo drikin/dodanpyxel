@@ -5,7 +5,7 @@ class Bullet:
     def __init__(self, x, y, speed, color, width=2, height=5):
         self.x = x
         self.y = y
-        self.dx = 0  # Horizontal movement (for angled shots)
+        self.dx = 0  # Horizontal movement (for angled shots) - integer value
         self.speed = speed
         self.color = color
         self.width = width

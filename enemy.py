@@ -68,11 +68,10 @@ class SmallEnemy(Enemy):
         # Small enemies shoot single bullets
         bullet = EnemyBullet(self.x + self.width // 2 - 1, self.y + self.height)
         
-        # Access the game instance to add the bullet
-        for obj in pyxel._app._update_funcs:
-            if hasattr(obj, 'enemy_bullets'):
-                obj.enemy_bullets.append(bullet)
-                break
+        # Access the game instance via global
+        from main import game_instance
+        if game_instance and hasattr(game_instance, 'enemy_bullets'):
+            game_instance.enemy_bullets.append(bullet)
     
     def draw(self):
         # Draw a small triangular enemy
@@ -95,12 +94,11 @@ class MediumEnemy(Enemy):
         bullet1 = EnemyBullet(self.x + 2, self.y + self.height)
         bullet2 = EnemyBullet(self.x + self.width - 3, self.y + self.height)
         
-        # Access the game instance to add the bullets
-        for obj in pyxel._app._update_funcs:
-            if hasattr(obj, 'enemy_bullets'):
-                obj.enemy_bullets.append(bullet1)
-                obj.enemy_bullets.append(bullet2)
-                break
+        # Access the game instance via global
+        from main import game_instance
+        if game_instance and hasattr(game_instance, 'enemy_bullets'):
+            game_instance.enemy_bullets.append(bullet1)
+            game_instance.enemy_bullets.append(bullet2)
     
     def draw(self):
         # Draw a medium rectangular enemy
@@ -123,17 +121,16 @@ class LargeEnemy(Enemy):
         bullet2 = EnemyBullet(self.x + 2, self.y + self.height - 2)
         bullet3 = EnemyBullet(self.x + self.width - 3, self.y + self.height - 2)
         
-        # Set angle for side bullets
-        bullet2.dx = -0.5
-        bullet3.dx = 0.5
+        # Set angle for side bullets (using integers since dx is defined as int)
+        bullet2.dx = -1
+        bullet3.dx = 1
         
-        # Access the game instance to add the bullets
-        for obj in pyxel._app._update_funcs:
-            if hasattr(obj, 'enemy_bullets'):
-                obj.enemy_bullets.append(bullet1)
-                obj.enemy_bullets.append(bullet2)
-                obj.enemy_bullets.append(bullet3)
-                break
+        # Access the game instance via global
+        from main import game_instance
+        if game_instance and hasattr(game_instance, 'enemy_bullets'):
+            game_instance.enemy_bullets.append(bullet1)
+            game_instance.enemy_bullets.append(bullet2)
+            game_instance.enemy_bullets.append(bullet3)
     
     def draw(self):
         # Draw a large diamond-shaped enemy
