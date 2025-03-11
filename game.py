@@ -82,6 +82,10 @@ class Game:
         # Game variables
         self.frame_count = 0
         
+        # ボス戦までの距離トラッキング
+        self.boss_distance = BOSS_DISTANCE_MAX
+        self.boss_appeared = False
+        
         # 自動発射は常に有効にする
         self.touch_shoot = True
     
@@ -157,6 +161,15 @@ class Game:
         
         # Update player
         self.player.update()
+        
+        # Update boss distance counter
+        if not self.boss_appeared and self.boss_distance > 0:
+            self.boss_distance -= 1
+            
+            # Check if it's time for the boss to appear
+            if self.boss_distance <= 0 or self.score >= BOSS_SPAWN_SCORE:
+                self.boss_appeared = True
+                # TODO: ボスの生成処理を追加
         
         # Spawn enemies
         self.update_enemy_spawning()
@@ -382,6 +395,42 @@ class Game:
         # Draw lives
         for i in range(self.player.lives):
             pyxel.rect(SCREEN_WIDTH - 10 - i * 8, 5, 6, 6, pyxel.COLOR_RED)
+            
+        # ボスまでの距離インジケーター
+        if self.state == STATE_PLAYING and not self.boss_appeared:
+            # インジケーターの基本パラメータ
+            bar_width = 50
+            bar_height = 5
+            x = SCREEN_WIDTH - bar_width - 5
+            y = 20
+            
+            # 背景バー（黒枠）
+            pyxel.rectb(x - 1, y - 1, bar_width + 2, bar_height + 2, BLACK)
+            
+            # 進行度を計算（0〜1の範囲）
+            progress = 1.0 - (self.boss_distance / BOSS_DISTANCE_MAX)
+            
+            # プログレスバーの色（赤→黄→緑でグラデーション）
+            if progress < 0.5:
+                # 赤→黄 (0.0〜0.5の範囲)
+                bar_color = RED
+            elif progress < 0.8:
+                # 黄 (0.5〜0.8の範囲)
+                bar_color = YELLOW
+            else:
+                # 緑 (0.8〜1.0の範囲)
+                bar_color = GREEN
+                
+            # 進行バー
+            fill_width = int(bar_width * progress)
+            pyxel.rect(x, y, fill_width, bar_height, bar_color)
+            
+            # 「BOSS」ラベル
+            pyxel.text(x - 20, y, "BOSS:", WHITE)
+            
+            # 距離テキスト（％で表示）
+            percent = int(progress * 100)
+            pyxel.text(x + bar_width + 5, y, f"{percent}%", WHITE)
             
         # Draw virtual touch controls if enabled
         if self.show_touch_controls:

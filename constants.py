@@ -50,6 +50,10 @@ ENEMY_SHOOT_INTERVAL = 60
 # Game settings
 SCROLL_SPEED = 1
 
+# Boss settings
+BOSS_SPAWN_SCORE = 5000  # スコアがこの値に達するとボスが出現
+BOSS_DISTANCE_MAX = 10000  # ボスまでの最大距離（フレーム数）
+
 # Score settings
 ENEMY_SMALL_SCORE = 100
 ENEMY_MEDIUM_SCORE = 200
