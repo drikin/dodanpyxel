@@ -1,4 +1,5 @@
 import pyxel
+import math
 from constants import *
 from bullet import PlayerBullet
 
@@ -11,7 +12,13 @@ class Player:
         self.base_speed = PLAYER_SPEED  # 基本速度を保存
         self.speed = self.base_speed
         self.lives = PLAYER_LIVES
+        
+        # 射撃関連
+        self.base_shoot_interval = PLAYER_SHOOT_INTERVAL  # 基本射撃間隔
         self.shoot_timer = 0
+        self.shoot_interval = self.base_shoot_interval     # 現在の射撃間隔
+        
+        # 無敵状態
         self.invulnerable = False
         self.invulnerable_timer = 0
         self.auto_shoot = True  # 自動発射をデフォルトで有効化
@@ -20,9 +27,14 @@ class Player:
         # パワーアップ状態
         self.powerup_type = None
         self.powerup_timer = 0
-        self.has_spread_shot = False
-        self.has_power_shot = False
-        self.has_shield = False
+        
+        # 黄色パワーアップの段階管理
+        self.yellow_level = 0       # 黄色パワーアップのレベル（0-4）
+        self.shot_direction = 1     # 弾の発射方向数
+        self.max_yellow_level = 4   # 最大レベル（5段階なので0-4）
+        
+        self.has_power_shot = False  # 赤アイテム効果
+        self.has_shield = False      # 緑アイテム効果
         
     def update(self):
         # AUTO-SHOOT MODE - Always fire when cooldown is ready
@@ -34,29 +46,12 @@ class Player:
             if self.powerup_timer <= 0:
                 self.reset_powerups()
         
-        # 直接弾を作成して強制的に追加（デバッグ用）
+        # 黄色パワーアップが適用されている場合、射撃間隔を調整
+        # 通常はPLAYER_SHOOT_INTERVALが使われるが、黄色パワーアップのレベルに応じて短縮
         if self.shoot_timer <= 0:
-            print("DEBUG: Forcing direct bullet creation")
-            try:
-                # 弾を直接ゲームインスタンスに追加
-                bullet = PlayerBullet(self.x + self.width // 2 - 1, self.y - 5)
-                if self.game_ref and hasattr(self.game_ref, 'player_bullets'):
-                    print(f"DEBUG: Direct bullet add via game_ref - before count: {len(self.game_ref.player_bullets)}")
-                    self.game_ref.player_bullets.append(bullet)
-                    print(f"DEBUG: Direct bullet add - after count: {len(self.game_ref.player_bullets)}")
-                    self.shoot_timer = PLAYER_SHOOT_INTERVAL
-                else:
-                    print("DEBUG: No valid game_ref, trying global instance")
-                    # フォールバック：グローバルインスタンスも試す
-                    try:
-                        from main import game_instance
-                        if game_instance and hasattr(game_instance, 'player_bullets'):
-                            game_instance.player_bullets.append(bullet)
-                            self.shoot_timer = PLAYER_SHOOT_INTERVAL
-                    except Exception as e:
-                        print(f"DEBUG: Global fallback failed: {e}")
-            except Exception as e:
-                print(f"DEBUG: Direct bullet creation failed: {e}")
+            current_interval = self.shoot_interval if hasattr(self, 'shoot_interval') else PLAYER_SHOOT_INTERVAL
+            self.shoot_timer = current_interval
+            print(f"DEBUG: Using shoot interval: {current_interval}")
         
         # Keyboard movement with multiple method detection for better compatibility
         left_pressed = False
@@ -118,7 +113,9 @@ class Player:
             # Handle shooting with touch
             if game_instance.touch_shoot and self.shoot_timer <= 0:
                 self.shoot()
-                self.shoot_timer = PLAYER_SHOOT_INTERVAL
+                # 黄色パワーアップが適用されている場合、射撃間隔を調整
+                current_interval = self.shoot_interval if hasattr(self, 'shoot_interval') else PLAYER_SHOOT_INTERVAL
+                self.shoot_timer = current_interval
         
         # Keyboard shooting - multiple methods for better compatibility
         print(f"DEBUG: self.shoot_timer before decrement: {self.shoot_timer}")
@@ -187,7 +184,9 @@ class Player:
         if self.shoot_timer <= 0 and (self.auto_shoot or z_pressed):
             print("DEBUG: Shooting condition met, calling shoot()")
             self.shoot()
-            self.shoot_timer = PLAYER_SHOOT_INTERVAL
+            # 黄色パワーアップが適用されている場合、射撃間隔を調整
+            current_interval = self.shoot_interval if hasattr(self, 'shoot_interval') else PLAYER_SHOOT_INTERVAL
+            self.shoot_timer = current_interval
         else:
             print("DEBUG: Shooting condition NOT met")
         
@@ -203,28 +202,53 @@ class Player:
         self.powerup_timer = POWERUP_DURATION
         
         # パワーアップタイプに応じた効果適用
-        if powerup_type == POWERUP_SPREAD:
-            self.has_spread_shot = True
-            print("DEBUG: POWERUP - SPREAD SHOT activated")
+        if powerup_type == POWERUP_YELLOW:
+            # 黄色アイテム: 射撃レベルか方向数を増加
+            self.apply_yellow_powerup()
+            print(f"DEBUG: YELLOW POWERUP - Level {self.yellow_level}, Directions {self.shot_direction}")
+            
         elif powerup_type == POWERUP_POWER:
             self.has_power_shot = True
             print("DEBUG: POWERUP - POWER SHOT activated")
+            
         elif powerup_type == POWERUP_SPEED:
             self.speed = self.base_speed * 1.5  # 速度1.5倍
             print("DEBUG: POWERUP - SPEED BOOST activated")
+            
         elif powerup_type == POWERUP_SHIELD:
             self.has_shield = True
             self.invulnerable = True
             self.invulnerable_timer = POWERUP_DURATION
             print("DEBUG: POWERUP - SHIELD activated")
+            
+    def apply_yellow_powerup(self):
+        """黄色パワーアップの段階的処理"""
+        # 現在のレベルを一段階上げる
+        self.yellow_level += 1
+        
+        # レベルが最大に達したかチェック
+        if self.yellow_level > self.max_yellow_level:
+            # レベルをリセットして弾の方向数を増やす
+            self.yellow_level = 0
+            self.shot_direction += 1
+            print(f"DEBUG: Shot directions increased to {self.shot_direction}")
+            
+            # 射撃間隔を初期値に戻す
+            self.shoot_interval = self.base_shoot_interval
+        else:
+            # レベルに応じて射撃間隔を短くする (最大5段階)
+            # レベル0で基本値、レベル4で最速（基本値の1/3）
+            factor = 1.0 - (self.yellow_level / (self.max_yellow_level + 1) * 0.7)
+            self.shoot_interval = int(self.base_shoot_interval * factor)
+            print(f"DEBUG: Shoot interval decreased to {self.shoot_interval} (factor: {factor:.2f})")
     
     def reset_powerups(self):
         """パワーアップ効果をリセットする"""
         self.powerup_type = None
-        self.has_spread_shot = False
         self.has_power_shot = False
         self.has_shield = False
         self.speed = self.base_speed
+        # 黄色パワーアップの段階はリセットしない（永続的効果）
         print("DEBUG: Powerups reset")
     
     def shoot(self):
@@ -239,26 +263,69 @@ class Player:
                 pyxel.play(0, 0)  # Play shoot sound
             except:
                 pass  # サウンドエラーを無視
+            
+            # ゲームインスタンスの参照があるか確認
+            if not (self.game_ref and hasattr(self.game_ref, 'player_bullets')):
+                print("DEBUG: game_ref is None or doesn't have player_bullets attribute")
+                return
                 
-            # スプレッドショット（散弾）の場合
-            if self.has_spread_shot and self.game_ref and hasattr(self.game_ref, 'player_bullets'):
-                # 中央弾
-                center_bullet = PlayerBullet(bullet_x, bullet_y)
-                # 左斜め弾
-                left_bullet = PlayerBullet(bullet_x, bullet_y)
-                left_bullet.x_speed = -0.5  # 左に少し移動
-                # 右斜め弾
-                right_bullet = PlayerBullet(bullet_x, bullet_y)
-                right_bullet.x_speed = 0.5  # 右に少し移動
+            print(f"DEBUG: Shot direction count: {self.shot_direction}")
                 
-                # 全ての弾を追加
-                self.game_ref.player_bullets.append(center_bullet)
-                self.game_ref.player_bullets.append(left_bullet)
-                self.game_ref.player_bullets.append(right_bullet)
-                print("DEBUG: Spread shot fired")
+            # 複数方向弾発射の場合（黄色パワーアップ）
+            if self.shot_direction > 1:
+                # 発射方向数に応じた角度の弾を生成
+                angle_step = 30  # 初期値は左右30度ずつ
+                
+                # 方向数が増えるほど、発射角度の範囲を広げる
+                if self.shot_direction >= 6:  # 6方向以上なら360度全周に
+                    angle_step = 360 / self.shot_direction
+                elif self.shot_direction >= 4:  # 4-5方向なら120度の扇状に
+                    angle_step = 30
+                else:  # 2-3方向の場合は左右30度に
+                    angle_step = 25
+                
+                bullets_created = 0
+                
+                # 方向数に応じた弾を作成
+                for i in range(self.shot_direction):
+                    # 角度を計算（ラジアン）
+                    if self.shot_direction >= 6:  # 全周発射の場合
+                        angle = (i * angle_step) * (3.14159 / 180)
+                    else:  # 扇状発射の場合
+                        # 中心から左右に広がるよう角度を調整
+                        offset = (self.shot_direction - 1) / 2
+                        angle = ((i - offset) * angle_step) * (3.14159 / 180)
+                    
+                    # 角度から速度を計算
+                    speed_x = math.sin(angle) * 0.5
+                    speed_y = -math.cos(angle)  # 上向きを基準とするため -cos
+                    
+                    # 弾を生成
+                    bullet = PlayerBullet(bullet_x, bullet_y, speed_x)
+                    
+                    # 弾の方向補正（上向き基準）
+                    bullet.speed = bullet.speed * speed_y
+                    
+                    # 弾がまっすぐ上にいくよう追加調整
+                    if abs(angle) < 0.01:  # 中央の弾は補正なし
+                        bullet.speed = -abs(bullet.speed)
+                    
+                    # パワーショットの場合は強化
+                    if self.has_power_shot:
+                        bullet.damage = 2
+                        bullet.width = 4
+                        bullet.color = RED
+                    
+                    # 弾を追加
+                    self.game_ref.player_bullets.append(bullet)
+                    bullets_created += 1
+                
+                print(f"DEBUG: Multi-directional shot fired ({bullets_created} bullets)")
+                
             else:
-                # 通常の弾
+                # 通常の弾を発射（単一方向）
                 bullet = PlayerBullet(bullet_x, bullet_y)
+                
                 # パワーショットの場合は強化
                 if self.has_power_shot:
                     bullet.damage = 2  # 通常の2倍のダメージ
@@ -266,22 +333,12 @@ class Player:
                     bullet.color = RED # 色を変える
                     print("DEBUG: Power shot fired")
                 
-                # Use direct game reference instead of global import
-                print(f"DEBUG: self.game_ref: {self.game_ref}")  # デバッグログ
-                if self.game_ref and hasattr(self.game_ref, 'player_bullets'):
-                    print(f"DEBUG: Player bullets before append: {len(self.game_ref.player_bullets)}")  # デバッグログ
-                    self.game_ref.player_bullets.append(bullet)
-                    print(f"DEBUG: Player bullets after append: {len(self.game_ref.player_bullets)}")  # デバッグログ
-                else:
-                    print("DEBUG: game_ref is None or doesn't have player_bullets attribute")  # デバッグログ
-                    
-                    # フォールバック：グローバルインスタンスを試す
-                    try:
-                        from main import game_instance
-                        if game_instance and hasattr(game_instance, 'player_bullets'):
-                            game_instance.player_bullets.append(bullet)
-                    except:
-                        pass
+                # 弾を追加
+                print(f"DEBUG: Player bullets before append: {len(self.game_ref.player_bullets)}")
+                self.game_ref.player_bullets.append(bullet)
+                print(f"DEBUG: Player bullets after append: {len(self.game_ref.player_bullets)}")
+                print("DEBUG: Single shot fired")
+                
         except Exception as e:
             print(f"DEBUG: Exception in shoot(): {e}")  # 例外をキャッチして表示
     

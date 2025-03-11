@@ -65,5 +65,12 @@ class PowerUp:
 # パワーアップアイテムファクトリー関数
 def create_random_powerup(x, y):
     """ランダムなパワーアップアイテムを生成"""
-    powerup_type = random.choice([POWERUP_SPREAD, POWERUP_POWER, POWERUP_SPEED, POWERUP_SHIELD])
+    # 黄色パワーアップ（POWERUP_YELLOW）の出現率を高くする
+    if random.random() < 0.4:  # 40%の確率で黄色
+        powerup_type = POWERUP_YELLOW
+    else:
+        # 残りは他のパワーアップからランダム選択
+        powerup_type = random.choice([POWERUP_POWER, POWERUP_SPEED, POWERUP_SHIELD])
+    
+    print(f"DEBUG: Powerup created of type {powerup_type}")
     return PowerUp(x, y, powerup_type)
