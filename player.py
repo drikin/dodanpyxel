@@ -3,7 +3,7 @@ from constants import *
 from bullet import PlayerBullet
 
 class Player:
-    def __init__(self, x, y):
+    def __init__(self, x, y, game_ref=None):
         self.x = x
         self.y = y
         self.width = PLAYER_WIDTH
@@ -14,6 +14,7 @@ class Player:
         self.invulnerable = False
         self.invulnerable_timer = 0
         self.auto_shoot = True  # 自動発射をデフォルトで有効化
+        self.game_ref = game_ref  # ゲームインスタンスへの直接参照
         
     def update(self):
         # AUTO-SHOOT MODE - Always fire when cooldown is ready
@@ -25,12 +26,21 @@ class Player:
             try:
                 # 弾を直接ゲームインスタンスに追加
                 bullet = PlayerBullet(self.x + self.width // 2 - 1, self.y - 5)
-                from main import game_instance
-                if game_instance:
-                    print(f"DEBUG: Direct bullet add - before count: {len(game_instance.player_bullets)}")
-                    game_instance.player_bullets.append(bullet)
-                    print(f"DEBUG: Direct bullet add - after count: {len(game_instance.player_bullets)}")
+                if self.game_ref and hasattr(self.game_ref, 'player_bullets'):
+                    print(f"DEBUG: Direct bullet add via game_ref - before count: {len(self.game_ref.player_bullets)}")
+                    self.game_ref.player_bullets.append(bullet)
+                    print(f"DEBUG: Direct bullet add - after count: {len(self.game_ref.player_bullets)}")
                     self.shoot_timer = PLAYER_SHOOT_INTERVAL
+                else:
+                    print("DEBUG: No valid game_ref, trying global instance")
+                    # フォールバック：グローバルインスタンスも試す
+                    try:
+                        from main import game_instance
+                        if game_instance and hasattr(game_instance, 'player_bullets'):
+                            game_instance.player_bullets.append(bullet)
+                            self.shoot_timer = PLAYER_SHOOT_INTERVAL
+                    except Exception as e:
+                        print(f"DEBUG: Global fallback failed: {e}")
             except Exception as e:
                 print(f"DEBUG: Direct bullet creation failed: {e}")
         
@@ -186,15 +196,22 @@ class Player:
             except:
                 pass  # サウンドエラーを無視
             
-            # Access the game instance via global
-            from main import game_instance
-            print(f"DEBUG: game_instance in shoot(): {game_instance}")  # デバッグログ
-            if game_instance and hasattr(game_instance, 'player_bullets'):
-                print(f"DEBUG: Player bullets before append: {len(game_instance.player_bullets)}")  # デバッグログ
-                game_instance.player_bullets.append(bullet)
-                print(f"DEBUG: Player bullets after append: {len(game_instance.player_bullets)}")  # デバッグログ
+            # Use direct game reference instead of global import
+            print(f"DEBUG: self.game_ref: {self.game_ref}")  # デバッグログ
+            if self.game_ref and hasattr(self.game_ref, 'player_bullets'):
+                print(f"DEBUG: Player bullets before append: {len(self.game_ref.player_bullets)}")  # デバッグログ
+                self.game_ref.player_bullets.append(bullet)
+                print(f"DEBUG: Player bullets after append: {len(self.game_ref.player_bullets)}")  # デバッグログ
             else:
-                print("DEBUG: game_instance is None or doesn't have player_bullets attribute")  # デバッグログ
+                print("DEBUG: game_ref is None or doesn't have player_bullets attribute")  # デバッグログ
+                
+                # フォールバック：グローバルインスタンスを試す
+                try:
+                    from main import game_instance
+                    if game_instance and hasattr(game_instance, 'player_bullets'):
+                        game_instance.player_bullets.append(bullet)
+                except:
+                    pass
         except Exception as e:
             print(f"DEBUG: Exception in shoot(): {e}")  # 例外をキャッチして表示
     

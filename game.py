@@ -62,16 +62,16 @@ class Game:
         pass
     
     def reset_game(self):
-        # Player
-        self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 20)
+        # Initialize bullet lists first (so they exist before player creation)
+        self.player_bullets = []
+        self.enemy_bullets = []
+        
+        # Player (with direct reference to this game instance)
+        self.player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 20, self)
         
         # Enemies
         self.enemies = []
         self.enemy_timer = 0
-        
-        # Bullets
-        self.player_bullets = []
-        self.enemy_bullets = []
         
         # Explosions
         self.explosions = []
