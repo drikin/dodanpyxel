@@ -411,15 +411,23 @@ class Game:
             progress = 1.0 - (self.boss_distance / BOSS_DISTANCE_MAX)
             
             # プログレスバーの色（赤→黄→緑でグラデーション）
-            if progress < 0.5:
-                # 赤→黄 (0.0〜0.5の範囲)
-                bar_color = RED
-            elif progress < 0.8:
-                # 黄 (0.5〜0.8の範囲)
-                bar_color = YELLOW
-            else:
-                # 緑 (0.8〜1.0の範囲)
-                bar_color = GREEN
+            try:
+                if progress < 0.5:
+                    # 赤→黄 (0.0〜0.5の範囲)
+                    bar_color = RED
+                elif progress < 0.8:
+                    # 黄 (0.5〜0.8の範囲)
+                    bar_color = YELLOW
+                else:
+                    # 緑 (0.8〜1.0の範囲)
+                    bar_color = GREEN
+                
+                # デバッグ出力
+                print(f"DEBUG: Boss progress: {progress:.2f}, Color: {bar_color}")
+            except Exception as e:
+                # エラーが発生した場合はデフォルト色に
+                print(f"DEBUG: Error setting bar color: {e}")
+                bar_color = WHITE
                 
             # 進行バー
             fill_width = int(bar_width * progress)
