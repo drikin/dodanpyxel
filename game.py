@@ -9,8 +9,9 @@ from assets.sounds import init_sounds
 
 class Game:
     def __init__(self):
-        # Initialize Pyxel with mouse input enabled
-        pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="DodanPyxel", fps=60, display_scale=3, capture_scale=1, capture_sec=0)
+        # Initialize Pyxel with mouse input enabled and no acceleration for better compatibility
+        pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="DodanPyxel", fps=60, display_scale=3, 
+                  capture_scale=1, capture_sec=0, quit_key=pyxel.KEY_NONE)
         pyxel.mouse(True)  # Enable mouse/touch input
         
         # Initialize sounds
