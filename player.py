@@ -13,6 +13,7 @@ class Player:
         self.shoot_timer = 0
         self.invulnerable = False
         self.invulnerable_timer = 0
+        self.auto_shoot = True  # 自動発射をデフォルトで有効化
         
     def update(self):
         # AUTO-SHOOT MODE - Always fire when cooldown is ready

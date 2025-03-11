@@ -49,7 +49,7 @@ class Game:
         self.touch_start_y = 0
         self.touch_current_x = 0
         self.touch_current_y = 0
-        self.touch_shoot = False
+        self.touch_shoot = True  # 自動発射をデフォルトで有効
         
         # For virtual touch controls display
         self.show_touch_controls = True
@@ -106,7 +106,11 @@ class Game:
             self.touch_current_x = pyxel.mouse_x
             self.touch_current_y = pyxel.mouse_y
             
-            # Check if we're touching in the bottom right corner (shoot button)
+            # Auto-shoot is active by default, but allow additional control
+            # with touch in the bottom right corner
+            self.touch_shoot = True  # Always enable auto-shooting
+            
+            # Additional touch control in bottom right still available
             if (pyxel.mouse_x > SCREEN_WIDTH - 30 and 
                 pyxel.mouse_y > SCREEN_HEIGHT - 30):
                 self.touch_shoot = True
@@ -330,9 +334,9 @@ class Game:
         pyxel.text(10, SCREEN_HEIGHT - 20, "TOUCH & DRAG: MOVE", pyxel.COLOR_YELLOW)
         pyxel.text(10, SCREEN_HEIGHT - 10, "AUTO-SHOOTING ACTIVE", pyxel.COLOR_YELLOW)
         
-        # Draw touch button preview
-        pyxel.circ(SCREEN_WIDTH - 15, SCREEN_HEIGHT - 15, 10, pyxel.COLOR_RED)
-        pyxel.text(SCREEN_WIDTH - 20, SCREEN_HEIGHT - 17, "FIRE", pyxel.COLOR_WHITE)
+        # Draw auto-shoot button preview
+        pyxel.circ(SCREEN_WIDTH - 15, SCREEN_HEIGHT - 15, 10, ORANGE)
+        pyxel.text(SCREEN_WIDTH - 27, SCREEN_HEIGHT - 17, "AUTO", pyxel.COLOR_WHITE)
     
     def draw_game(self):
         # Draw background
@@ -369,9 +373,9 @@ class Game:
             
         # Draw virtual touch controls if enabled
         if self.show_touch_controls:
-            # Draw shoot button in bottom right
-            pyxel.circ(SCREEN_WIDTH - 15, SCREEN_HEIGHT - 15, 10, pyxel.COLOR_RED)
-            pyxel.text(SCREEN_WIDTH - 20, SCREEN_HEIGHT - 17, "FIRE", pyxel.COLOR_WHITE)
+            # Draw auto-shoot indicator in bottom right
+            pyxel.circ(SCREEN_WIDTH - 15, SCREEN_HEIGHT - 15, 10, ORANGE)
+            pyxel.text(SCREEN_WIDTH - 27, SCREEN_HEIGHT - 17, "AUTO", pyxel.COLOR_WHITE)
             
             # Draw touch movement indicator if active
             if self.touch_enabled and not (
