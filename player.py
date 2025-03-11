@@ -15,14 +15,14 @@ class Player:
         self.invulnerable_timer = 0
         
     def update(self):
-        # Keyboard movement
-        if pyxel.btn(pyxel.KEY_LEFT) and self.x > 0:
+        # Keyboard movement - using constants from constants.py
+        if pyxel.btn(KEY_LEFT) and self.x > 0:
             self.x -= self.speed
-        if pyxel.btn(pyxel.KEY_RIGHT) and self.x < SCREEN_WIDTH - self.width:
+        if pyxel.btn(KEY_RIGHT) and self.x < SCREEN_WIDTH - self.width:
             self.x += self.speed
-        if pyxel.btn(pyxel.KEY_UP) and self.y > 0:
+        if pyxel.btn(KEY_UP) and self.y > 0:
             self.y -= self.speed
-        if pyxel.btn(pyxel.KEY_DOWN) and self.y < SCREEN_HEIGHT - self.height:
+        if pyxel.btn(KEY_DOWN) and self.y < SCREEN_HEIGHT - self.height:
             self.y += self.speed
         
         # Touch movement support - get game instance via global
@@ -48,9 +48,9 @@ class Player:
                 self.shoot()
                 self.shoot_timer = PLAYER_SHOOT_INTERVAL
         
-        # Keyboard shooting
+        # Keyboard shooting - using constants
         self.shoot_timer -= 1
-        if self.shoot_timer <= 0 and pyxel.btn(pyxel.KEY_Z):
+        if self.shoot_timer <= 0 and pyxel.btn(KEY_Z):
             self.shoot()
             self.shoot_timer = PLAYER_SHOOT_INTERVAL
         

@@ -86,7 +86,7 @@ class Game:
         
     def process_touch_input(self):
         # Check for mouse press as a proxy for touch in Pyxel
-        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+        if pyxel.btnp(MOUSE_BUTTON_LEFT):
             self.touch_enabled = True
             self.touch_start_x = pyxel.mouse_x
             self.touch_start_y = pyxel.mouse_y
