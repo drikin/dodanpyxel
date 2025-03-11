@@ -65,6 +65,10 @@ def main():
     # Initialize game
     game_instance = Game()
     
+    # トラブルシューティング: game_instanceが正しく設定されているか確認
+    print("DEBUG: game_instance initialized:", game_instance)
+    print("DEBUG: Has player_bullets attribute:", hasattr(game_instance, 'player_bullets'))
+    
     # Start the game loop
     pyxel.run(game_instance.update, game_instance.draw)
 

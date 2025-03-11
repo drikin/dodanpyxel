@@ -81,6 +81,9 @@ class Game:
         
         # Game variables
         self.frame_count = 0
+        
+        # 自動発射は常に有効にする
+        self.touch_shoot = True
     
     def update(self):
         # Handle touch input for mobile devices
@@ -133,10 +136,11 @@ class Game:
                 pyxel.mouse_y > SCREEN_HEIGHT - 30):
                 self.touch_shoot = True
                 
-        # Reset touch when released
+        # Reset touch when released, but keep auto-shoot enabled
         elif pyxel.btnr(MOUSE_BUTTON_LEFT):
             self.touch_enabled = False
-            self.touch_shoot = False
+            # 自動発射は常に有効にしておく
+            self.touch_shoot = True
     
     def update_title_screen(self):
         # Start game when SPACE is pressed
@@ -145,6 +149,9 @@ class Game:
             pyxel.play(0, 2)  # Play start sound
     
     def update_game(self):
+        # 自動発射フラグを確認して更新
+        self.touch_shoot = True
+        
         # Update background
         self.background.update()
         
@@ -199,6 +206,9 @@ class Game:
                 self.enemies.append(LargeEnemy(x, -20))
     
     def update_bullets(self):
+        # デバッグ: 弾のカウントを表示
+        print(f"DEBUG: Player bullets count: {len(self.player_bullets)}")
+        
         # Update player bullets
         for bullet in self.player_bullets[:]:
             bullet.update()
@@ -350,7 +360,9 @@ class Game:
             enemy.draw()
         
         # Draw bullets
+        print(f"DEBUG: Number of player bullets to draw: {len(self.player_bullets)}")
         for bullet in self.player_bullets:
+            print(f"DEBUG: Drawing bullet at ({bullet.x}, {bullet.y})")
             bullet.draw()
         
         for bullet in self.enemy_bullets:

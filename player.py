@@ -19,6 +19,12 @@ class Player:
         # AUTO-SHOOT MODE - Always fire when cooldown is ready
         self.auto_shoot = True
         
+        # 強制的に発射
+        if self.shoot_timer <= 0:
+            print("DEBUG: Forcing shoot in player update")
+            self.shoot()
+            self.shoot_timer = PLAYER_SHOOT_INTERVAL
+        
         # Keyboard movement with multiple method detection for better compatibility
         left_pressed = False
         right_pressed = False
@@ -158,12 +164,18 @@ class Player:
         
         # Play shoot sound
         import pyxel
-        pyxel.play(0, 0)  # Play shoot sound
+        try:
+            pyxel.play(0, 0)  # Play shoot sound
+        except:
+            pass  # サウンドエラーを無視
         
         # Access the game instance via global
         from main import game_instance
         if game_instance and hasattr(game_instance, 'player_bullets'):
+            print("DEBUG: Adding bullet to game_instance.player_bullets")  # デバッグログ
             game_instance.player_bullets.append(bullet)
+        else:
+            print("DEBUG: game_instance is None or doesn't have player_bullets attribute")  # デバッグログ
     
     def hit(self):
         if not self.invulnerable:

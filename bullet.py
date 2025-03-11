@@ -22,7 +22,8 @@ class Bullet:
 
 class PlayerBullet(Bullet):
     def __init__(self, x, y):
-        super().__init__(x, y, -PLAYER_BULLET_SPEED, CYAN)
+        # 速度を直接指定して確実に上方向に移動
+        super().__init__(x, y, PLAYER_BULLET_SPEED, CYAN)
     
     def draw(self):
         # Special drawing for player bullet
