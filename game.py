@@ -117,13 +117,13 @@ class Game:
                 self.touch_shoot = True
                 
         # Reset touch when released
-        elif pyxel.btnr(pyxel.MOUSE_BUTTON_LEFT):
+        elif pyxel.btnr(MOUSE_BUTTON_LEFT):
             self.touch_enabled = False
             self.touch_shoot = False
     
     def update_title_screen(self):
         # Start game when SPACE is pressed
-        if pyxel.btnp(pyxel.KEY_SPACE):
+        if pyxel.btnp(KEY_SPACE):
             self.state = STATE_PLAYING
             pyxel.play(0, 2)  # Play start sound
     
@@ -160,7 +160,7 @@ class Game:
     
     def update_game_over(self):
         # Restart game when SPACE is pressed
-        if pyxel.btnp(pyxel.KEY_SPACE):
+        if pyxel.btnp(KEY_SPACE):
             self.reset_game()
             self.state = STATE_PLAYING
     
