@@ -19,11 +19,20 @@ class Player:
         # AUTO-SHOOT MODE - Always fire when cooldown is ready
         self.auto_shoot = True
         
-        # 強制的に発射
+        # 直接弾を作成して強制的に追加（デバッグ用）
         if self.shoot_timer <= 0:
-            print("DEBUG: Forcing shoot in player update")
-            self.shoot()
-            self.shoot_timer = PLAYER_SHOOT_INTERVAL
+            print("DEBUG: Forcing direct bullet creation")
+            try:
+                # 弾を直接ゲームインスタンスに追加
+                bullet = PlayerBullet(self.x + self.width // 2 - 1, self.y - 5)
+                from main import game_instance
+                if game_instance:
+                    print(f"DEBUG: Direct bullet add - before count: {len(game_instance.player_bullets)}")
+                    game_instance.player_bullets.append(bullet)
+                    print(f"DEBUG: Direct bullet add - after count: {len(game_instance.player_bullets)}")
+                    self.shoot_timer = PLAYER_SHOOT_INTERVAL
+            except Exception as e:
+                print(f"DEBUG: Direct bullet creation failed: {e}")
         
         # Keyboard movement with multiple method detection for better compatibility
         left_pressed = False
@@ -88,7 +97,9 @@ class Player:
                 self.shoot_timer = PLAYER_SHOOT_INTERVAL
         
         # Keyboard shooting - multiple methods for better compatibility
+        print(f"DEBUG: self.shoot_timer before decrement: {self.shoot_timer}")
         self.shoot_timer -= 1
+        print(f"DEBUG: self.shoot_timer after decrement: {self.shoot_timer}")
         
         # Use our unified key detection method if available
         z_pressed = False
@@ -148,9 +159,13 @@ class Player:
             pass
         
         # AUTO-SHOOT: Always fire when ready + normal trigger
+        print(f"DEBUG: auto_shoot flag: {self.auto_shoot}, z_pressed: {z_pressed}, timer: {self.shoot_timer}")
         if self.shoot_timer <= 0 and (self.auto_shoot or z_pressed):
+            print("DEBUG: Shooting condition met, calling shoot()")
             self.shoot()
             self.shoot_timer = PLAYER_SHOOT_INTERVAL
+        else:
+            print("DEBUG: Shooting condition NOT met")
         
         # Invulnerability after being hit
         if self.invulnerable:
@@ -159,23 +174,29 @@ class Player:
                 self.invulnerable = False
     
     def shoot(self):
-        # Create a bullet
-        bullet = PlayerBullet(self.x + self.width // 2 - 1, self.y - 5)
-        
-        # Play shoot sound
-        import pyxel
+        print("DEBUG: shoot() method called!") # 追加デバッグ
         try:
-            pyxel.play(0, 0)  # Play shoot sound
-        except:
-            pass  # サウンドエラーを無視
-        
-        # Access the game instance via global
-        from main import game_instance
-        if game_instance and hasattr(game_instance, 'player_bullets'):
-            print("DEBUG: Adding bullet to game_instance.player_bullets")  # デバッグログ
-            game_instance.player_bullets.append(bullet)
-        else:
-            print("DEBUG: game_instance is None or doesn't have player_bullets attribute")  # デバッグログ
+            # Create a bullet
+            bullet = PlayerBullet(self.x + self.width // 2 - 1, self.y - 5)
+            
+            # Play shoot sound
+            import pyxel
+            try:
+                pyxel.play(0, 0)  # Play shoot sound
+            except:
+                pass  # サウンドエラーを無視
+            
+            # Access the game instance via global
+            from main import game_instance
+            print(f"DEBUG: game_instance in shoot(): {game_instance}")  # デバッグログ
+            if game_instance and hasattr(game_instance, 'player_bullets'):
+                print(f"DEBUG: Player bullets before append: {len(game_instance.player_bullets)}")  # デバッグログ
+                game_instance.player_bullets.append(bullet)
+                print(f"DEBUG: Player bullets after append: {len(game_instance.player_bullets)}")  # デバッグログ
+            else:
+                print("DEBUG: game_instance is None or doesn't have player_bullets attribute")  # デバッグログ
+        except Exception as e:
+            print(f"DEBUG: Exception in shoot(): {e}")  # 例外をキャッチして表示
     
     def hit(self):
         if not self.invulnerable:
