@@ -48,9 +48,25 @@ class Player:
                 self.shoot()
                 self.shoot_timer = PLAYER_SHOOT_INTERVAL
         
-        # Keyboard shooting - using constants
+        # Keyboard shooting - multiple methods for better compatibility
         self.shoot_timer -= 1
-        if self.shoot_timer <= 0 and pyxel.btn(KEY_Z):
+        
+        # Try direct Z key detection multiple ways for better version compatibility
+        z_pressed = False
+        try:
+            # Method 1: Using KEY_Z constant
+            z_pressed = pyxel.btn(KEY_Z)
+        except:
+            try:
+                # Method 2: Try direct ASCII code (122 = 'z')
+                z_pressed = pyxel.btn(122)
+            except:
+                # Method 3: Try pyxel.btn_direct if added by our compatibility layer
+                if hasattr(pyxel, 'btn_direct'):
+                    z_pressed = pyxel.btn_direct(122)
+        
+        # Fire if needed
+        if self.shoot_timer <= 0 and z_pressed:
             self.shoot()
             self.shoot_timer = PLAYER_SHOOT_INTERVAL
         
