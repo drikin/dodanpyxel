@@ -1,0 +1,28 @@
+version = 1
+requires-python = ">=3.11"
+
+[[package]]
+name = "pyxel"
+version = "2.3.11"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c3/78/e19515bf72b0e9832e7c44a2703545bdb4a5533ceedf47b31f6f94a12f48/pyxel-2.3.11-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:2768376fad95729755c4bbdea2a226844af3654d47f7cf75ff7e85d5ebc68103", size = 3476701 },
+    { url = "https://files.pythonhosted.org/packages/83/50/04606a171cec060948baeeb141f25a5f64d9a9e3c61ec624cfdb953e63a0/pyxel-2.3.11-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:fd175ee36b9f82365b59b605d763e09e2a63254ebc00c6d8abc0dc4b70e6b3f1", size = 3307905 },
+    { url = "https://files.pythonhosted.org/packages/28/b2/3077ed5931f4827d18d9192284ee1b846b0897b2b9e80f3247476e39943f/pyxel-2.3.11-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1a44a3f213a82480b87ceec1267c5a10b81419faca3029c57a168322558f2820", size = 2966267 },
+    { url = "https://files.pythonhosted.org/packages/5f/af/cdfc15ac52e54f05f37d19f8c20b9a8b80230b87760515ca17226a527596/pyxel-2.3.11-cp38-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:2b009fcfbeb830065f5c1c447a84e57968e6df40b7f161fe54f3fda28a5dfe11", size = 2978988 },
+    { url = "https://files.pythonhosted.org/packages/6e/32/ab92df6d05aa4a21eae123572d031d1934e1bfc995ba330aeaa8ca2ef1d7/pyxel-2.3.11-cp38-abi3-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:0a323e6c005a5e70131be397fe5636f5618ab2136241b8ebb15d792e2b37c0c9", size = 3234470 },
+    { url = "https://files.pythonhosted.org/packages/57/88/40b929821932f1d79173a6fd01a5307c789c6fd82d1481a08c0b22b02359/pyxel-2.3.11-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:66cd715004578845eccf189e0cc1b9ad8f7164a53d256964778d9bdfd6723585", size = 3035442 },
+    { url = "https://files.pythonhosted.org/packages/31/42/196814eeafc6af993af9b2c9475f8c0f272944cd12a99123233a3730b796/pyxel-2.3.11-cp38-abi3-win32.whl", hash = "sha256:e73318176fa6ab5b8a86b2d19f6e6cb0f1e967f4716415fa85025979c5a2e753", size = 3119510 },
+    { url = "https://files.pythonhosted.org/packages/77/40/e350ca7a7d4cf6acfc6ba417e60f536d3e647601dc201cbe22e3126fa27c/pyxel-2.3.11-cp38-abi3-win_amd64.whl", hash = "sha256:e9dd3d01d31a29fc4302f6a0155b68d05d8fdebad8887213276e9ae5bcb29d24", size = 3268739 },
+]
+
+[[package]]
+name = "repl-nix-workspace"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "pyxel" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pyxel", specifier = ">=2.3.11" }]
