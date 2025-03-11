@@ -6,6 +6,7 @@ from player import Player
 from enemy import SmallEnemy, MediumEnemy, LargeEnemy
 from background import Background
 from assets.sounds import init_sounds
+from powerup import PowerUp, create_random_powerup
 
 class Game:
     def __init__(self):
@@ -75,6 +76,9 @@ class Game:
         
         # Explosions
         self.explosions = []
+        
+        # パワーアップアイテム
+        self.powerups = []
         
         # Score
         self.score = 0
@@ -185,6 +189,14 @@ class Game:
         # Update bullets
         self.update_bullets()
         
+        # パワーアップアイテムの更新
+        for powerup in self.powerups[:]:
+            powerup.update()
+            
+            # 画面外に出たアイテムを削除
+            if powerup.y > SCREEN_HEIGHT + 10:
+                self.powerups.remove(powerup)
+        
         # Check collisions
         self.check_collisions()
         
@@ -264,6 +276,16 @@ class Game:
                         elif isinstance(enemy, LargeEnemy):
                             self.score += ENEMY_LARGE_SCORE
                         
+                        # ランダムでパワーアップアイテムをドロップ
+                        if random.random() < POWERUP_DROP_CHANCE:
+                            # ランダムなパワーアップアイテムを生成
+                            powerup = create_random_powerup(
+                                enemy.x + enemy.width // 2, 
+                                enemy.y + enemy.height // 2
+                            )
+                            self.powerups.append(powerup)
+                            print(f"DEBUG: Powerup created of type {powerup.powerup_type}")
+                        
                         # Remove enemy
                         if enemy in self.enemies:
                             self.enemies.remove(enemy)
@@ -272,6 +294,25 @@ class Game:
                         pyxel.play(1, 1)  # explosion sound
                     
                     break
+        
+        # パワーアップアイテムとプレイヤーの衝突判定
+        for powerup in self.powerups[:]:
+            if (powerup.x < self.player.x + self.player.width and
+                powerup.x + powerup.width > self.player.x and
+                powerup.y < self.player.y + self.player.height and
+                powerup.y + powerup.height > self.player.y):
+                
+                # パワーアップ効果を適用
+                self.player.apply_powerup(powerup.powerup_type)
+                
+                # パワーアップアイテム削除
+                self.powerups.remove(powerup)
+                
+                # パワーアップ取得音再生
+                try:
+                    pyxel.play(1, 2)  # アイテム取得音
+                except:
+                    pass
         
         # Check enemy bullets vs player
         if not self.player.invulnerable:
@@ -380,6 +421,10 @@ class Game:
         
         for bullet in self.enemy_bullets:
             bullet.draw()
+            
+        # パワーアップアイテムの描画
+        for powerup in self.powerups:
+            powerup.draw()
         
         # Draw explosions
         for explosion in self.explosions:

@@ -10,6 +10,7 @@ class Bullet:
         self.color = color
         self.width = width
         self.height = height
+        self.damage = 1  # デフォルトダメージ
     
     def update(self):
         # Movement logic
@@ -21,9 +22,18 @@ class Bullet:
         pyxel.rect(self.x, self.y, self.width, self.height, self.color)
 
 class PlayerBullet(Bullet):
-    def __init__(self, x, y):
+    def __init__(self, x, y, x_speed=0.0):
         # 速度を直接指定して確実に上方向に移動
         super().__init__(x, y, PLAYER_BULLET_SPEED, CYAN)
+        self.x_speed = float(x_speed)  # 横方向の速度設定（float型に明示的に変換）
+    
+    def update(self):
+        # 弾の上方向への移動 (speed値はマイナス = 上向き)
+        self.y += self.speed
+        
+        # 横方向の移動を適用（x_speedが設定されている場合、斜めに移動）
+        if self.x_speed != 0:
+            self.x += self.x_speed
     
     def draw(self):
         # Special drawing for player bullet

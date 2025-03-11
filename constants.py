@@ -63,3 +63,13 @@ ENEMY_LARGE_SCORE = 300
 STATE_TITLE = 0
 STATE_PLAYING = 1
 STATE_GAME_OVER = 2
+
+# パワーアップタイプ
+POWERUP_SPREAD = 0  # 散弾（弾が複数方向に発射）
+POWERUP_POWER = 1   # 弾のパワーアップ（敵を一撃で倒せる）
+POWERUP_SPEED = 2   # プレイヤーの移動速度アップ
+POWERUP_SHIELD = 3  # 一定時間無敵になる
+
+# パワーアップ設定
+POWERUP_DURATION = 600    # パワーアップの効果持続時間（フレーム数）
+POWERUP_DROP_CHANCE = 0.2  # 敵を倒した時にアイテムが出る確率
