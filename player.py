@@ -25,14 +25,10 @@ class Player:
         if pyxel.btn(pyxel.KEY_DOWN) and self.y < SCREEN_HEIGHT - self.height:
             self.y += self.speed
         
-        # Touch movement support
-        game_instance = None
-        for obj in pyxel._app._update_funcs:
-            if hasattr(obj, 'touch_enabled'):
-                game_instance = obj
-                break
-                
-        if game_instance and game_instance.touch_enabled:
+        # Touch movement support - get game instance via global
+        from main import game_instance
+        
+        if game_instance and hasattr(game_instance, 'touch_enabled') and game_instance.touch_enabled:
             # Calculate movement direction based on touch drag
             dx = game_instance.touch_current_x - game_instance.touch_start_x
             dy = game_instance.touch_current_y - game_instance.touch_start_y
@@ -67,16 +63,15 @@ class Player:
     def shoot(self):
         # Create a bullet
         bullet = PlayerBullet(self.x + self.width // 2 - 1, self.y - 5)
-        from game import Game
-        # Get the current game instance to add the bullet
+        
+        # Play shoot sound
         import pyxel
         pyxel.play(0, 0)  # Play shoot sound
         
-        # Access the game instance
-        for obj in pyxel._app._update_funcs:
-            if hasattr(obj, 'player_bullets'):
-                obj.player_bullets.append(bullet)
-                break
+        # Access the game instance via global
+        from main import game_instance
+        if game_instance and hasattr(game_instance, 'player_bullets'):
+            game_instance.player_bullets.append(bullet)
     
     def hit(self):
         if not self.invulnerable:
