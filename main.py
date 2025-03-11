@@ -30,6 +30,30 @@ def patch_pyxel_compatibility():
         
         # Monkey patch the function
         pyxel.btn_direct = btn_direct
+        
+    # Add direct key_press detection (macOS compatibility)
+    if not hasattr(pyxel, 'key_press'):
+        def key_press(key_value):
+            """Multi-method key detection that works across environments"""
+            try:
+                # Try built-in methods
+                if isinstance(key_value, int):
+                    return pyxel.btn(key_value)
+                elif isinstance(key_value, str) and len(key_value) == 1:
+                    # Try to check by ASCII code
+                    return pyxel.btn(ord(key_value.lower()))
+            except:
+                pass
+            
+            # Last resort - try keyboard module
+            try:
+                import keyboard
+                return keyboard.is_pressed(key_value)
+            except:
+                return False
+        
+        # Add our custom function
+        pyxel.key_press = key_press
 
 # Initialize and run the game
 def main():

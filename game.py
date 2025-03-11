@@ -9,10 +9,23 @@ from assets.sounds import init_sounds
 
 class Game:
     def __init__(self):
-        # Initialize Pyxel with mouse input enabled and no acceleration for better compatibility
-        pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="DodanPyxel", fps=60, display_scale=3, 
-                  capture_scale=1, capture_sec=0, quit_key=pyxel.KEY_NONE)
-        pyxel.mouse(True)  # Enable mouse/touch input
+        try:
+            # Try current API (newer Pyxel versions)
+            pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="DodanPyxel", fps=60, display_scale=3, 
+                      capture_scale=1, capture_sec=0, quit_key=pyxel.KEY_NONE)
+        except:
+            try:
+                # Try older API
+                pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, caption="DodanPyxel", fps=60, scale=3)
+            except:
+                # Absolute minimal initialization
+                pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT)
+                
+        # Enable mouse input for touch
+        try:
+            pyxel.mouse(True)  # Enable mouse/touch input
+        except:
+            pass  # Some versions don't have this
         
         # Initialize sounds
         try:
@@ -107,7 +120,7 @@ class Game:
                 self.state = STATE_PLAYING
                 
         # Update current touch position if touching
-        elif pyxel.btn(pyxel.MOUSE_BUTTON_LEFT) and self.touch_enabled:
+        elif pyxel.btn(MOUSE_BUTTON_LEFT) and self.touch_enabled:
             self.touch_current_x = pyxel.mouse_x
             self.touch_current_y = pyxel.mouse_y
             
@@ -310,12 +323,12 @@ class Game:
             pyxel.text(SCREEN_WIDTH//2 - 50, SCREEN_HEIGHT//2, "PRESS SPACE or TAP SCREEN", pyxel.COLOR_WHITE)
         
         # Draw instructions
-        pyxel.text(10, SCREEN_HEIGHT - 40, "ARROWS: MOVE", pyxel.COLOR_WHITE)
-        pyxel.text(10, SCREEN_HEIGHT - 30, "Z: SHOOT", pyxel.COLOR_WHITE)
+        pyxel.text(10, SCREEN_HEIGHT - 40, "ARROWS/WASD: MOVE", pyxel.COLOR_WHITE)
+        pyxel.text(10, SCREEN_HEIGHT - 30, "AUTO-SHOOTING ENABLED!", ORANGE)
         
         # Mobile instructions
         pyxel.text(10, SCREEN_HEIGHT - 20, "TOUCH & DRAG: MOVE", pyxel.COLOR_YELLOW)
-        pyxel.text(10, SCREEN_HEIGHT - 10, "TAP RED BUTTON: SHOOT", pyxel.COLOR_YELLOW)
+        pyxel.text(10, SCREEN_HEIGHT - 10, "AUTO-SHOOTING ACTIVE", pyxel.COLOR_YELLOW)
         
         # Draw touch button preview
         pyxel.circ(SCREEN_WIDTH - 15, SCREEN_HEIGHT - 15, 10, pyxel.COLOR_RED)

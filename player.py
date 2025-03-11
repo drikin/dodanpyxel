@@ -15,14 +15,46 @@ class Player:
         self.invulnerable_timer = 0
         
     def update(self):
-        # Keyboard movement - using constants from constants.py
-        if pyxel.btn(KEY_LEFT) and self.x > 0:
+        # AUTO-SHOOT MODE - Always fire when cooldown is ready
+        self.auto_shoot = True
+        
+        # Keyboard movement with multiple method detection for better compatibility
+        left_pressed = False
+        right_pressed = False
+        up_pressed = False
+        down_pressed = False
+        
+        # Method 1: Try standard constants
+        try:
+            left_pressed = pyxel.btn(KEY_LEFT)
+            right_pressed = pyxel.btn(KEY_RIGHT)
+            up_pressed = pyxel.btn(KEY_UP)
+            down_pressed = pyxel.btn(KEY_DOWN)
+        except:
+            pass
+            
+        # Method 2: Try custom key_press function if available (more reliable across versions)
+        if hasattr(pyxel, 'key_press'):
+            try:
+                if not left_pressed:
+                    left_pressed = pyxel.key_press('left') or pyxel.key_press('a')
+                if not right_pressed:
+                    right_pressed = pyxel.key_press('right') or pyxel.key_press('d')
+                if not up_pressed:
+                    up_pressed = pyxel.key_press('up') or pyxel.key_press('w')
+                if not down_pressed: 
+                    down_pressed = pyxel.key_press('down') or pyxel.key_press('s')
+            except:
+                pass
+        
+        # Apply movement
+        if left_pressed and self.x > 0:
             self.x -= self.speed
-        if pyxel.btn(KEY_RIGHT) and self.x < SCREEN_WIDTH - self.width:
+        if right_pressed and self.x < SCREEN_WIDTH - self.width:
             self.x += self.speed
-        if pyxel.btn(KEY_UP) and self.y > 0:
+        if up_pressed and self.y > 0:
             self.y -= self.speed
-        if pyxel.btn(KEY_DOWN) and self.y < SCREEN_HEIGHT - self.height:
+        if down_pressed and self.y < SCREEN_HEIGHT - self.height:
             self.y += self.speed
         
         # Touch movement support - get game instance via global
@@ -51,22 +83,65 @@ class Player:
         # Keyboard shooting - multiple methods for better compatibility
         self.shoot_timer -= 1
         
-        # Try direct Z key detection multiple ways for better version compatibility
+        # Use our unified key detection method if available
         z_pressed = False
-        try:
-            # Method 1: Using KEY_Z constant
-            z_pressed = pyxel.btn(KEY_Z)
-        except:
+        
+        # Try our custom multi-platform function first
+        if hasattr(pyxel, 'key_press'):
             try:
-                # Method 2: Try direct ASCII code (122 = 'z')
+                z_pressed = pyxel.key_press('z')
+            except:
+                pass
+                
+        # Method 1: Using KEY_Z constant from our constants as fallback
+        if not z_pressed:
+            try:
+                z_pressed = pyxel.btn(KEY_Z)
+            except:
+                pass
+            
+        # Method 2: Try direct ASCII code (122 = 'z')
+        if not z_pressed:
+            try:
                 z_pressed = pyxel.btn(122)
             except:
-                # Method 3: Try pyxel.btn_direct if added by our compatibility layer
-                if hasattr(pyxel, 'btn_direct'):
-                    z_pressed = pyxel.btn_direct(122)
+                pass
+                
+        # Method 3: Try lowercase 'z' string (works in some versions)
+        if not z_pressed:
+            try:
+                z_pressed = pyxel.btn('z')
+            except:
+                pass
+                
+        # Method 4: Check if x key is pressed as alternative (in case keyboard layouts are different)
+        if not z_pressed:
+            try:
+                if hasattr(pyxel, 'key_press'):
+                    z_pressed = pyxel.key_press('x')
+            except:
+                pass
+                
+        # Method 5: Check if space is pressed as a fallback control
+        if not z_pressed:
+            try:
+                if hasattr(pyxel, 'key_press'):
+                    z_pressed = pyxel.key_press(' ')
+                else:
+                    z_pressed = pyxel.btn(KEY_SPACE)
+            except:
+                pass
+                
+        # Method 6: Check for touch_shoot flag
+        try:
+            from main import game_instance
+            if game_instance and hasattr(game_instance, 'touch_shoot') and game_instance.touch_shoot:
+                z_pressed = True
+        except:
+            pass
         
-        # Fire if needed
-        if self.shoot_timer <= 0 and z_pressed:
+        # AUTO-SHOOT: Always fire when ready + normal trigger
+        if self.shoot_timer <= 0 and (self.auto_shoot or z_pressed):
             self.shoot()
             self.shoot_timer = PLAYER_SHOOT_INTERVAL
         
