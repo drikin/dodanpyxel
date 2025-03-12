@@ -99,10 +99,19 @@ class Game:
         self.boss_cycle_enabled = BOSS_CYCLE_ENABLED
         self.max_boss_in_cycle = 10  # 1サイクルの最大ボス数
         
-        # サイクル完了メッセージ表示用の変数
+        # メッセージ表示用の変数
         self.show_cycle_message = False
         self.cycle_message_timer = 0
         self.cycle_message = ""
+        
+        # ボスクリアメッセージ表示用の変数
+        self.show_boss_clear_message = False
+        self.boss_clear_message_timer = 0
+        self.boss_clear_message = ""
+        self.boss_clear_bonus = 0
+        
+        # 遅延エフェクト用の配列
+        self.delayed_effects = []
         
         # 自動発射は常に有効にする
         self.touch_shoot = True
@@ -185,6 +194,12 @@ class Game:
             self.cycle_message_timer -= 1
             if self.cycle_message_timer <= 0:
                 self.show_cycle_message = False
+                
+        # ボスクリアメッセージのタイマー更新
+        if self.show_boss_clear_message:
+            self.boss_clear_message_timer -= 1
+            if self.boss_clear_message_timer <= 0:
+                self.show_boss_clear_message = False
         
         # 距離カウンターの更新（1フレームごとに距離を加算）
         self.boss_distance += 1
@@ -207,21 +222,68 @@ class Game:
                     
                     # 大規模な爆発エフェクト (ボス撃破演出)
                     from explosion import Explosion
-                    # 複数箇所に爆発エフェクト
-                    for _ in range(10):
-                        ex = self.boss.x + random.randint(0, self.boss.width)
-                        ey = self.boss.y + random.randint(0, self.boss.height)
-                        self.explosions.append(Explosion(ex, ey))
+                    
+                    # 複数の大きな爆発を時間差で発生（連鎖爆発の演出）
+                    def create_delayed_explosion(x, y, scale=1.0, delay=0):
+                        # 指定フレーム後に爆発を生成する関数
+                        if delay <= 0:
+                            explosion = Explosion(x, y)
+                            explosion.scale = scale  # スケールの設定
+                            self.explosions.append(explosion)
+                        else:
+                            # 遅延タイマーを設定
+                            self.delayed_effects.append({
+                                'type': 'explosion',
+                                'timer': delay,
+                                'x': x,
+                                'y': y,
+                                'scale': scale
+                            })
+                    
+                    # 中央で大爆発
+                    center_x = self.boss.x + self.boss.width//2
+                    center_y = self.boss.y + self.boss.height//2
+                    create_delayed_explosion(center_x, center_y, 2.0, 0)  # 即時の大爆発
+                    
+                    # 周囲に小〜中爆発をランダムな時間差で配置
+                    for i in range(15):
+                        offset_x = random.randint(-20, 20)
+                        offset_y = random.randint(-20, 20)
+                        delay = random.randint(5, 25)  # 数フレーム遅延
+                        scale = random.uniform(0.7, 1.5)
+                        ex = center_x + offset_x
+                        ey = center_y + offset_y
+                        create_delayed_explosion(ex, ey, scale, delay)
+                    
+                    # ボスの輪郭に沿った爆発 (より広範囲に)
+                    for i in range(10):
+                        ex = self.boss.x + random.randint(-10, self.boss.width + 10)
+                        ey = self.boss.y + random.randint(-10, self.boss.height + 10)
+                        delay = random.randint(10, 30)
+                        scale = random.uniform(0.8, 1.2)
+                        create_delayed_explosion(ex, ey, scale, delay)
+                    
+                    # 「BOSS CLEARED!」メッセージを表示
+                    self.show_boss_clear_message = True
+                    self.boss_clear_message_timer = 120  # 2秒間表示
+                    self.boss_clear_message = f"BOSS {self.current_boss_number} CLEARED!"
+                    self.boss_clear_bonus = 1000 * self.boss.boss_number  # ボーナス点数
                     
                     # ボス撃破報酬として追加ライフ
                     self.player.lives += BOSS_EXTRA_LIFE
                     
-                    # 効果音
+                    # 効果音 (複数のチャンネルを使って重ねて鳴らす)
                     try:
                         pyxel.play(2, 3)  # ボス撃破音
-                        # 連続して効果音を鳴らして豪華に
                         pyxel.play(1, 1)  # 爆発音1
                         pyxel.play(0, 1)  # 爆発音2
+                        # 0.5秒後にもう一度爆発音
+                        self.delayed_effects.append({
+                            'type': 'sound',
+                            'timer': 30,
+                            'channel': 0,
+                            'sound': 1
+                        })
                     except:
                         pass
                     
@@ -522,6 +584,27 @@ class Game:
             explosion.update()
             if explosion.is_finished():
                 self.explosions.remove(explosion)
+                
+        # 遅延エフェクトの更新
+        for effect in self.delayed_effects[:]:
+            effect['timer'] -= 1
+            if effect['timer'] <= 0:
+                if effect['type'] == 'explosion':
+                    # 爆発エフェクトの作成
+                    from explosion import Explosion
+                    explosion = Explosion(effect['x'], effect['y'])
+                    explosion.scale = effect['scale']
+                    self.explosions.append(explosion)
+                    
+                elif effect['type'] == 'sound':
+                    # 効果音の再生
+                    try:
+                        pyxel.play(effect['channel'], effect['sound'])
+                    except:
+                        pass
+                    
+                # 処理済みのエフェクトをリストから削除
+                self.delayed_effects.remove(effect)
     
     def draw(self):
         # Clear screen
@@ -610,6 +693,37 @@ class Game:
             x = SCREEN_WIDTH//2 - msg_width//2
             y = SCREEN_HEIGHT//3
             pyxel.text(x, y, message, text_color)
+            
+        # ボスクリアメッセージを表示（ボス撃破時）
+        if self.show_boss_clear_message:
+            # 半透明の背景（画面中央に横帯）
+            for y in range(SCREEN_HEIGHT//2 - 15, SCREEN_HEIGHT//2 + 25, 2):
+                for x in range(0, SCREEN_WIDTH, 1):  # 横帯を濃くする
+                    pyxel.pset(x, y, 0)
+            
+            # 点滅効果
+            text_color = WHITE if (self.frame_count // 3) % 2 == 0 else YELLOW
+            bonus_color = GREEN if (self.frame_count // 4) % 2 == 0 else YELLOW
+            
+            # メッセージ表示 (中央揃え)
+            message = self.boss_clear_message
+            msg_width = len(message) * 4
+            x = SCREEN_WIDTH//2 - msg_width//2
+            y = SCREEN_HEIGHT//2 - 5
+            
+            # ボスクリアメッセージ
+            pyxel.text(x, y, message, text_color)
+            
+            # ボーナススコアメッセージ
+            bonus_msg = f"BONUS: {self.boss_clear_bonus}"
+            bonus_width = len(bonus_msg) * 4
+            pyxel.text(SCREEN_WIDTH//2 - bonus_width//2, y + 10, bonus_msg, bonus_color)
+            
+            # 追加ライフメッセージ
+            if BOSS_EXTRA_LIFE > 0:
+                life_msg = f"+{BOSS_EXTRA_LIFE} LIFE!"
+                life_width = len(life_msg) * 4
+                pyxel.text(SCREEN_WIDTH//2 - life_width//2, y + 20, life_msg, RED)
     
     def draw_ui(self):
         # Draw score
