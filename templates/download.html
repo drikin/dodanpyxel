@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DodanPyxel - ダウンロード</title>
+    <style>
+        body {
+            background-color: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #222;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #ff0;
+        }
+        .back-btn {
+            display: inline-block;
+            background-color: #05a;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .download-options {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .download-box {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px;
+            width: 250px;
+        }
+        .download-btn {
+            display: inline-block;
+            background-color: #0a0;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .download-btn:hover {
+            background-color: #0c0;
+        }
+        .installation-note {
+            background-color: #542;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            color: #ffa;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DodanPyxel - ダウンロード</h1>
+        <p>以下のプラットフォーム向けのバイナリをダウンロードできます。</p>
+        
+        <div class="download-options">
+            <div class="download-box">
+                <h3>Windows版</h3>
+                <p>Windows 10/11で動作します</p>
+                <a href="/download/windows" class="download-btn">ダウンロード (.zip)</a>
+                <div class="installation-note">
+                    ダウンロード後、.zipファイルを解凍して<br>dodanpyxel.batを実行してください。
+                    <small>※Python環境が自動検出され、必要に応じてPyxelライブラリがインストールされます。</small>
+                </div>
+            </div>
+            
+            <div class="download-box">
+                <h3>macOS版</h3>
+                <p>macOS 10.14以降で動作します</p>
+                <a href="/download/mac" class="download-btn">ダウンロード (.zip)</a>
+                <div class="installation-note">
+                    ダウンロード後、zipを解凍して<br>dodanpyxel.shを実行してください。
+                    <small>※Pythonがインストールされている必要があります。</small>
+                </div>
+            </div>
+            
+            <div class="download-box">
+                <h3>ソースコード</h3>
+                <p>全プラットフォーム向け</p>
+                <a href="/download/source" class="download-btn">ダウンロード (.zip)</a>
+                <div class="installation-note">
+                    Pythonとpyxelライブラリが必要です:<br>
+                    <code>pip install pyxel</code><br>
+                    解凍後:<br>
+                    <code>python main.py</code>
+                </div>
+            </div>
+        </div>
+        
+        <a href="/" class="back-btn">トップに戻る</a>
+    </div>
+</body>
+</html>

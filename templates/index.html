@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DodanPyxel - Shooter Game</title>
+    <style>
+        body {
+            background-color: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #ff0;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .game-info {
+            background-color: #222;
+            border: 1px solid #444;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .control-box {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            width: 45%;
+        }
+        .download-btn {
+            display: inline-block;
+            background-color: #0a0;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .download-btn:hover {
+            background-color: #0c0;
+        }
+        .screenshot {
+            margin: 20px auto;
+            border: 2px solid #444;
+            border-radius: 5px;
+            max-width: 100%;
+            height: auto;
+        }
+        .installation {
+            background-color: #333;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        .installation code {
+            background-color: #222;
+            padding: 3px 5px;
+            border-radius: 3px;
+        }
+        .installation pre {
+            background-color: #222;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .version-note {
+            background-color: #542;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            color: #ffa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DodanPyxel - Vertical Shooter</h1>
+        
+        <div class="game-info">
+            <h2>ゲーム情報</h2>
+            <p>DodanPyxelは、古典的な「弾幕系」シューティングゲームを再現した縦スクロールシューターです。</p>
+            <p>敵の弾を避けながら、できるだけ多くの敵を撃墜して高スコアを目指しましょう！</p>
+            
+            <img src="{{ url_for('static', filename='screenshot.png') }}" alt="Game Screenshot" class="screenshot">
+        </div>
+        
+        <div class="controls">
+            <div class="control-box">
+                <h3>キーボード操作</h3>
+                <p>矢印キー: 移動</p>
+                <p>自動発射機能有効！</p>
+                <p>スペース: ゲーム開始/リスタート</p>
+            </div>
+            
+            <div class="control-box">
+                <h3>タッチ操作</h3>
+                <p>タッチ＆ドラッグ: 移動</p>
+                <p>自動発射機能搭載！</p>
+                <p>画面タップ: ゲーム開始/リスタート</p>
+            </div>
+        </div>
+        
+        <a href="/download" class="download-btn">ゲームをダウンロード</a>
+        
+        <div class="installation">
+            <h3>インストールと実行方法</h3>
+            <p>1. Pythonをインストール (3.7以上):</p>
+            <p><a href="https://www.python.org/downloads/" style="color: #0f0;">Python公式サイト</a>からダウンロード</p>
+            
+            <p>2. Pyxelライブラリをインストール:</p>
+            <pre><code>pip install pyxel</code></pre>
+            
+            <p>3. ダウンロードしたZIPファイルを解凍</p>
+            
+            <p>4. ゲームを実行:</p>
+            <pre><code>python main.py</code></pre>
+            
+            <div class="version-note">
+                <strong>注意:</strong> Pyxelのバージョンによって互換性の問題が発生する場合があります。
+                <p>新機能：自動発射モードが有効になりました！</p>
+                <ol style="text-align: left;">
+                    <li>自動発射：プレイヤーは移動に集中できるようになりました</li>
+                    <li>矢印キーまたはWASDキーを使って移動できます</li>
+                    <li>タッチ操作でもスムーズに動作するよう最適化されています</li>
+                    <li>発射音が無効化されています</li>
+                </ol>
+                <p>最新版では、より多くのプラットフォームとキーボード配列で動作するよう互換性が向上しています。</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

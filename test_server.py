@@ -4,40 +4,49 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return '''
+    return """
     <!DOCTYPE html>
     <html>
     <head>
-        <title>シューティングゲーム - テストページ</title>
+        <title>テストサーバー</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
-                background-color: #f0f0f0;
                 text-align: center;
-                padding: 20px;
-            }
-            h1 {
-                color: #333;
+                margin-top: 50px;
+                background-color: #333;
+                color: white;
             }
             .container {
-                max-width: 800px;
+                max-width: 600px;
                 margin: 0 auto;
-                background-color: white;
                 padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                background-color: #444;
+                border-radius: 10px;
+            }
+            h1 {
+                color: #ffcc00;
+            }
+            .btn {
+                display: inline-block;
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px 20px;
+                margin: 10px 0;
+                border-radius: 5px;
+                text-decoration: none;
             }
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>テストページが表示されました！</h1>
-            <p>Webサーバーが正常に動作しています。</p>
+            <h1>Replit Webview テスト</h1>
+            <p>このサーバーは正常に動作しています。</p>
         </div>
     </body>
     </html>
-    '''
+    """
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("Starting test server...")
     app.run(host='0.0.0.0', port=5000)

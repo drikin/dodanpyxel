@@ -12,8 +12,8 @@ class Boss:
         self.y = y
         self.boss_number = boss_number  # 1-10のボス番号
         
-        # ボス番号に応じたサイズ計算（5%から始めて徐々に大きく）
-        size_percent = 5 + (boss_number - 1) * 5  # 5%ずつ増加（5%〜50%）
+        # ボス番号に応じたサイズ計算（最初が50%で徐々に大きくなる）
+        size_percent = 50 + (boss_number - 1) * 5  # 5%ずつ増加（50%〜95%）
         
         # 画面サイズを基準にしたサイズ計算
         self.width = int(SCREEN_WIDTH * size_percent / 100)
