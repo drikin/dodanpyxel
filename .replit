@@ -39,6 +39,10 @@ args = "Game VNC Test"
 task = "workflow.run"
 args = "WebServer"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "TestServer"
+
 [[workflows.workflow]]
 name = "Shooter Game"
 author = "agent"
@@ -137,6 +141,21 @@ task = "packager.installForAll"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python web_wrapper.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "TestServer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python test_server.py"
 waitForPort = 5000
 
 [deployment]

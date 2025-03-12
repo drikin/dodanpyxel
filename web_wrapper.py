@@ -449,5 +449,11 @@ python main.py
     )
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    # Replitの環境変数をチェック
+    if os.environ.get('REPLIT_DB_URL'):
+        print("Running in Replit environment")
+    
+    # 明示的にポート5000を使用
+    port = 5000
+    print(f"Starting server on port {port}")
     app.run(host='0.0.0.0', port=port, debug=True)
