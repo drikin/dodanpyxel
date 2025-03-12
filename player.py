@@ -257,12 +257,8 @@ class Player:
             bullet_x = self.x + self.width // 2 - 1
             bullet_y = self.y - 5
             
-            # Play shoot sound
-            import pyxel
-            try:
-                pyxel.play(0, 0)  # Play shoot sound
-            except:
-                pass  # サウンドエラーを無視
+            # 発射音は無効化（消音設定）
+            # 以前はここで発射音を鳴らしていました
             
             # ゲームインスタンスの参照があるか確認
             if not (self.game_ref and hasattr(self.game_ref, 'player_bullets')):
