@@ -1,0 +1,35 @@
+DodanPyxel - ビルドガイド
+
+このガイドでは、ソースコードからWindows実行ファイル(.exe)やMacアプリケーション(.app)を作成する方法を説明します。
+
+前提条件:
+1. Python 3.8以上がインストールされていること
+2. pipがインストールされていること
+
+ステップ1: 必要なパッケージをインストール
+```
+pip install pyxel pyinstaller
+```
+
+ステップ2: Windows実行ファイルの作成
+```
+pyinstaller --name=DodanPyxel --onefile --windowed --clean --add-data="assets;assets" main.py
+```
+生成されたexeファイルは `dist` フォルダに保存されます。
+
+ステップ3: Macアプリケーションの作成
+```
+pyinstaller --name=DodanPyxel --windowed --clean --add-data="assets:assets" main.py
+```
+生成されたappフォルダは `dist` フォルダに保存されます。
+
+注意事項:
+- ビルドするOSに応じて適切なコマンドを選択してください
+- Windowsではパスの区切り文字にセミコロン(;)、MacやLinuxではコロン(:)を使用します
+- アプリケーションの動作には必ずassetsフォルダが必要です
+
+トラブルシューティング:
+- ビルドエラーが発生した場合は、pyinstallerのログを確認して必要なライブラリを追加インストールしてください
+- MacOSでセキュリティの警告が表示される場合は、システム環境設定からアプリケーションの実行を許可してください
+
+© 2025 DodanPyxel

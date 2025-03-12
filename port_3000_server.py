@@ -23,6 +23,11 @@ def index():
                 color: #333; 
                 margin-bottom: 20px;
             }
+            h2 {
+                color: #555;
+                margin-top: 30px;
+                font-size: 22px;
+            }
             .container {
                 background-color: white;
                 border-radius: 8px;
@@ -53,6 +58,14 @@ def index():
                 font-size: 32px;
                 margin-bottom: 10px;
             }
+            .info-box {
+                background-color: #f8f9fa;
+                border-left: 4px solid #4CAF50;
+                padding: 15px;
+                margin: 25px 0;
+                text-align: left;
+                border-radius: 4px;
+            }
             .footer {
                 margin-top: 40px;
                 color: #666;
@@ -66,18 +79,32 @@ def index():
             <p>縦スクロールシューティングゲームをダウンロードして、プレイしてみましょう！</p>
             
             <div class="download-section">
-                <a href="/download/windows" class="download-btn">
-                    <span class="platform-icon">🪟</span>
-                    Windows版
-                </a>
-                <a href="/download/mac" class="download-btn">
-                    <span class="platform-icon">🍎</span>
-                    Mac版
-                </a>
                 <a href="/download/source" class="download-btn">
                     <span class="platform-icon">📦</span>
                     ソースコード
                 </a>
+            </div>
+            
+            <div class="info-box">
+                <h2>バイナリのビルド方法</h2>
+                <p>ソースコードパッケージには、PyInstallerを使ってWindowsやMac用の実行可能ファイルを作成する方法が含まれています。</p>
+                <p>詳細は同梱の <strong>build_guide.txt</strong> ファイルを参照してください。</p>
+                <p>基本的な手順:</p>
+                <ol>
+                    <li>Python 3.8以上をインストール</li>
+                    <li>必要なライブラリをインストール：<code>pip install pyxel pyinstaller</code></li>
+                    <li>PyInstallerコマンドを実行してバイナリを生成</li>
+                </ol>
+            </div>
+            
+            <div class="info-box">
+                <h2>ゲーム操作方法</h2>
+                <p>
+                    矢印キー: 移動<br>
+                    Zキー: 発射 (常時自動発射も有効)<br>
+                    Xキー: ボム発射<br>
+                    ESCキー: 終了
+                </p>
             </div>
             
             <div class="footer">
