@@ -29,9 +29,9 @@ class Player:
         self.powerup_timer = 0
         
         # 黄色パワーアップの段階管理
-        self.yellow_level = 0       # 黄色パワーアップのレベル（0-4）
+        self.yellow_level = 0       # 黄色パワーアップのレベル（0-2）
         self.shot_direction = 1     # 弾の発射方向数
-        self.max_yellow_level = 4   # 最大レベル（5段階なので0-4）
+        self.max_yellow_level = 2   # 最大レベル（3段階なので0-2）
         
         self.has_power_shot = False  # 赤アイテム効果
         self.has_shield = False      # 緑アイテム効果
@@ -236,8 +236,8 @@ class Player:
             # 射撃間隔を初期値に戻す
             self.shoot_interval = self.base_shoot_interval
         else:
-            # レベルに応じて射撃間隔を短くする (最大5段階)
-            # レベル0で基本値、レベル4で最速（基本値の1/3）
+            # レベルに応じて射撃間隔を短くする (最大3段階)
+            # レベル0で基本値、レベル2で最速（基本値の1/3）
             factor = 1.0 - (self.yellow_level / (self.max_yellow_level + 1) * 0.7)
             self.shoot_interval = int(self.base_shoot_interval * factor)
             print(f"DEBUG: Shoot interval decreased to {self.shoot_interval} (factor: {factor:.2f})")
