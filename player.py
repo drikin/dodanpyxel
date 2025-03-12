@@ -286,75 +286,58 @@ class Player:
                 
                 bullets_created = 0
                 
-                # 方向数に応じた弾を作成
-                # 必ず前方（上方向）への弾を含める
-                forward_shot_included = False
+                # まず前方（上向き）の弾を必ず発射
+                # 真上方向の弾を作成
+                forward_bullet = PlayerBullet(bullet_x, bullet_y, 0.0)
+                forward_bullet.speed = -abs(forward_bullet.speed)  # 強制的に上向き
                 
-                for i in range(self.shot_direction):
-                    # 角度を計算（ラジアン）
-                    if self.shot_direction >= 6:  # 全周発射の場合
-                        # 0度（上方向）の弾が含まれるように調整
-                        if i == 0:
-                            angle = 0  # 最初の弾は必ず上方向
-                            forward_shot_included = True
-                        else:
-                            angle = (i * angle_step) * (3.14159 / 180)
-                    else:  # 扇状発射の場合
-                        # 中心から左右に広がるよう角度を調整
-                        offset = (self.shot_direction - 1) / 2
+                # パワーショットの場合は強化
+                if self.has_power_shot:
+                    forward_bullet.damage = 2
+                    forward_bullet.width = 4
+                    forward_bullet.color = RED
+                
+                # 弾を追加
+                self.game_ref.player_bullets.append(forward_bullet)
+                bullets_created = 1  # 必ず1発は発射される
+                print("DEBUG: Added forward shot")
+                
+                # 方向数が2以上なら追加の方向にも発射
+                if self.shot_direction > 1:
+                    # 残りの方向に発射
+                    for i in range(self.shot_direction - 1):  # 前方弾は既に発射済みなので-1
+                        # 角度を計算（ラジアン）
+                        if self.shot_direction >= 6:  # 全周発射の場合
+                            # 均等に配置（0度は除く）
+                            angle = ((i + 1) * (360 / self.shot_direction)) * (3.14159 / 180)
+                        else:  # 扇状発射の場合
+                            # 左右対称に配置
+                            offset = (self.shot_direction - 1) / 2
+                            if i < offset:  # 左側
+                                angle = -((offset - i) * angle_step) * (3.14159 / 180)
+                            else:  # 右側
+                                angle = ((i - offset + 1) * angle_step) * (3.14159 / 180)
+                                
+                        # 角度から速度を計算
+                        speed_x = math.sin(angle) * 0.5
+                        speed_y = -math.cos(angle)  # 上向きを基準とするため -cos
                         
-                        # 奇数方向数の場合、中央の弾が上方向になるよう調整
-                        if self.shot_direction % 2 == 1 and i == int(offset):
-                            angle = 0  # 中央の弾は上方向
-                            forward_shot_included = True
-                        else:
-                            angle = ((i - offset) * angle_step) * (3.14159 / 180)
-                
-                # 前方弾が含まれていない場合は、追加の弾を前方に発射
-                if not forward_shot_included and self.shot_direction > 0:
-                    # 前方弾を追加
-                    angle = 0  # 真上方向
-                    speed_x = 0.0  # X方向の速度なし
-                    speed_y = -1.0  # 上向きに進む
-                    
-                    # 前方弾を生成
-                    forward_bullet = PlayerBullet(bullet_x, bullet_y, speed_x)
-                    forward_bullet.speed = abs(forward_bullet.speed) * speed_y  # 強制的に上向き
-                    
-                    # パワーショットの場合は強化
-                    if self.has_power_shot:
-                        forward_bullet.damage = 2
-                        forward_bullet.width = 4
-                        forward_bullet.color = RED
-                    
-                    # 弾を追加
-                    self.game_ref.player_bullets.append(forward_bullet)
-                    bullets_created += 1
-                    print("DEBUG: Added forced forward shot")
-                    
-                    # 角度から速度を計算
-                    speed_x = math.sin(angle) * 0.5
-                    speed_y = -math.cos(angle)  # 上向きを基準とするため -cos
-                    
-                    # 弾を生成
-                    bullet = PlayerBullet(bullet_x, bullet_y, speed_x)
-                    
-                    # 弾の方向補正（上向き基準）
-                    bullet.speed = bullet.speed * speed_y
-                    
-                    # 弾がまっすぐ上にいくよう追加調整
-                    if abs(angle) < 0.01:  # 中央の弾は補正なし
-                        bullet.speed = -abs(bullet.speed)
-                    
-                    # パワーショットの場合は強化
-                    if self.has_power_shot:
-                        bullet.damage = 2
-                        bullet.width = 4
-                        bullet.color = RED
-                    
-                    # 弾を追加
-                    self.game_ref.player_bullets.append(bullet)
-                    bullets_created += 1
+                        # 弾を生成
+                        bullet = PlayerBullet(bullet_x, bullet_y, speed_x)
+                        
+                        # 弾の方向補正（上向き基準）
+                        bullet.speed = bullet.speed * speed_y
+                        
+                        # パワーショットの場合は強化
+                        if self.has_power_shot:
+                            bullet.damage = 2
+                            bullet.width = 4
+                            bullet.color = RED
+                        
+                        # 弾を追加
+                        self.game_ref.player_bullets.append(bullet)
+                        bullets_created += 1
+                    # 追加コードは不要（ループ内で処理済み）
                 
                 print(f"DEBUG: Multi-directional shot fired ({bullets_created} bullets)")
                 
