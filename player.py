@@ -287,14 +287,50 @@ class Player:
                 bullets_created = 0
                 
                 # 方向数に応じた弾を作成
+                # 必ず前方（上方向）への弾を含める
+                forward_shot_included = False
+                
                 for i in range(self.shot_direction):
                     # 角度を計算（ラジアン）
                     if self.shot_direction >= 6:  # 全周発射の場合
-                        angle = (i * angle_step) * (3.14159 / 180)
+                        # 0度（上方向）の弾が含まれるように調整
+                        if i == 0:
+                            angle = 0  # 最初の弾は必ず上方向
+                            forward_shot_included = True
+                        else:
+                            angle = (i * angle_step) * (3.14159 / 180)
                     else:  # 扇状発射の場合
                         # 中心から左右に広がるよう角度を調整
                         offset = (self.shot_direction - 1) / 2
-                        angle = ((i - offset) * angle_step) * (3.14159 / 180)
+                        
+                        # 奇数方向数の場合、中央の弾が上方向になるよう調整
+                        if self.shot_direction % 2 == 1 and i == int(offset):
+                            angle = 0  # 中央の弾は上方向
+                            forward_shot_included = True
+                        else:
+                            angle = ((i - offset) * angle_step) * (3.14159 / 180)
+                
+                # 前方弾が含まれていない場合は、追加の弾を前方に発射
+                if not forward_shot_included and self.shot_direction > 0:
+                    # 前方弾を追加
+                    angle = 0  # 真上方向
+                    speed_x = 0.0  # X方向の速度なし
+                    speed_y = -1.0  # 上向きに進む
+                    
+                    # 前方弾を生成
+                    forward_bullet = PlayerBullet(bullet_x, bullet_y, speed_x)
+                    forward_bullet.speed = abs(forward_bullet.speed) * speed_y  # 強制的に上向き
+                    
+                    # パワーショットの場合は強化
+                    if self.has_power_shot:
+                        forward_bullet.damage = 2
+                        forward_bullet.width = 4
+                        forward_bullet.color = RED
+                    
+                    # 弾を追加
+                    self.game_ref.player_bullets.append(forward_bullet)
+                    bullets_created += 1
+                    print("DEBUG: Added forced forward shot")
                     
                     # 角度から速度を計算
                     speed_x = math.sin(angle) * 0.5

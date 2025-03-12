@@ -31,6 +31,10 @@ args = "Pyxel VNC"
 task = "workflow.run"
 args = "Web App"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "New Pyxel VNC"
+
 [[workflows.workflow]]
 name = "Shooter Game"
 author = "agent"
@@ -103,9 +107,22 @@ task = "shell.exec"
 args = "python web_wrapper.py"
 waitForPort = 5000
 
+[[workflows.workflow]]
+name = "New Pyxel VNC"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
+
 [deployment]
 run = ["sh", "-c", "pip install pyxel && python main.py"]
 
 [[ports]]
 localPort = 5000
-externalPort = 80
