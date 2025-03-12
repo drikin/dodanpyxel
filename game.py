@@ -84,6 +84,10 @@ class Game:
         # Score
         self.score = 0
         
+        # BGM関連の変数
+        self.current_bgm = 0  # 0=通常BGM、1=ボス戦BGM
+        self.bgm_playing = False
+        
         # Game variables
         self.frame_count = 0
         
@@ -178,10 +182,35 @@ class Game:
         if pyxel.btnp(KEY_SPACE):
             self.state = STATE_PLAYING
             pyxel.play(0, 2)  # Play start sound
+            
+            # タイトル画面から遷移時にBGMフラグをリセット
+            self.bgm_playing = False
     
     def update_game(self):
         # 自動発射フラグを確認して更新
         self.touch_shoot = True
+        
+        # BGMの再生（開始時または停止していたら）
+        if not self.bgm_playing:
+            # ボス戦とノーマル戦で異なるBGM
+            if self.boss and self.boss.active and not self.boss.exit_phase:
+                # ボス戦BGM（インデックス1）を再生
+                if self.current_bgm != 1:
+                    self.current_bgm = 1
+                    try:
+                        pyxel.playm(1, loop=True)
+                    except Exception as e:
+                        print(f"ERROR playing boss BGM: {e}")
+            else:
+                # 通常BGM（インデックス0）を再生
+                if self.current_bgm != 0:
+                    self.current_bgm = 0
+                    try:
+                        pyxel.playm(0, loop=True)
+                    except Exception as e:
+                        print(f"ERROR playing normal BGM: {e}")
+            
+            self.bgm_playing = True
         
         # Update background
         self.background.update()
