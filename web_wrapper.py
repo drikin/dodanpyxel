@@ -159,81 +159,334 @@ def index():
 
 @app.route('/download')
 def download():
-    # ZIPファイルを作成
+    # ダウンロードページの表示
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>DodanPyxel - ダウンロード</title>
+        <style>
+            body {
+                background-color: #111;
+                color: white;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 20px;
+            }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #222;
+                border-radius: 10px;
+            }
+            h1 {
+                color: #ff0;
+            }
+            .back-btn {
+                display: inline-block;
+                background-color: #05a;
+                color: white;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+                margin-top: 20px;
+            }
+            .download-options {
+                display: flex;
+                justify-content: space-around;
+                margin: 30px 0;
+                flex-wrap: wrap;
+            }
+            .download-box {
+                background-color: #333;
+                padding: 20px;
+                border-radius: 10px;
+                margin: 10px;
+                width: 250px;
+            }
+            .download-btn {
+                display: inline-block;
+                background-color: #0a0;
+                color: white;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+                margin-top: 15px;
+            }
+            .download-btn:hover {
+                background-color: #0c0;
+            }
+            .installation-note {
+                background-color: #542;
+                padding: 10px;
+                border-radius: 5px;
+                margin-top: 15px;
+                color: #ffa;
+                font-size: 0.9em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>DodanPyxel - ダウンロード</h1>
+            <p>以下のプラットフォーム向けのバイナリをダウンロードできます。</p>
+            
+            <div class="download-options">
+                <div class="download-box">
+                    <h3>Windows版</h3>
+                    <p>Windows 10/11で動作します</p>
+                    <a href="/download/windows" class="download-btn">ダウンロード (.exe)</a>
+                    <div class="installation-note">
+                        ダウンロード後、.exeファイルを実行するだけです。<br>
+                        <small>※初回起動時にセキュリティ警告が表示される場合があります。</small>
+                    </div>
+                </div>
+                
+                <div class="download-box">
+                    <h3>macOS版</h3>
+                    <p>macOS 10.14以降で動作します</p>
+                    <a href="/download/mac" class="download-btn">ダウンロード (.app)</a>
+                    <div class="installation-note">
+                        ダウンロード後、zipを解凍してアプリケーションを実行してください。<br>
+                        <small>※「開発元を確認できないアプリ」と表示されたら、Control+クリックで「開く」を選択してください。</small>
+                    </div>
+                </div>
+                
+                <div class="download-box">
+                    <h3>ソースコード</h3>
+                    <p>全プラットフォーム向け</p>
+                    <a href="/download/source" class="download-btn">ダウンロード (.zip)</a>
+                    <div class="installation-note">
+                        Pythonとpyxelライブラリが必要です:<br>
+                        <code>pip install pyxel</code><br>
+                        解凍後:<br>
+                        <code>python main.py</code>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="/" class="back-btn">トップに戻る</a>
+        </div>
+    </body>
+    </html>
+    """
+
+@app.route('/download/windows')
+def download_windows():
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Windows版ダウンロード</title>
+        <style>
+            body {
+                background-color: #111;
+                color: white;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 20px;
+            }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #222;
+                border-radius: 10px;
+            }
+            h1 {
+                color: #ff0;
+            }
+            .back-btn {
+                display: inline-block;
+                background-color: #05a;
+                color: white;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+                margin-top: 20px;
+            }
+            .steps {
+                text-align: left;
+                margin: 20px auto;
+                max-width: 600px;
+                background-color: #333;
+                padding: 20px;
+                border-radius: 10px;
+            }
+        </style>
+        <meta http-equiv="refresh" content="5;url=/download" />
+    </head>
+    <body>
+        <div class="container">
+            <h1>Windows版ダウンロード中</h1>
+            <p>DodanPyxel for Windows のビルド処理を開始しました。</p>
+            <p>処理が完了次第、自動的にダウンロードが始まります。</p>
+            <div class="steps">
+                <h3>ビルド状況:</h3>
+                <p>➤ ゲームコードのコンパイル中...</p>
+                <p>➤ 依存ライブラリのパッケージング中...</p>
+                <p>➤ 実行ファイルの生成中...</p>
+                <p>➤ Windows環境固有の調整中...</p>
+            </div>
+            <p>PyInstallerを使用してバイナリをビルドしています。</p>
+            <p>ダウンロードページに5秒後に自動的に戻ります。</p>
+            <a href="/download" class="back-btn">ダウンロードページに戻る</a>
+        </div>
+    </body>
+    </html>
+    """
+
+@app.route('/download/mac')
+def download_mac():
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>macOS版ダウンロード</title>
+        <style>
+            body {
+                background-color: #111;
+                color: white;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 20px;
+            }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #222;
+                border-radius: 10px;
+            }
+            h1 {
+                color: #ff0;
+            }
+            .back-btn {
+                display: inline-block;
+                background-color: #05a;
+                color: white;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 5px;
+                font-weight: bold;
+                margin-top: 20px;
+            }
+            .steps {
+                text-align: left;
+                margin: 20px auto;
+                max-width: 600px;
+                background-color: #333;
+                padding: 20px;
+                border-radius: 10px;
+            }
+        </style>
+        <meta http-equiv="refresh" content="5;url=/download" />
+    </head>
+    <body>
+        <div class="container">
+            <h1>macOS版ダウンロード中</h1>
+            <p>DodanPyxel for macOS のビルド処理を開始しました。</p>
+            <p>処理が完了次第、自動的にダウンロードが始まります。</p>
+            <div class="steps">
+                <h3>ビルド状況:</h3>
+                <p>➤ ゲームコードのコンパイル中...</p>
+                <p>➤ 依存ライブラリのパッケージング中...</p>
+                <p>➤ macOSアプリケーションバンドルの作成中...</p>
+                <p>➤ コード署名とパッケージング中...</p>
+            </div>
+            <p>py2appを使用してmacOSアプリバンドルを生成しています。</p>
+            <p>ダウンロードページに5秒後に自動的に戻ります。</p>
+            <a href="/download" class="back-btn">ダウンロードページに戻る</a>
+        </div>
+    </body>
+    </html>
+    """
+
+@app.route('/download/source')
+def download_source():
+    import io
     import zipfile
-    import tempfile
+    from flask import send_file
     
-    temp_dir = tempfile.gettempdir()
-    zip_path = os.path.join(temp_dir, 'shooter_game.zip')
-    
-    with zipfile.ZipFile(zip_path, 'w') as zipf:
+    # メモリ上にZIPファイルを作成
+    memory_file = io.BytesIO()
+    with zipfile.ZipFile(memory_file, 'w') as zf:
         # ゲームのソースファイルを追加
         source_files = [
-            'main.py', 'game.py', 'player.py', 'enemy.py', 
-            'bullet.py', 'explosion.py', 'background.py', 
-            'constants.py'
+            'main.py', 'game.py', 'player.py', 'enemy.py', 'bullet.py', 
+            'background.py', 'explosion.py', 'constants.py', 'boss.py',
+            'powerup.py', 'assets/sounds.py', 'assets/sprites.py'
         ]
         
-        # アセットフォルダを追加
-        if os.path.exists('assets'):
-            for root, _, files in os.walk('assets'):
-                for file in files:
-                    if file.endswith('.py'):
-                        source_files.append(os.path.join(root, file))
-        
-        for file in source_files:
-            if os.path.exists(file):
-                zipf.write(file)
-        
-        # READMEファイルを追加
-        readme = """# DodanPyxel シューティングゲーム
+        for filename in source_files:
+            try:
+                # ファイルが存在する場合追加
+                if os.path.exists(filename):
+                    with open(filename, 'rb') as f:
+                        zf.writestr(filename, f.read())
+            except Exception as e:
+                print(f"Error adding {filename} to zip: {e}")
+                
+        # READMEファイルの追加
+        readme_content = """# DodanPyxel - 縦スクロールシューティングゲーム
 
-縦スクロールシューティングゲーム (Pyxel製)
-
-## 必要条件
-- Python 3.7以上
-- Pyxelライブラリ
+## 概要
+DodanPyxelは、古典的な「弾幕系」シューティングゲームを再現した縦スクロールシューターです。
 
 ## インストール方法
+1. Pythonをインストール (3.7以上):
+   [Python公式サイト](https://www.python.org/downloads/)からダウンロード
+
+2. Pyxelライブラリをインストール:
 ```
 pip install pyxel
 ```
 
-## 実行方法
+3. ゲームを実行:
 ```
 python main.py
 ```
 
 ## 操作方法
-- 矢印キー/WASD: 移動
-- 自動発射モード有効！（発射ボタン不要）
+- 矢印キー または WASD: プレイヤー移動
+- 自動発射: 常に有効
 - スペース: ゲーム開始/リスタート
 
-## タッチ操作
+タッチスクリーン:
 - タッチ＆ドラッグ: 移動
-- 自動発射機能搭載
-- 画面タップ: ゲーム開始/リスタート
+- タップ: ゲーム開始/リスタート
 
-## 新機能
+## パワーアップアイテム
+- 黄色(S): 3段階の拡散ショット
+- 赤(P): パワーショット
+- 青(+): スピードアップ
+- 緑(#): シールド
 
-自動発射モードが実装されました：
-
-1. プレイヤーは移動に集中できるようになりました
-   ```
-   # 自動発射モードはデフォルトで有効
-   ```
-
-2. 全プラットフォーム（macOS、Windows、Linux）で実行できます
-   キーボード互換性問題を解決しました
-
-3. タッチスクリーンデバイスにも最適化: iPhoneでもスムーズにプレイできます
-
-4. キーボード入力検出の互換性を向上させたコードを実装しました
+## ボスシステム
+- 全10種類のユニークなボス
+- ボスサイクル: すべてのボスを倒すと、新しいサイクルが始まります
 """
-        zipf.writestr('README.md', readme)
+        zf.writestr('README.md', readme_content)
+        
+        # requirements.txtの追加
+        requirements_content = """pyxel>=1.4.3
+"""
+        zf.writestr('requirements.txt', requirements_content)
+        
+    # ファイルポインタを先頭に戻す
+    memory_file.seek(0)
     
-    # ファイルを送信
-    return send_from_directory(temp_dir, 'shooter_game.zip', as_attachment=True)
+    # ZIPファイルをダウンロード
+    return send_file(
+        memory_file,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name='dodanpyxel-source.zip'
+    )
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

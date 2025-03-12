@@ -51,8 +51,11 @@ ENEMY_SHOOT_INTERVAL = 60
 SCROLL_SPEED = 1
 
 # Boss settings
-BOSS_SPAWN_SCORE = 5000  # スコアがこの値に達するとボスが出現
-BOSS_DISTANCE_MAX = 3000  # ボスまでの最大距離（フレーム数）- 開発テスト用に短縮
+BOSS_DISTANCE_INTERVAL = 3000  # ボスが出現するまでの距離間隔
+BOSS_DISTANCE_MAX = 30000  # ゲーム全体の距離（10体のボスと通常ステージ）
+BOSS_EXTRA_LIFE = 1  # ボスを倒した時に得られる追加ライフ
+BOSS_CLEAR_BONUS = 50000  # すべてのボスを倒した時のボーナス得点
+BOSS_CYCLE_ENABLED = True  # ボスを倒した後、次のボスまでのサイクルを有効にするか
 
 # Score settings
 ENEMY_SMALL_SCORE = 100

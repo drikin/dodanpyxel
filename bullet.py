@@ -43,6 +43,14 @@ class PlayerBullet(Bullet):
 class EnemyBullet(Bullet):
     def __init__(self, x, y):
         super().__init__(x, y, 2, RED, 2, 4)
+        # ボス用の弾速度（x方向、y方向）- 明示的にfloat型を指定
+        self.speed_x = 0.0
+        self.speed_y = 2.0
+    
+    def update(self):
+        # 通常の移動ではなく、speed_xとspeed_yを使用
+        self.y += self.speed_y
+        self.x += self.speed_x
     
     def draw(self):
         # Special drawing for enemy bullet
