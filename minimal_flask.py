@@ -1,13 +1,13 @@
-from flask import Flask, send_from_directory, render_template_string
+from flask import Flask, send_from_directory
 import os
 from create_windows_zip import create_windows_zip
 from create_mac_zip import create_mac_zip
 from create_source_zip import create_source_zip
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='web_static')
 
 # Build game packages
-def build_packages():
+def build_game_packages():
     # Ensure downloads directory exists
     if not os.path.exists('web_static/downloads'):
         os.makedirs('web_static/downloads', exist_ok=True)
@@ -18,45 +18,39 @@ def build_packages():
     create_source_zip()
     print("All game packages built successfully")
 
-# Load HTML templates directly from files
-def load_template(filename):
-    with open(f"web_static/{filename}", "r") as f:
-        return f.read()
-
-# Main page
+# Home page
 @app.route('/')
 def index():
-    return render_template_string(load_template("index.html"))
+    return app.send_static_file('index.html')
 
 # Download page
 @app.route('/download')
 def download():
-    return render_template_string(load_template("download.html"))
+    return app.send_static_file('download.html')
 
-# Windows package
-@app.route('/download/windows')
+# Download Windows package
+@app.route('/downloads/dodanpyxel-windows.zip')
 def download_windows():
     return send_from_directory('web_static/downloads', 'dodanpyxel-windows.zip')
 
-# macOS package
-@app.route('/download/mac')
+# Download macOS package
+@app.route('/downloads/dodanpyxel-mac.zip')
 def download_mac():
     return send_from_directory('web_static/downloads', 'dodanpyxel-mac.zip')
 
-# Source code package
-@app.route('/download/source')
+# Download source package
+@app.route('/downloads/dodanpyxel-source.zip')
 def download_source():
     return send_from_directory('web_static/downloads', 'dodanpyxel-source.zip')
 
-# Serve static images
-@app.route('/screenshot.png')
-def screenshot():
-    return send_from_directory('web_static', 'screenshot.png')
+# Static file handler
+@app.route('/<path:path>')
+def static_file(path):
+    return app.send_static_file(path)
 
 if __name__ == '__main__':
-    # First build packages
-    build_packages()
+    # Build packages before starting server
+    build_game_packages()
     
-    # Start server
-    print("Starting server on port 5000...")
-    app.run(host='0.0.0.0', port=5000)
+    # Start Flask server
+    app.run(host='0.0.0.0', port=5000, debug=False)
