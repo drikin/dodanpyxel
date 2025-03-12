@@ -190,27 +190,31 @@ class Game:
         # 自動発射フラグを確認して更新
         self.touch_shoot = True
         
-        # BGMの再生（開始時または停止していたら）
+        # BGMの再生と管理（毎フレーム確認）
+        # ボス戦とノーマル戦で異なるBGM
+        if self.boss and self.boss.active and not self.boss.exit_phase:
+            # ボス戦BGM（インデックス1）に切り替え
+            if self.current_bgm != 1:
+                self.current_bgm = 1
+                self.bgm_playing = False
+                print("DEBUG: Switching to BOSS BGM")
+        else:
+            # 通常BGM（インデックス0）に切り替え
+            if self.current_bgm != 0:
+                self.current_bgm = 0
+                self.bgm_playing = False
+                print("DEBUG: Switching to NORMAL BGM")
+        
+        # BGMの再生（停止していたら再開）
         if not self.bgm_playing:
-            # ボス戦とノーマル戦で異なるBGM
-            if self.boss and self.boss.active and not self.boss.exit_phase:
-                # ボス戦BGM（インデックス1）を再生
-                if self.current_bgm != 1:
-                    self.current_bgm = 1
-                    try:
-                        pyxel.playm(1, loop=True)
-                    except Exception as e:
-                        print(f"ERROR playing boss BGM: {e}")
-            else:
-                # 通常BGM（インデックス0）を再生
-                if self.current_bgm != 0:
-                    self.current_bgm = 0
-                    try:
-                        pyxel.playm(0, loop=True)
-                    except Exception as e:
-                        print(f"ERROR playing normal BGM: {e}")
-            
-            self.bgm_playing = True
+            try:
+                pyxel.playm(self.current_bgm, loop=True)
+                print(f"DEBUG: Started playing BGM {self.current_bgm}")
+                self.bgm_playing = True
+            except Exception as e:
+                print(f"ERROR playing BGM {self.current_bgm}: {e}")
+                # エラー発生時は次のフレームで再試行
+                self.bgm_playing = False
         
         # Update background
         self.background.update()
@@ -241,6 +245,13 @@ class Game:
                 if self.boss.y >= 50:  # 画面上部に到達したら登場フェーズ終了
                     self.boss.entry_phase = False
             elif self.boss.exit_phase:
+                # 退場フェーズに入ったらBGM切り替えのフラグを設定（通常BGMに戻す準備）
+                if not self.boss.exit_bgm_changed and self.boss.exit_phase:
+                    print("DEBUG: Boss defeat detected - preparing to switch back to normal BGM")
+                    self.boss.exit_bgm_changed = True
+                    self.current_bgm = 0  # 通常BGMに切り替え準備
+                    self.bgm_playing = False  # BGM再生をリセット
+                
                 self.boss.y -= 2  # 上に退場
                 if self.boss.y + self.boss.height < 0:  # 画面外に出たら
                     self.boss.active = False  # 非アクティブに

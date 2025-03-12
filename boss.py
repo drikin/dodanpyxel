@@ -38,6 +38,7 @@ class Boss:
         self.active = True  # ボスが行動可能かどうか
         self.entry_phase = True  # 登場フェーズ中か
         self.exit_phase = False  # 退場フェーズ中か
+        self.exit_bgm_changed = False  # 退場時BGM切り替えフラグ
         self.explosion_timer = 0  # 爆発エフェクト用
         self.flash_timer = 0      # ダメージ表現用
         
