@@ -289,7 +289,7 @@ class Player:
                 # まず前方（上向き）の弾を必ず発射
                 # 真上方向の弾を作成
                 forward_bullet = PlayerBullet(bullet_x, bullet_y, 0.0)
-                forward_bullet.speed = -abs(forward_bullet.speed)  # 強制的に上向き
+                forward_bullet.speed = -abs(forward_bullet.speed) * 1.2  # 強制的に上向き、速度を少し速く
                 
                 # パワーショットの場合は強化
                 if self.has_power_shot:
@@ -307,16 +307,29 @@ class Player:
                     # 残りの方向に発射
                     for i in range(self.shot_direction - 1):  # 前方弾は既に発射済みなので-1
                         # 角度を計算（ラジアン）
+                        PI = 3.14159
+                        
                         if self.shot_direction >= 6:  # 全周発射の場合
-                            # 均等に配置（0度は除く）
-                            angle = ((i + 1) * (360 / self.shot_direction)) * (3.14159 / 180)
-                        else:  # 扇状発射の場合
+                            # 全周360度に均等配置するが、前方位置を開ける
+                            total_angles = self.shot_direction - 1
+                            # スタート角度をずらして前方に弾を集中させない
+                            start_offset = 30  # 度数
+                            # 前方を含まない角度で等間隔に配置
+                            angle = ((i * (360 - start_offset) / total_angles) + start_offset) * (PI / 180)
+                        elif self.shot_direction >= 4:  # 4-5方向の場合は広い扇状に
+                            # 扇形の角度を広げる（240度の範囲）
+                            total_spread = 240
+                            angle_per_shot = total_spread / (self.shot_direction - 1)
                             # 左右対称に配置
-                            offset = (self.shot_direction - 1) / 2
-                            if i < offset:  # 左側
-                                angle = -((offset - i) * angle_step) * (3.14159 / 180)
-                            else:  # 右側
-                                angle = ((i - offset + 1) * angle_step) * (3.14159 / 180)
+                            offset = total_spread / 2
+                            angle = ((i * angle_per_shot) - offset / 2) * (PI / 180)
+                        else:  # 2-3方向の場合は少し狭い扇状に
+                            # 左右対称に配置（約120度の扇状）
+                            total_spread = 120
+                            angle_per_shot = total_spread / (self.shot_direction - 1)
+                            # 左右対称に配置
+                            offset = total_spread / 2
+                            angle = ((i * angle_per_shot) - offset / 2) * (PI / 180)
                                 
                         # 角度から速度を計算
                         speed_x = math.sin(angle) * 0.5
