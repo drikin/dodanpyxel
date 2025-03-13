@@ -8,6 +8,7 @@ from background import Background
 from assets.sounds import init_sounds
 from powerup import PowerUp, create_random_powerup
 from boss import create_boss
+from highscores import HighScores, SoftwareKeyboard
 
 class Game:
     def __init__(self):
@@ -55,6 +56,11 @@ class Game:
         
         # For virtual touch controls display
         self.show_touch_controls = True
+        
+        # Initialize high scores
+        self.high_scores = HighScores()
+        self.keyboard = SoftwareKeyboard(SCREEN_WIDTH // 2 - 35, SCREEN_HEIGHT // 2 + 20)
+        self.new_high_score = False
         
         # Initialize other game components
         self.reset_game()
@@ -437,6 +443,39 @@ class Game:
             self.state = STATE_GAME_OVER
     
     def update_game_over(self):
+        # ハイスコア判定と入力処理
+        if not self.new_high_score:
+            # スコアがハイスコアなら名前入力モードに
+            if self.high_scores.is_high_score(self.score):
+                self.new_high_score = True
+                self.keyboard.activate()
+        else:
+            # キーボード操作を更新
+            self.keyboard.update()
+            
+            # 名前入力が完了したらハイスコアに登録
+            if self.keyboard.complete:
+                player_name = self.keyboard.get_text()
+                if not player_name:  # 空の場合はデフォルト名
+                    player_name = "PLAYER"
+                
+                # ハイスコアに追加して保存
+                self.high_scores.add_score(player_name, self.score)
+                
+                # キーボードを無効化し、ハイスコア登録完了
+                self.keyboard.deactivate()
+                self.new_high_score = False
+                
+                # 効果音再生
+                try:
+                    pyxel.play(0, 3)  # ハイスコア登録音
+                except:
+                    pass
+        
+        # 名前入力中は以下の処理をスキップ
+        if self.keyboard.active:
+            return
+            
         # Restart game when SPACE is pressed
         if pyxel.btnp(KEY_SPACE):
             self.reset_game()
@@ -861,11 +900,25 @@ class Game:
                 pyxel.pset(x, y, 0)
         
         # Draw "GAME OVER" text
-        pyxel.text(SCREEN_WIDTH//2 - 20, SCREEN_HEIGHT//2 - 10, "GAME OVER", pyxel.COLOR_RED)
+        pyxel.text(SCREEN_WIDTH//2 - 20, 30, "GAME OVER", pyxel.COLOR_RED)
         
         # Draw score
-        pyxel.text(SCREEN_WIDTH//2 - 30, SCREEN_HEIGHT//2 + 10, f"SCORE: {self.score}", pyxel.COLOR_YELLOW)
+        pyxel.text(SCREEN_WIDTH//2 - 30, 50, f"SCORE: {self.score}", pyxel.COLOR_YELLOW)
+        
+        # ソフトウェアキーボードが有効な場合は表示
+        if self.keyboard.active:
+            self.keyboard.draw()
+            return
+            
+        # ハイスコア表示（名前入力完了後または入力不要の場合）
+        if not self.new_high_score:
+            # ハイスコアリストを描画
+            self.high_scores.draw_high_scores(30, 70, pyxel.COLOR_WHITE, pyxel.COLOR_LIME, pyxel.COLOR_YELLOW)
+            
+            # 自分のスコアがハイスコアにある場合はハイライト
+            if any(score["score"] == self.score for score in self.high_scores.scores):
+                pyxel.text(30, 65, "NEW HIGH SCORE!", pyxel.COLOR_YELLOW)
         
         # Blink "PRESS SPACE or TAP SCREEN" text
         if self.frame_count % 30 < 15:
-            pyxel.text(SCREEN_WIDTH//2 - 50, SCREEN_HEIGHT//2 + 30, "PRESS SPACE or TAP SCREEN", pyxel.COLOR_WHITE)
+            pyxel.text(SCREEN_WIDTH//2 - 50, SCREEN_HEIGHT - 20, "PRESS SPACE or TAP SCREEN", pyxel.COLOR_WHITE)
