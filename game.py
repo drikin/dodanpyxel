@@ -476,6 +476,11 @@ class Game:
                     pyxel.play(0, 3)  # ハイスコア登録音
                 except:
                     pass
+                    
+                # ハイスコア確定後にタイトル画面に戻る
+                self.reset_game()
+                self.state = STATE_TITLE
+                print("DEBUG: High score submitted, returning to title screen")
         
         # 名前入力中は以下の処理をスキップ
         if self.keyboard.active:
@@ -484,7 +489,7 @@ class Game:
         # Restart game when SPACE is pressed or screen is touched
         if pyxel.btnp(KEY_SPACE) or pyxel.btnp(MOUSE_BUTTON_LEFT):
             self.reset_game()
-            self.state = STATE_PLAYING
+            self.state = STATE_TITLE  # タイトル画面に戻る
     
     def update_enemy_spawning(self):
         # ボスが存在する場合は敵の生成を停止（ボス戦中）

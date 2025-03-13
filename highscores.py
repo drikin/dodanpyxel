@@ -11,6 +11,12 @@ class HighScores:
         self.scores = []
         self.load_scores()
         
+    def reset_scores(self):
+        """ハイスコアを全てリセット"""
+        self.scores = []
+        self.save_scores()
+        print("DEBUG: High scores have been reset")
+        
     def load_scores(self):
         """ハイスコアをファイルから読み込み"""
         try:
