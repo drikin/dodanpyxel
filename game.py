@@ -737,11 +737,14 @@ class Game:
         self.background.draw()
         
         # Draw title
-        pyxel.text(SCREEN_WIDTH//2 - 30, SCREEN_HEIGHT//3, "DODANPYXEL", pyxel.COLOR_YELLOW)
+        pyxel.text(SCREEN_WIDTH//2 - 30, SCREEN_HEIGHT//6, "DODANPYXEL", pyxel.COLOR_YELLOW)
         
         # Blink "PRESS SPACE or TAP SCREEN" text
         if self.frame_count % 30 < 15:
-            pyxel.text(SCREEN_WIDTH//2 - 50, SCREEN_HEIGHT//2, "PRESS SPACE or TAP SCREEN", pyxel.COLOR_WHITE)
+            pyxel.text(SCREEN_WIDTH//2 - 50, SCREEN_HEIGHT//2 + 30, "PRESS SPACE or TAP SCREEN", pyxel.COLOR_WHITE)
+        
+        # Draw high scores in the middle of the title screen
+        self.draw_title_high_scores()
         
         # Draw instructions
         pyxel.text(10, SCREEN_HEIGHT - 40, "ARROWS/WASD: MOVE", pyxel.COLOR_WHITE)
@@ -754,6 +757,78 @@ class Game:
         # Draw auto-shoot button preview
         pyxel.circ(SCREEN_WIDTH - 15, SCREEN_HEIGHT - 15, 10, ORANGE)
         pyxel.text(SCREEN_WIDTH - 27, SCREEN_HEIGHT - 17, "AUTO", pyxel.COLOR_WHITE)
+        
+    def draw_title_high_scores(self):
+        """タイトル画面にハイスコア表示"""
+        # タイトル
+        title_text = "- HIGH SCORES -"
+        title_width = len(title_text) * 4  # 文字幅の計算
+        title_x = SCREEN_WIDTH // 2 - title_width // 2  # 中央揃え
+        title_y = SCREEN_HEIGHT // 3
+        
+        # 半透明の背景パネル（ハイスコア表示用）
+        panel_padding = 5
+        panel_x = title_x - panel_padding
+        panel_y = title_y - panel_padding
+        panel_width = title_width + panel_padding * 2
+        panel_height = 68  # タイトル + 上位5位分 + 余白
+        
+        # 背景パネルを描画（半透明効果）
+        for y in range(panel_y, panel_y + panel_height, 2):
+            for x in range(panel_x, panel_x + panel_width, 2):
+                pyxel.pset(x, y, 0)  # 黒色のドット
+        
+        # パネルの枠線
+        pyxel.rectb(panel_x, panel_y, panel_width, panel_height, 5)  # 紫色の枠線
+        
+        # タイトルを描画
+        pyxel.text(title_x, title_y, title_text, pyxel.COLOR_YELLOW)
+        
+        # 上位5スコアのみを表示（タイトル画面用に簡略化）
+        scores = self.high_scores.scores[:5]  # 上位5件を取得
+        
+        # スコアがない場合
+        if not scores:
+            no_score_text = "NO SCORES YET"
+            no_score_x = SCREEN_WIDTH // 2 - len(no_score_text) * 2
+            pyxel.text(no_score_x, title_y + 15, no_score_text, pyxel.COLOR_WHITE)
+            return
+        
+        # スコア表示の開始位置
+        score_x = title_x - 10  # 左寄せ
+        score_y = title_y + 10  # タイトルの下
+        
+        # 上位5スコアを表示
+        for i, score_data in enumerate(scores):
+            # 色分け (1位: 金, 2位: 銀, 3位: 銅, その他: 白)
+            if i == 0:  # 1位
+                color = 10  # 緑/金
+                prefix = "1."
+            elif i == 1:  # 2位
+                color = 7   # 白/銀
+                prefix = "2."
+            elif i == 2:  # 3位
+                color = 9   # オレンジ/銅
+                prefix = "3."
+            else:
+                color = pyxel.COLOR_WHITE
+                prefix = f"{i+1}."
+            
+            name = score_data["name"]
+            score = score_data["score"]
+            
+            # 表示を単純化（省スペース表示用）
+            rank_x = score_x
+            name_x = score_x + 15
+            
+            # スコアは右寄せ
+            score_text = f"{score}"
+            score_x_pos = score_x + panel_width - 20 - len(score_text) * 4
+            
+            # 各行を表示
+            pyxel.text(rank_x, score_y + i * 10, prefix, color)
+            pyxel.text(name_x, score_y + i * 10, name, color)
+            pyxel.text(score_x_pos, score_y + i * 10, score_text, color)
     
     def draw_game(self):
         # Draw background
