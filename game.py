@@ -8,6 +8,7 @@ from background import Background
 from assets.sounds import init_sounds
 from powerup import PowerUp, create_random_powerup
 from boss import create_boss
+from highscore import HighScore
 
 class Game:
     def __init__(self):
@@ -38,6 +39,9 @@ class Game:
         
         # Load resources
         self.load_resources()
+        
+        # ハイスコアシステムの初期化
+        self.highscore = HighScore()
         
         # Game state
         self.state = STATE_TITLE
@@ -131,6 +135,10 @@ class Game:
             self.update_game()
         elif self.state == STATE_GAME_OVER:
             self.update_game_over()
+        elif self.state == STATE_NAME_INPUT:
+            self.update_name_input()
+        elif self.state == STATE_HIGH_SCORE:
+            self.update_high_score()
             
         # Increment frame counter
         self.frame_count += 1
@@ -158,6 +166,9 @@ class Game:
                 self.state = STATE_PLAYING
                 pyxel.play(0, 2)  # Play start sound
             elif self.state == STATE_GAME_OVER:
+                self.reset_game()
+                self.state = STATE_PLAYING
+            elif self.state == STATE_HIGH_SCORE:
                 self.reset_game()
                 self.state = STATE_PLAYING
                 
@@ -437,7 +448,30 @@ class Game:
             self.state = STATE_GAME_OVER
     
     def update_game_over(self):
-        # Restart game when SPACE is pressed
+        # ハイスコアかどうかチェック
+        if self.highscore.is_high_score(self.score):
+            # ハイスコアなら名前入力へ
+            self.highscore.start_name_input(self.score)
+            self.state = STATE_NAME_INPUT
+        else:
+            # SPACE押下で再スタート
+            if pyxel.btnp(KEY_SPACE):
+                self.reset_game()
+                self.state = STATE_PLAYING
+            
+            # スコア一覧を表示するには「H」キーを押す
+            if pyxel.btnp(pyxel.KEY_H):
+                self.state = STATE_HIGH_SCORE
+                
+    def update_name_input(self):
+        """名前入力画面の更新処理"""
+        # 名前入力が完了したらハイスコア画面へ
+        if self.highscore.update_name_input():
+            self.state = STATE_HIGH_SCORE
+            
+    def update_high_score(self):
+        """ハイスコア画面の更新処理"""
+        # SPACE押下で再スタート
         if pyxel.btnp(KEY_SPACE):
             self.reset_game()
             self.state = STATE_PLAYING
@@ -658,6 +692,12 @@ class Game:
         elif self.state == STATE_GAME_OVER:
             self.draw_game()
             self.draw_game_over()
+        elif self.state == STATE_NAME_INPUT:
+            self.draw_game()
+            self.draw_game_over()
+            self.highscore.draw_input_screen()
+        elif self.state == STATE_HIGH_SCORE:
+            self.draw_high_score_screen()
     
     def draw_title_screen(self):
         # Draw background
@@ -866,6 +906,26 @@ class Game:
         # Draw score
         pyxel.text(SCREEN_WIDTH//2 - 30, SCREEN_HEIGHT//2 + 10, f"SCORE: {self.score}", pyxel.COLOR_YELLOW)
         
-        # Blink "PRESS SPACE or TAP SCREEN" text
+        # ハイスコア入力中は操作案内を表示しない
+        if self.state != STATE_NAME_INPUT:
+            # ハイスコア画面へのナビゲーション
+            pyxel.text(SCREEN_WIDTH//2 - 40, SCREEN_HEIGHT//2 + 30, "PRESS H FOR HIGH SCORES", CYAN)
+            
+            # Blink "PRESS SPACE or TAP SCREEN" text
+            if self.frame_count % 30 < 15:
+                pyxel.text(SCREEN_WIDTH//2 - 50, SCREEN_HEIGHT//2 + 40, "PRESS SPACE or TAP SCREEN", pyxel.COLOR_WHITE)
+                
+    def draw_high_score_screen(self):
+        """ハイスコア画面の描画"""
+        # 背景を描画
+        self.background.draw()
+        
+        # タイトル
+        pyxel.text(SCREEN_WIDTH//2 - 30, 20, "HIGH SCORES", YELLOW)
+        
+        # ハイスコアリストを表示
+        self.highscore.draw_high_scores(SCREEN_WIDTH//2 - 50, 40)
+        
+        # 戻る方法のガイド
         if self.frame_count % 30 < 15:
-            pyxel.text(SCREEN_WIDTH//2 - 50, SCREEN_HEIGHT//2 + 30, "PRESS SPACE or TAP SCREEN", pyxel.COLOR_WHITE)
+            pyxel.text(SCREEN_WIDTH//2 - 50, SCREEN_HEIGHT - 20, "PRESS SPACE TO CONTINUE", WHITE)

@@ -2,13 +2,6 @@ import pyxel
 import random
 import math
 from constants import *
-
-# 色の定数
-WHITE = 7
-BLACK = 0
-RED = 8
-YELLOW = 10
-
 from bullet import EnemyBullet
 
 class Boss:
@@ -192,33 +185,13 @@ class Boss:
         # 共通描画処理
         self.draw_boss_shape()
         
-        # 体力ゲージ（より目立つように改良）
+        # 体力ゲージ
         health_ratio = self.health / self.max_health
         bar_width = self.width
         filled_width = int(bar_width * health_ratio)
         
-        # ゲージの背景（黒）
-        pyxel.rect(self.x, self.y - 7, bar_width, 5, BLACK)
-        
-        # 現在の体力（赤）
-        pyxel.rect(self.x, self.y - 7, filled_width, 5, RED)
-        
-        # ゲージの枠線
-        pyxel.rectb(self.x - 1, self.y - 8, bar_width + 2, 7, WHITE)
-        
-        # 体力の段階に応じて色を変える
-        if health_ratio < 0.2:  # 残り20%未満で点滅
-            if pyxel.frame_count % 4 < 2:
-                pyxel.rect(self.x, self.y - 7, filled_width, 5, YELLOW)
-                
-        # ボスの名前と体力値を表示
-        boss_name = getattr(self, 'name', f"Boss {self.boss_number}")
-        health_text = f"{int(health_ratio * 100)}%"
-        
-        # 画面上部にボス情報を表示
-        pyxel.text(5, 5, f"{boss_name}", WHITE)
-        pyxel.text(SCREEN_WIDTH - 40, 5, f"HP: {health_text}", 
-                  YELLOW if health_ratio < 0.3 else WHITE)
+        pyxel.rect(self.x, self.y - 5, bar_width, 3, BLACK)
+        pyxel.rect(self.x, self.y - 5, filled_width, 3, RED)
         
     def draw_boss_shape(self):
         """ボスの基本形状を描画する（派生クラスでオーバーライド）"""
