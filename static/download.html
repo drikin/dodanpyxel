@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ダウンロード - シューティングゲーム</title>
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic Pro', 'Meiryo', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #f0f0f0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #66ccff;
+            text-shadow: 0 0 5px #3399ff;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #66ccff;
+            margin-bottom: 20px;
+        }
+        
+        .download-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        
+        .download-box {
+            flex-basis: 280px;
+            margin-bottom: 30px;
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .download-box h3 {
+            margin-top: 0;
+            color: #66ccff;
+        }
+        
+        .download-box p {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #aaa;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            background-color: #66ccff;
+            color: #000;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+            box-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+        }
+        
+        .download-btn:hover {
+            background-color: #3399ff;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(102, 204, 255, 0.8);
+        }
+        
+        .installation-note {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+        
+        .installation-note small {
+            display: block;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        code {
+            display: inline-block;
+            background-color: #2a2a2a;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            margin: 3px 0;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background-color: #444;
+            color: #f0f0f0;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .back-btn:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DodanPyxel - ダウンロード</h1>
+        <h2>プラットフォームを選択</h2>
+        
+        <div class="download-options">
+            <div class="download-box">
+                <h3>Windows版</h3>
+                <p>Windows 10/11で動作します</p>
+                <a href="/download/windows" class="download-btn">ダウンロード (.zip)</a>
+                <div class="installation-note">
+                    ダウンロード後、.zipファイルを解凍して<br>dodanpyxel.batを実行してください。
+                    <small>※Python環境が自動検出され、必要に応じてPyxelライブラリがインストールされます。</small>
+                </div>
+            </div>
+            
+            <div class="download-box">
+                <h3>macOS版</h3>
+                <p>macOS 10.14以降で動作します</p>
+                <a href="/download/mac" class="download-btn">ダウンロード (.zip)</a>
+                <div class="installation-note">
+                    ダウンロード後、zipを解凍して<br>dodanpyxel.shを実行してください。
+                    <small>※Pythonがインストールされている必要があります。</small>
+                </div>
+            </div>
+            
+            <div class="download-box">
+                <h3>ソースコード</h3>
+                <p>全プラットフォーム向け</p>
+                <a href="/download/source" class="download-btn">ダウンロード (.zip)</a>
+                <div class="installation-note">
+                    Pythonとpyxelライブラリが必要です:<br>
+                    <code>pip install pyxel</code><br>
+                    解凍後:<br>
+                    <code>python main.py</code>
+                </div>
+            </div>
+        </div>
+        
+        <a href="/" class="back-btn">トップに戻る</a>
+    </div>
+</body>
+</html>

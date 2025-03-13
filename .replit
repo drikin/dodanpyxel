@@ -37,7 +37,59 @@ args = "Game VNC Test"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "TestServer"
+args = "FlaskServer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "TestFlaskServer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "StaticWebServer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "BasicWebServer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "HelloServer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "HelloFlask"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "MinimalWeb"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "GameDownloadServer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "UltraSimpleServer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "SimpleFlaskServer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "BareMinimumServer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "SocketServer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "VeryMinimalServer"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Port3000Server"
 
 [[workflows.workflow]]
 name = "Shooter Game"
@@ -125,7 +177,7 @@ task = "shell.exec"
 args = "python main.py"
 
 [[workflows.workflow]]
-name = "TestServer"
+name = "FlaskServer"
 author = "agent"
 
 [workflows.workflow.metadata]
@@ -136,12 +188,210 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python test_server.py"
+args = "python web_wrapper.py"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "TestFlaskServer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python flask_server.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "StaticWebServer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python web_server.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "BasicWebServer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python basic_server.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "HelloServer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python hello_server.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "HelloFlask"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python hello_flask.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "MinimalWeb"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python minimal_web.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "GameDownloadServer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python game_server.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "UltraSimpleServer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python ultra_simple_server.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "SimpleFlaskServer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python simple_flask_server.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "BareMinimumServer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python bare_minimum_server.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "SocketServer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python socket_server.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "VeryMinimalServer"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python very_minimal_server.py"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Port3000Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python port_3000_server.py"
+waitForPort = 3000
 
 [deployment]
 run = ["sh", "-c", "pip install pyxel && python main.py"]
 
 [[ports]]
-localPort = 5000
+localPort = 3000
 externalPort = 80
+
+[[ports]]
+localPort = 5000
