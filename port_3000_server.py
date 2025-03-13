@@ -3,6 +3,7 @@ import os
 import subprocess
 import time
 import sys
+import create_web_build
 
 app = Flask(__name__)
 
@@ -146,11 +147,21 @@ def play():
         os.makedirs("public/web", exist_ok=True)
         
         # すでにWebゲームファイルが存在するか確認
-        if os.path.exists("public/web/main.html") and os.path.exists("public/web/game.js"):
+        if os.path.exists("public/web/main.html") and os.path.exists("public/web/index.html"):
             # Web版ゲームページを返す
             return send_from_directory('public/web', 'main.html')
         
-        # Web版がない場合はエラーメッセージを表示
+        # Web版がない場合は作成を試みる
+        print("Web版ゲームファイルが見つからないため、作成を試みます...")
+        
+        # Pyxel app2html を使ってWeb版を作成
+        success = create_web_build.create_web_version()
+        
+        if success and os.path.exists("public/web/main.html") and os.path.exists("public/web/index.html"):
+            print("Web版ゲームの作成に成功しました！")
+            return send_from_directory('public/web', 'main.html')
+        
+        # 作成に失敗した場合はエラーメッセージを表示
         return """
         <!DOCTYPE html>
         <html lang="ja">
@@ -226,7 +237,7 @@ def play():
                 <p>申し訳ありませんが、Web版ゲームの準備中にエラーが発生しました。</p>
                 
                 <div class="error-box">
-                    <p>Webゲームファイルが見つかりません。</p>
+                    <p>Webゲームの変換に失敗しました。技術的な問題が発生している可能性があります。</p>
                 </div>
                 
                 <p>Web版の問題を解決しています。しばらくしてから再度お試しください。</p>
