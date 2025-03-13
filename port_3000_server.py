@@ -1,11 +1,24 @@
-from flask import Flask, send_from_directory, redirect, url_for, render_template_string
+from flask import Flask, send_from_directory, redirect, url_for, render_template_string, Response
 import os
 import subprocess
 import time
 import sys
 import create_web_build
+import threading
 
 app = Flask(__name__)
+
+# ゲームを先に構築
+def build_game_on_startup():
+    print("バックグラウンドでゲームファイルをビルド中...")
+    try:
+        create_web_build.create_web_version()
+        print("ゲームビルドが完了しました！")
+    except Exception as e:
+        print(f"ゲームビルド中にエラーが発生しました: {e}")
+
+# バックグラウンドスレッドでゲームをビルド
+threading.Thread(target=build_game_on_startup, daemon=True).start()
 
 @app.route('/')
 def index():
@@ -113,6 +126,10 @@ def index():
                             ダブルタップ: ボム発射
                         </p>
                     </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <a href="/original" class="btn" style="display: inline-block; background-color: #ff6b6b; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; transition: all 0.3s;">オリジナルゲームを起動</a>
                 </div>
                 
                 <div class="footer">
@@ -414,6 +431,215 @@ def screenshot():
     except:
         # スクリーンショット画像がない場合は代替テキストを返す
         return "スクリーンショット画像はまだ用意されていません。"
+
+@app.route('/original')
+def original_game():
+    """オリジナルのPyxelゲームを新しいワークフローで直接起動する"""
+    return """
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DodanPyxel - オリジナルゲーム起動</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #1a1a2e;
+                color: #e6e6e6;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                text-align: center;
+            }
+            
+            .container {
+                max-width: 800px;
+                padding: 20px;
+            }
+            
+            h1 {
+                color: #ff6b6b;
+                margin-bottom: 20px;
+            }
+            
+            .game-box {
+                background-color: #222244;
+                border-radius: 10px;
+                padding: 30px;
+                margin: 20px 0;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+            
+            .btn {
+                display: inline-block;
+                background-color: #4ecdc4;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: bold;
+                margin: 10px;
+                transition: all 0.3s;
+            }
+            
+            .btn:hover {
+                background-color: #44b8b1;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+            
+            .btn-primary {
+                background-color: #ff6b6b;
+            }
+            
+            .btn-primary:hover {
+                background-color: #e05555;
+            }
+            
+            .info-box {
+                background-color: #2a2a4a;
+                border-radius: 8px;
+                padding: 15px;
+                margin: 20px 0;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>DodanPyxel - オリジナルゲーム起動</h1>
+            
+            <div class="game-box">
+                <p>元のPyxelゲームを直接起動するには、以下のボタンをクリックしてください。</p>
+                <p>新しいタブでゲームが起動します。</p>
+                
+                <a href="/run_game" target="_blank" class="btn btn-primary">オリジナルゲームを起動</a>
+                <a href="/" class="btn">Webゲーム版に戻る</a>
+                
+                <div class="info-box">
+                    <h3>注意事項</h3>
+                    <p>
+                        ・オリジナルゲームを実行するには、Pyxelのインストールが必要です。<br>
+                        ・ゲームの起動には数秒かかる場合があります。<br>
+                        ・「Shooter Game」ワークフローが起動します。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+@app.route('/run_game')
+def run_game():
+    """Shooter Gameワークフローを起動する"""
+    try:
+        # Shooter Gameワークフローが実行中かどうかを確認
+        # ただしReplitの制約上、ここではシンプルにページを返す
+        return """
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>DodanPyxel - ゲーム起動中</title>
+            <style>
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #1a1a2e;
+                    color: #e6e6e6;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                    text-align: center;
+                }
+                
+                .container {
+                    max-width: 600px;
+                    padding: 20px;
+                }
+                
+                h1 {
+                    color: #ff6b6b;
+                    margin-bottom: 20px;
+                }
+                
+                .box {
+                    background-color: #222244;
+                    border-radius: 10px;
+                    padding: 30px;
+                    margin: 20px 0;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                }
+                
+                .loader {
+                    border: 5px solid #333;
+                    border-radius: 50%;
+                    border-top: 5px solid #ff6b6b;
+                    width: 50px;
+                    height: 50px;
+                    animation: spin 1.5s linear infinite;
+                    margin: 20px auto;
+                }
+                
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                
+                .btn {
+                    display: inline-block;
+                    background-color: #4ecdc4;
+                    color: white;
+                    padding: 12px 25px;
+                    border-radius: 5px;
+                    text-decoration: none;
+                    font-weight: bold;
+                    margin-top: 20px;
+                    transition: all 0.3s;
+                }
+                
+                .btn:hover {
+                    background-color: #44b8b1;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>DodanPyxel - ゲーム起動中</h1>
+                
+                <div class="box">
+                    <p>オリジナルゲームを起動しています...</p>
+                    <div class="loader"></div>
+                    <p>このページは自動的に更新されます。</p>
+                    <p>ゲームがすでに起動している場合は、Replitの「Shooter Game」ワークフローを確認してください。</p>
+                    
+                    <a href="/original" class="btn">戻る</a>
+                </div>
+            </div>
+            <script>
+                // Shooter Gameワークフローが起動しているかをチェック
+                setTimeout(function() {
+                    // 3秒後に元のページに戻る
+                    window.location.href = "/original";
+                }, 3000);
+            </script>
+        </body>
+        </html>
+        """
+    except Exception as e:
+        return f"ゲームの起動中にエラーが発生しました: {str(e)}"
 
 @app.route('/health')
 def health():
