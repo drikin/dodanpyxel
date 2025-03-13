@@ -149,14 +149,14 @@ class SoftwareKeyboard:
                             else:
                                 self.text += key
                                 
-            # 決定ボタン領域 (広めにとる)
-            enter_text_x = self.x - 1
-            enter_text_y = self.y + len(self.keys) * 10 + 4
-            enter_text_width = 70  # ボタン全体の幅
-            enter_text_height = 10 # ボタンの高さ
+            # 確定ボタン領域 (より広く、わかりやすく)
+            confirm_button_x = self.x - 2
+            confirm_button_y = self.y + len(self.keys) * 10 + 5
+            confirm_button_width = 72  # ボタン全体の幅
+            confirm_button_height = 16 # ボタンの高さ
             
-            if (enter_text_x <= mouse_x <= enter_text_x + enter_text_width and
-                enter_text_y <= mouse_y <= enter_text_y + enter_text_height):
+            if (confirm_button_x <= mouse_x <= confirm_button_x + confirm_button_width and
+                confirm_button_y <= mouse_y <= confirm_button_y + confirm_button_height):
                 # 決定ボタンがクリックされた
                 self.complete = True
                 return
@@ -222,13 +222,20 @@ class SoftwareKeyboard:
                     
                 # キーの文字表示
                 pyxel.text(key_x, key_y, key, color)
-                
-        # 操作説明と決定ボタン（目立たせる）
-        # 操作ボタンの背景
-        button_y = self.y + len(self.keys) * 10 + 5
-        pyxel.rect(self.x - 1, button_y - 1, 70, 9, 5)
-        # 操作説明テキスト
-        pyxel.text(self.x, button_y, "TAP KEY or Z:INPUT X:ENTER", 0)
+        
+        # 確定ボタン（目立つ大きなボタン）
+        confirm_button_y = self.y + len(self.keys) * 10 + 5
+        # ボタンの背景（点滅効果）
+        button_color = 8 if (pyxel.frame_count // 8) % 2 == 0 else 5
+        pyxel.rect(self.x - 1, confirm_button_y - 1, 70, 14, button_color)
+        pyxel.rectb(self.x - 2, confirm_button_y - 2, 72, 16, 7)  # ボーダー
+        
+        # 「確定」テキスト
+        pyxel.text(self.x + 25, confirm_button_y + 3, "確定", 0)
+        
+        # 操作説明（小さめに）
+        instruction_y = self.y + len(self.keys) * 10 + 22
+        pyxel.text(self.x, instruction_y, "TAP KEY/Z:INPUT TAP/X:OK", 13)
         
     def activate(self):
         """キーボードを有効化"""
