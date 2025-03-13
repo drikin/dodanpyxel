@@ -9,123 +9,191 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>DodanPyxel シューティングゲーム</title>
-        <style>
-            body { 
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #1a1a2e;
-                color: #e6e6e6;
-                text-align: center;
-            }
-            
-            .container {
-                max-width: 800px;
-                margin: 0 auto;
-                padding: 20px;
-            }
-            
-            h1 {
-                color: #ff6b6b;
-                margin-bottom: 30px;
-            }
-            
-            h2 {
-                color: #4ecdc4;
-                margin-top: 30px;
-            }
-            
-            .game-box {
-                background-color: #222244;
-                border-radius: 10px;
-                padding: 20px;
-                margin: 20px 0;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                text-align: center;
-            }
-            
-            .game-frame {
-                width: 100%;
-                max-width: 640px;
-                height: 480px;
-                border: none;
-                margin: 20px auto;
-                display: block;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            }
-            
-            .control-info {
-                background-color: #2a2a4a;
-                border-radius: 8px;
-                padding: 15px;
-                margin: 20px auto;
-                max-width: 600px;
-                text-align: left;
-            }
-            
-            .play-btn {
-                display: inline-block;
-                background-color: #ff6b6b;
-                color: white;
-                padding: 15px 30px;
-                margin: 20px 0;
-                border-radius: 5px;
-                text-decoration: none;
-                font-weight: bold;
-                font-size: 18px;
-                transition: all 0.3s;
-            }
-            
-            .play-btn:hover {
-                background-color: #ff8e8e;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            }
-            
-            .footer {
-                margin-top: 40px;
-                padding-top: 20px;
-                border-top: 1px solid #333355;
-                color: #888;
-                font-size: 0.9em;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>DodanPyxel シューティングゲーム</h1>
-            
-            <div class="game-box">
-                <h2>ブラウザでプレイ！</h2>
-                <p>Pyxel製の縦スクロールシューティングゲームをブラウザで直接プレイ！</p>
+    try:
+        # Webゲーム用ディレクトリが存在することを確認
+        os.makedirs("public/web", exist_ok=True)
+        
+        # WebゲームHTMLが存在するか確認
+        if not (os.path.exists("public/web/index.html") and os.path.exists("public/web/main.html")):
+            # Web版がない場合は作成を試みる
+            print("Web版ゲームファイルを作成中...")
+            create_web_build.create_web_version()
+        
+        # トップページでゲームを直接表示するHTML
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>DodanPyxel シューティングゲーム</title>
+            <style>
+                body { 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #1a1a2e;
+                    color: #e6e6e6;
+                    text-align: center;
+                }
                 
-                <a href="/play" class="play-btn">今すぐプレイ!</a>
+                .container {
+                    max-width: 850px;
+                    margin: 0 auto;
+                    padding: 20px;
+                }
                 
-                <div class="control-info">
-                    <h3>ゲーム操作方法</h3>
-                    <p>
-                        矢印キー: 移動<br>
-                        Zキー: 発射 (常時自動発射も有効)<br>
-                        Xキー: ボム発射<br>
-                        ESCキー: 終了
-                    </p>
+                h1 {
+                    color: #ff6b6b;
+                    margin-bottom: 20px;
+                }
+                
+                .game-box {
+                    background-color: #222244;
+                    border-radius: 10px;
+                    padding: 20px;
+                    margin: 10px 0 20px 0;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                }
+                
+                .game-frame {
+                    width: 100%;
+                    max-width: 640px;
+                    height: 480px;
+                    border: none;
+                    margin: 10px auto;
+                    display: block;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                }
+                
+                .control-info {
+                    background-color: #2a2a4a;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin: 20px auto;
+                    max-width: 600px;
+                    text-align: left;
+                }
+                
+                .footer {
+                    margin-top: 30px;
+                    padding-top: 15px;
+                    border-top: 1px solid #333355;
+                    color: #888;
+                    font-size: 0.9em;
+                }
+
+                @media (max-width: 680px) {
+                    .game-frame {
+                        width: 100%;
+                        height: 400px;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>DodanPyxel シューティングゲーム</h1>
+                
+                <div class="game-box">
+                    <iframe src="/index.html" class="game-frame" allowfullscreen></iframe>
+                    
+                    <div class="control-info">
+                        <h3>ゲーム操作方法</h3>
+                        <p>
+                            矢印キー: 移動<br>
+                            Zキー: 発射 (常時自動発射も有効)<br>
+                            Xキー: ボム発射<br>
+                            Rキー: ゲームオーバー時にリスタート<br>
+                            ESCキー: 一時停止/再開
+                        </p>
+                        <p>
+                            <strong>スマートフォン/タブレット:</strong><br>
+                            画面タップ: 移動<br>
+                            ダブルタップ: ボム発射
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <p>© 2025 DodanPyxel - Pyxelで作られた縦スクロールシューティングゲーム</p>
                 </div>
             </div>
-            
-            <div class="footer">
-                <p>© 2025 DodanPyxel - Pyxelで作られた縦スクロールシューティングゲーム</p>
+        </body>
+        </html>
+        """
+    except Exception as e:
+        return f"""
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>エラー</title>
+            <style>
+                body {{ 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    padding: 20px;
+                    background-color: #1a1a2e;
+                    color: #e6e6e6;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                }}
+                .container {{
+                    max-width: 800px;
+                    width: 100%;
+                    background-color: #222244;
+                    border-radius: 10px;
+                    padding: 30px;
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+                }}
+                h1 {{ 
+                    color: #ff6b6b; 
+                    margin-bottom: 30px;
+                    text-align: center;
+                }}
+                .error-box {{ 
+                    background-color: #2a2a4a; 
+                    border-left: 3px solid #ff6b6b; 
+                    padding: 20px; 
+                    border-radius: 5px; 
+                    margin: 20px 0;
+                    word-break: break-word;
+                }}
+                .reload-btn {{
+                    display: inline-block;
+                    background-color: #4ecdc4;
+                    color: white;
+                    padding: 12px 25px;
+                    border-radius: 5px;
+                    text-decoration: none;
+                    font-weight: bold;
+                    margin-top: 20px;
+                    transition: all 0.3s;
+                    text-align: center;
+                }}
+                .reload-btn:hover {{
+                    background-color: #44b8b1;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>ゲームのロード中にエラーが発生しました</h1>
+                <div class="error-box">
+                    <p>{str(e)}</p>
+                </div>
+                <div style="text-align: center;">
+                    <a href="/" class="reload-btn">ページを再読み込み</a>
+                </div>
             </div>
-        </div>
-    </body>
-    </html>
-    """
+        </body>
+        </html>
+        """
 
 @app.route('/download/<platform>')
 def download(platform):
@@ -318,6 +386,24 @@ def play():
         </body>
         </html>
         """
+
+@app.route('/index.html')
+def game_html():
+    return send_from_directory('public/web', 'index.html')
+
+@app.route('/game.js')
+def game_js():
+    return send_from_directory('public/web', 'game.js')
+
+@app.route('/<path:filename>')
+def static_files(filename):
+    if os.path.exists(os.path.join('public/web', filename)):
+        return send_from_directory('public/web', filename)
+    return "File not found", 404
+
+@app.route('/web/<path:filename>')
+def web_files(filename):
+    return send_from_directory('public/web', filename)
 
 @app.route('/screenshot')
 def screenshot():
