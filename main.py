@@ -1,3 +1,11 @@
+import os
+# VNC互換性のために環境変数を設定 - Pyxelのインポート前に実行する必要があります
+os.environ['PYXEL_RENDERER'] = 'software'
+# OpenGLを無効化
+os.environ['PYXEL_GRAPHICS_DRIVER'] = 'software'
+os.environ['PYXEL_GLFW_WINDOW_API'] = 'x11'
+
+# 環境変数を設定した後でPyxelをインポート
 import pyxel
 from game import Game
 
@@ -58,6 +66,22 @@ def patch_pyxel_compatibility():
 # Initialize and run the game
 def main():
     global game_instance
+    
+    # VNC互換性のためのデバッグ情報を表示
+    print("DEBUG: Using software renderer for VNC compatibility")
+    print(f"DEBUG: PYXEL_RENDERER={os.environ.get('PYXEL_RENDERER', 'not set')}")
+    print(f"DEBUG: PYXEL_GRAPHICS_DRIVER={os.environ.get('PYXEL_GRAPHICS_DRIVER', 'not set')}")
+    
+    # 追加の設定 - 最新のPyxelバージョン向け
+    try:
+        if hasattr(pyxel, 'settings'):
+            try:
+                pyxel.settings.renderer = 'software'
+                print("DEBUG: Set renderer via pyxel.settings.renderer")
+            except Exception as e:
+                print(f"NOTICE: Could not set pyxel.settings.renderer: {e}")
+    except Exception as e:
+        print(f"WARNING: Settings error: {e}")
     
     # Apply compatibility patches
     patch_pyxel_compatibility()
