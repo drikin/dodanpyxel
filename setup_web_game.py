@@ -15,13 +15,44 @@ def setup_web_game():
     os.makedirs("temp_app", exist_ok=True)
     
     try:
-        # pyxapp形式でエクスポート
+        # すべての必要なコードファイルを一時ディレクトリにコピー
+        print("ゲームファイルを準備しています...")
+        game_files = [
+            "main.py", "game.py", "player.py", "enemy.py", 
+            "bullet.py", "boss.py", "background.py", 
+            "explosion.py", "powerup.py", "constants.py"
+        ]
+        
+        # アセットディレクトリも存在するならコピー
+        if os.path.exists("assets"):
+            if not os.path.exists("temp_app/assets"):
+                shutil.copytree("assets", "temp_app/assets")
+        
+        for file in game_files:
+            if os.path.exists(file):
+                shutil.copy(file, "temp_app/")
+        
+        # pyxapp形式でエクスポートを試みる
         print("Pyxelアプリをパッケージ化しています...")
-        subprocess.run([sys.executable, "-m", "pyxel", "package", "main.py", "temp_app/temp_app.pyxapp"], check=True)
+        try:
+            # まず直接メインPythonファイルを指定
+            subprocess.run([sys.executable, "-m", "pyxel", "package", "temp_app/main.py", "temp_app/temp_app.pyxapp"], check=True)
+        except:
+            # 失敗した場合はディレクトリを指定する方法を試す
+            try:
+                subprocess.run([sys.executable, "-m", "pyxel", "package", "temp_app", "temp_app/temp_app.pyxapp"], check=True)
+            except:
+                print("pyxapp形式でのパッケージ化に失敗しました。代替方法を使用します。")
+                # Web版変換に失敗しても続行する
+                return False
         
         # Pyxel Web版に変換
         print("PyxelアプリをWeb形式に変換しています...")
-        subprocess.run([sys.executable, "-m", "pyxel", "app2html", "temp_app/temp_app.pyxapp", "public/web"], check=True)
+        try:
+            subprocess.run([sys.executable, "-m", "pyxel", "app2html", "temp_app/temp_app.pyxapp", "public/web"], check=True)
+        except:
+            print("Web形式への変換に失敗しました。")
+            return False
         
         # HTMLファイルのリダイレクト設定
         with open("public/web/index.html", "r") as f:
@@ -213,6 +244,24 @@ def create_fallback_page():
             color: #888;
             font-size: 0.9em;
         }
+        
+        .back-btn {
+            display: inline-block;
+            background-color: #4ecdc4;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background-color: #44b8b1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -223,7 +272,8 @@ def create_fallback_page():
             <h2>Web版の準備中</h2>
             
             <div class="error-message">
-                <p>Web版ゲームの構築中にエラーが発生しました。現在、VNCで直接ゲームをプレイすることができます。</p>
+                <p>申し訳ありませんが、Web版ゲームの構築中にエラーが発生しました。現在、開発チームが解決に取り組んでいます。</p>
+                <p>ゲームのスクリーンショットをご覧ください：</p>
             </div>
             
             <img src="/screenshot" alt="ゲームスクリーンショット" class="screenshot">
@@ -237,6 +287,8 @@ def create_fallback_page():
                     ESCキー: 終了
                 </p>
             </div>
+            
+            <a href="/" class="back-btn">トップページに戻る</a>
         </div>
         
         <div class="footer">

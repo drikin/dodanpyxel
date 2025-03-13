@@ -163,7 +163,7 @@ def play():
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>DodanPyxel - ゲームプレイに移動しています</title>
+                <title>DodanPyxel - Web版ゲーム準備中</title>
                 <style>
                     body {{
                         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -215,20 +215,31 @@ def play():
                         transform: translateY(-2px);
                         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
                     }}
+                    
+                    .game-controls {{
+                        background-color: #2a2a4a;
+                        border-radius: 8px;
+                        padding: 15px;
+                        margin-top: 20px;
+                        text-align: left;
+                    }}
                 </style>
             </head>
             <body>
                 <div class="container">
                     <h1>DodanPyxel - 縦スクロールシューティングゲーム</h1>
-                    <p>現在、VNCを使用してゲームが別のウィンドウで起動しています。</p>
+                    <p>申し訳ありませんが、Web版ゲームを準備中です。</p>
+                    <p>Web版の開発が進行中ですので、もう少々お待ちください。</p>
                     
-                    <p>VNCウィンドウでゲームをプレイしてください。操作方法は以下の通りです：</p>
-                    <ul style="text-align: left;">
-                        <li>矢印キー: 移動</li>
-                        <li>Zキー: 発射 (常時自動発射も有効)</li>
-                        <li>Xキー: ボム発射</li>
-                        <li>ESCキー: 終了</li>
-                    </ul>
+                    <div class="game-controls">
+                        <h3>ゲーム操作方法</h3>
+                        <ul style="text-align: left;">
+                            <li>矢印キー: 移動</li>
+                            <li>Zキー: 発射 (常時自動発射も有効)</li>
+                            <li>Xキー: ボム発射</li>
+                            <li>ESCキー: 終了</li>
+                        </ul>
+                    </div>
                     
                     <a href="/" class="continue-btn">トップページに戻る</a>
                 </div>
@@ -236,8 +247,8 @@ def play():
             </html>
             """
             
-            # VNCでゲームを起動
-            subprocess.Popen([sys.executable, "main.py"])
+            # ゲーム直接起動は行わない
+            # subprocess.Popen([sys.executable, "main.py"])
             
             return html_content
     except Exception as e:
