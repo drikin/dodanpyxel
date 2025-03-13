@@ -452,6 +452,29 @@ class Game:
                 # デバッグ表示
                 print("DEBUG: High score detected, activating keyboard")
         else:
+            # ゲーム全体でのタッチイベントを先にチェックし、
+            # キーボード表示中はキーボード外のタッチを無視する
+            if pyxel.btnp(MOUSE_BUTTON_LEFT):
+                # タッチ座標を取得
+                mouse_x, mouse_y = pyxel.mouse_x, pyxel.mouse_y
+                
+                # キーボードの表示領域を計算
+                keyboard_area_x = self.keyboard.x - 8
+                keyboard_area_y = self.keyboard.y - 28
+                keyboard_area_width = 85  # キーボード幅 + 余白
+                keyboard_area_height = 120  # キーボード高さ + 確定ボタン + 余白
+                
+                # キーボード領域外のタッチはこの時点で無視（ゲーム再開防止）
+                keyboard_area = (
+                    keyboard_area_x <= mouse_x <= keyboard_area_x + keyboard_area_width and
+                    keyboard_area_y <= mouse_y <= keyboard_area_y + keyboard_area_height
+                )
+                
+                # キーボード領域外のタッチは処理しない（デバッグ出力）
+                if not keyboard_area:
+                    print("DEBUG: Touch outside keyboard area ignored")
+                    return
+            
             # キーボード操作を更新
             self.keyboard.update()
             
@@ -481,6 +504,7 @@ class Game:
                 self.reset_game()
                 self.state = STATE_TITLE
                 print("DEBUG: High score submitted, returning to title screen")
+                return  # 処理終了
         
         # 名前入力中は以下の処理をスキップ
         if self.keyboard.active:

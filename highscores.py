@@ -122,6 +122,7 @@ class SoftwareKeyboard:
         self.cursor_row = 0
         self.cursor_col = 0
         self.complete = False
+        self.confirm_button_focus = False  # 確定ボタンのフォーカスフラグを追加
         
     def update(self):
         """キーボード入力の更新"""
@@ -167,18 +168,41 @@ class SoftwareKeyboard:
                 self.complete = True
                 return
             
+        # 確定ボタンにフォーカスしているかどうかのフラグ
+        confirm_button_focus = hasattr(self, 'confirm_button_focus') and self.confirm_button_focus
+        
         # カーソル移動（キーボード）
         if pyxel.btnp(pyxel.KEY_UP) or pyxel.btnp(pyxel.KEY_W):
-            self.cursor_row = (self.cursor_row - 1) % len(self.keys)
-        if pyxel.btnp(pyxel.KEY_DOWN) or pyxel.btnp(pyxel.KEY_S):
-            self.cursor_row = (self.cursor_row + 1) % len(self.keys)
-        if pyxel.btnp(pyxel.KEY_LEFT) or pyxel.btnp(pyxel.KEY_A):
-            self.cursor_col = (self.cursor_col - 1) % len(self.keys[self.cursor_row])
-        if pyxel.btnp(pyxel.KEY_RIGHT) or pyxel.btnp(pyxel.KEY_D):
-            self.cursor_col = (self.cursor_col + 1) % len(self.keys[self.cursor_row])
-            
+            if confirm_button_focus:
+                # 確定ボタンからキーボードの一番下の行に移動
+                confirm_button_focus = False
+                self.confirm_button_focus = False
+                self.cursor_row = len(self.keys) - 1
+            else:
+                # 通常の上移動
+                self.cursor_row = (self.cursor_row - 1) % len(self.keys)
+                
+        elif pyxel.btnp(pyxel.KEY_DOWN) or pyxel.btnp(pyxel.KEY_S):
+            if self.cursor_row == len(self.keys) - 1:
+                # キーボードの一番下の行から確定ボタンにフォーカス
+                confirm_button_focus = True
+                self.confirm_button_focus = True
+            elif not confirm_button_focus:
+                # 通常の下移動
+                self.cursor_row = (self.cursor_row + 1) % len(self.keys)
+                
+        elif pyxel.btnp(pyxel.KEY_LEFT) or pyxel.btnp(pyxel.KEY_A):
+            if not confirm_button_focus:
+                # キーボード内での左移動
+                self.cursor_col = (self.cursor_col - 1) % len(self.keys[self.cursor_row])
+                
+        elif pyxel.btnp(pyxel.KEY_RIGHT) or pyxel.btnp(pyxel.KEY_D):
+            if not confirm_button_focus:
+                # キーボード内での右移動
+                self.cursor_col = (self.cursor_col + 1) % len(self.keys[self.cursor_row])
+        
         # 文字入力（キーボード）
-        if pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.KEY_Z):
+        if (pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.KEY_Z)) and not confirm_button_focus:
             if len(self.text) < self.max_length:
                 key = self.keys[self.cursor_row][self.cursor_col]
                 if key == '_':
@@ -189,10 +213,17 @@ class SoftwareKeyboard:
                         self.text = self.text[:-1]
                 else:
                     self.text += key
+        
+        # 確定ボタン押下またはキーボード確定キー
+        if confirm_button_focus and (pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.KEY_Z)):
+            # 確定ボタンにフォーカスがある状態でスペースまたはZキーが押された
+            self.complete = True
+            print("DEBUG: Confirm button activated with keyboard")
             
-        # 確定（キーボード）
+        # 確定（キーボードのエンターキーまたはXキー）
         if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.KEY_X):
             self.complete = True
+            print("DEBUG: Confirm activated with Return or X key")
             
     def draw(self):
         """キーボードの描画"""
@@ -231,13 +262,34 @@ class SoftwareKeyboard:
         
         # 確定ボタン（目立つ大きなボタン）
         confirm_button_y = self.y + len(self.keys) * 10 + 5
-        # ボタンの背景（点滅効果）
-        button_color = 8 if (pyxel.frame_count // 8) % 2 == 0 else 5
+        
+        # 確定ボタンにフォーカスがあるか確認
+        confirm_button_focus = hasattr(self, 'confirm_button_focus') and self.confirm_button_focus
+        
+        # ボタンの背景（点滅効果）- フォーカスがある場合は明るい色で強調
+        if confirm_button_focus:
+            # フォーカス時はより目立つ点滅効果
+            button_color = 10 if (pyxel.frame_count // 4) % 2 == 0 else 11  # 明るい緑と黄色で点滅
+            border_color = 7  # 白いボーダー
+            text_color = 0  # 黒いテキスト
+        else:
+            # 通常の表示
+            button_color = 8 if (pyxel.frame_count // 8) % 2 == 0 else 5
+            border_color = 6  # 通常のボーダー
+            text_color = 0  # 黒いテキスト
+            
+        # ボタンの描画
         pyxel.rect(self.x - 1, confirm_button_y - 1, 70, 14, button_color)
-        pyxel.rectb(self.x - 2, confirm_button_y - 2, 72, 16, 7)  # ボーダー
+        pyxel.rectb(self.x - 2, confirm_button_y - 2, 72, 16, border_color)  # ボーダー
         
         # 「確定」テキスト
-        pyxel.text(self.x + 25, confirm_button_y + 3, "確定", 0)
+        pyxel.text(self.x + 25, confirm_button_y + 3, "確定", text_color)
+        
+        # フォーカス時に追加の視覚的なヒント
+        if confirm_button_focus:
+            # 矢印マーカーでボタンが選択されていることを示す
+            pyxel.text(self.x - 7, confirm_button_y + 3, ">", 7)  # 左側の矢印
+            pyxel.text(self.x + 65, confirm_button_y + 3, "<", 7)  # 右側の矢印
         
         # 操作説明（小さめに）
         instruction_y = self.y + len(self.keys) * 10 + 22
@@ -248,6 +300,7 @@ class SoftwareKeyboard:
         self.active = True
         self.text = ""
         self.complete = False
+        self.confirm_button_focus = False  # フォーカスをリセット
         
     def deactivate(self):
         """キーボードを無効化"""
