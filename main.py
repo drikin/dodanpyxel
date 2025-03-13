@@ -10,8 +10,12 @@ def patch_pyxel_compatibility():
     # Direct key code support for older Pyxel versions
     if not hasattr(pyxel, 'KEY_Z'):
         pyxel.KEY_Z = 122  # ASCII code for 'z'
+    if not hasattr(pyxel, 'KEY_X'):
+        pyxel.KEY_X = 120  # ASCII code for 'x'
     if not hasattr(pyxel, 'KEY_SPACE'):
         pyxel.KEY_SPACE = 32  # ASCII code for space
+    if not hasattr(pyxel, 'KEY_RETURN'):
+        pyxel.KEY_RETURN = 13  # ASCII code for return/enter
     
     # Add btn_direct method for direct key code checking
     if not hasattr(pyxel, 'btn_direct'):

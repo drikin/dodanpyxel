@@ -449,6 +449,8 @@ class Game:
             if self.high_scores.is_high_score(self.score):
                 self.new_high_score = True
                 self.keyboard.activate()
+                # デバッグ表示
+                print("DEBUG: High score detected, activating keyboard")
         else:
             # キーボード操作を更新
             self.keyboard.update()
@@ -458,6 +460,9 @@ class Game:
                 player_name = self.keyboard.get_text()
                 if not player_name:  # 空の場合はデフォルト名
                     player_name = "PLAYER"
+                
+                # デバッグ表示
+                print(f"DEBUG: Name input complete: '{player_name}'")
                 
                 # ハイスコアに追加して保存
                 self.high_scores.add_score(player_name, self.score)
@@ -476,8 +481,8 @@ class Game:
         if self.keyboard.active:
             return
             
-        # Restart game when SPACE is pressed
-        if pyxel.btnp(KEY_SPACE):
+        # Restart game when SPACE is pressed or screen is touched
+        if pyxel.btnp(KEY_SPACE) or pyxel.btnp(MOUSE_BUTTON_LEFT):
             self.reset_game()
             self.state = STATE_PLAYING
     
@@ -894,31 +899,81 @@ class Game:
                 )
     
     def draw_game_over(self):
-        # Draw semi-transparent overlay
+        # 暗めの半透明オーバーレイ（市松模様）
         for y in range(0, SCREEN_HEIGHT, 2):
             for x in range(0, SCREEN_WIDTH, 2):
                 pyxel.pset(x, y, 0)
         
-        # Draw "GAME OVER" text
-        pyxel.text(SCREEN_WIDTH//2 - 20, 30, "GAME OVER", pyxel.COLOR_RED)
+        # "GAME OVER" テキストの背景とボーダー
+        game_over_y = 30
+        # 背景（黒い長方形）
+        pyxel.rect(SCREEN_WIDTH//2 - 35, game_over_y - 5, 70, 15, 0)
+        # 赤いボーダー
+        pyxel.rectb(SCREEN_WIDTH//2 - 36, game_over_y - 6, 72, 17, 8)
+        pyxel.rectb(SCREEN_WIDTH//2 - 35, game_over_y - 5, 70, 15, 8)
         
-        # Draw score
-        pyxel.text(SCREEN_WIDTH//2 - 30, 50, f"SCORE: {self.score}", pyxel.COLOR_YELLOW)
+        # "GAME OVER" テキスト（点滅効果）
+        text_color = 8 if (self.frame_count // 8) % 2 == 0 else 7
+        pyxel.text(SCREEN_WIDTH//2 - 20, game_over_y, "GAME OVER", text_color)
+        
+        # スコア表示の背景
+        score_y = 50
+        pyxel.rect(SCREEN_WIDTH//2 - 35, score_y - 2, 70, 10, 1)
+        
+        # スコア表示（大きめのフォントで）
+        score_text = f"SCORE: {self.score}"
+        pyxel.text(SCREEN_WIDTH//2 - len(score_text)*2, score_y, score_text, pyxel.COLOR_YELLOW)
         
         # ソフトウェアキーボードが有効な場合は表示
         if self.keyboard.active:
+            # キーボード入力中のメッセージ
+            message = "NEW HIGH SCORE!"
+            msg_width = len(message) * 4
+            msg_x = SCREEN_WIDTH//2 - msg_width//2
+            
+            # 点滅効果付きメッセージ
+            if (self.frame_count // 10) % 2 == 0:
+                pyxel.text(msg_x, 65, message, 10)  # 緑色
+            else:
+                pyxel.text(msg_x, 65, message, 9)   # オレンジ色
+            
+            # キーボード表示
             self.keyboard.draw()
             return
             
         # ハイスコア表示（名前入力完了後または入力不要の場合）
         if not self.new_high_score:
+            # ハイスコアセクションの背景
+            pyxel.rect(20, 68, SCREEN_WIDTH - 40, 86, 5)
+            pyxel.rectb(19, 67, SCREEN_WIDTH - 38, 88, 7)
+            
+            # ハイスコアヘッダー
+            pyxel.text(SCREEN_WIDTH//2 - 30, 70, "HIGH SCORES", 7)
+            
             # ハイスコアリストを描画
-            self.high_scores.draw_high_scores(30, 70, pyxel.COLOR_WHITE, pyxel.COLOR_LIME, pyxel.COLOR_YELLOW)
+            self.high_scores.draw_high_scores(30, 80, 7, 10, 9)
             
             # 自分のスコアがハイスコアにある場合はハイライト
-            if any(score["score"] == self.score for score in self.high_scores.scores):
-                pyxel.text(30, 65, "NEW HIGH SCORE!", pyxel.COLOR_YELLOW)
+            player_in_scores = False
+            for score in self.high_scores.scores:
+                if score["score"] == self.score:
+                    player_in_scores = True
+                    break
+                    
+            if player_in_scores:
+                # ハイスコア達成メッセージ（アニメーション効果）
+                message = "CONGRATULATIONS! NEW HIGH SCORE!"
+                msg_x = (self.frame_count % (SCREEN_WIDTH + len(message)*4)) - len(message)*4
+                # 点滅効果
+                text_color = 10 if (self.frame_count // 5) % 2 == 0 else 9
+                pyxel.text(msg_x, 160, message, text_color)
         
-        # Blink "PRESS SPACE or TAP SCREEN" text
-        if self.frame_count % 30 < 15:
-            pyxel.text(SCREEN_WIDTH//2 - 50, SCREEN_HEIGHT - 20, "PRESS SPACE or TAP SCREEN", pyxel.COLOR_WHITE)
+        # リスタートのためのタッチガイダンス（より大きく、目立つボタン風）
+        restart_y = SCREEN_HEIGHT - 25
+        # ボタンの背景
+        pyxel.rect(SCREEN_WIDTH//2 - 60, restart_y - 2, 120, 15, 5)
+        pyxel.rectb(SCREEN_WIDTH//2 - 61, restart_y - 3, 122, 17, 7)
+        
+        # 点滅するテキスト
+        if self.frame_count % 30 < 20:
+            pyxel.text(SCREEN_WIDTH//2 - 52, restart_y + 3, "PRESS SPACE or TAP HERE", 0)
