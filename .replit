@@ -17,26 +17,6 @@ args = "Shooter Game"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "pyxel_game"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Shooter Game VNC"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Pyxel VNC"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "New Pyxel VNC"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Game VNC Test"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "FlaskServer"
 
 [[workflows.workflow.tasks]]
@@ -91,6 +71,10 @@ args = "VeryMinimalServer"
 task = "workflow.run"
 args = "Port3000Server"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "DirectGame"
+
 [[workflows.workflow]]
 name = "Shooter Game"
 author = "agent"
@@ -105,76 +89,6 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "pip install pyxel && python main.py"
 waitForPort = 5000
-
-[[workflows.workflow]]
-name = "pyxel_game"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
-
-[[workflows.workflow]]
-name = "Shooter Game VNC"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
-
-[[workflows.workflow]]
-name = "Pyxel VNC"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
-
-[[workflows.workflow]]
-name = "New Pyxel VNC"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
-
-[[workflows.workflow]]
-name = "Game VNC Test"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python main.py"
 
 [[workflows.workflow]]
 name = "FlaskServer"
@@ -385,6 +299,20 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "python port_3000_server.py"
 waitForPort = 3000
+
+[[workflows.workflow]]
+name = "DirectGame"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
 
 [deployment]
 run = ["sh", "-c", "pip install pyxel && python main.py"]

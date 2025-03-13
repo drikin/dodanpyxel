@@ -2830,7 +2830,7 @@ requires-dist = [
     { name = "flask", specifier = ">=3.1.0" },
     { name = "keyboard", specifier = ">=0.13.5" },
     { name = "pyinstaller", specifier = ">=6.12.0" },
-    { name = "pyxel", specifier = ">=2.3.11" },
+    { name = "pyxel", extras = ["web"], specifier = ">=2.3.11" },
 ]
 
 [[package]]
