@@ -141,116 +141,101 @@ def download(platform):
 
 @app.route('/play')
 def play():
-    # Webゲーム環境を構築
     try:
-        from setup_web_game import setup_web_game
-        success = setup_web_game()
+        # Webゲーム用ディレクトリが存在することを確認
+        os.makedirs("public/web", exist_ok=True)
         
-        if success:
+        # すでにWebゲームファイルが存在するか確認
+        if os.path.exists("public/web/main.html") and os.path.exists("public/web/game.js"):
             # Web版ゲームページを返す
-            if os.path.exists("public/web/main.html"):
-                return send_from_directory('public/web', 'main.html')
-            else:
-                return send_from_directory('public/web', 'index.html')
-        else:
-            # 公開用ディレクトリを作成
-            os.makedirs("public/web", exist_ok=True)
-            
-            # フォールバックページを作成
-            html_content = f"""
-            <!DOCTYPE html>
-            <html lang="ja">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>DodanPyxel - Web版ゲーム準備中</title>
-                <style>
-                    body {{
-                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                        background-color: #1a1a2e;
-                        color: #e6e6e6;
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                        height: 100vh;
-                        text-align: center;
-                        margin: 0;
-                        padding: 20px;
-                    }}
-                    
-                    .container {{
-                        background-color: #222244;
-                        border-radius: 10px;
-                        padding: 30px;
-                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-                        max-width: 600px;
-                        width: 100%;
-                    }}
-                    
-                    h1 {{
-                        color: #ff6b6b;
-                        margin-bottom: 20px;
-                    }}
-                    
-                    p {{
-                        font-size: 18px;
-                        line-height: 1.6;
-                    }}
-                    
-                    .continue-btn {{
-                        display: inline-block;
-                        background-color: #4ecdc4;
-                        color: white;
-                        padding: 15px 30px;
-                        border-radius: 5px;
-                        text-decoration: none;
-                        font-weight: bold;
-                        margin-top: 30px;
-                        transition: all 0.3s;
-                    }}
-                    
-                    .continue-btn:hover {{
-                        background-color: #44b8b1;
-                        transform: translateY(-2px);
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                    }}
-                    
-                    .game-controls {{
-                        background-color: #2a2a4a;
-                        border-radius: 8px;
-                        padding: 15px;
-                        margin-top: 20px;
-                        text-align: left;
-                    }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <h1>DodanPyxel - 縦スクロールシューティングゲーム</h1>
-                    <p>申し訳ありませんが、Web版ゲームを準備中です。</p>
-                    <p>Web版の開発が進行中ですので、もう少々お待ちください。</p>
-                    
-                    <div class="game-controls">
-                        <h3>ゲーム操作方法</h3>
-                        <ul style="text-align: left;">
-                            <li>矢印キー: 移動</li>
-                            <li>Zキー: 発射 (常時自動発射も有効)</li>
-                            <li>Xキー: ボム発射</li>
-                            <li>ESCキー: 終了</li>
-                        </ul>
-                    </div>
-                    
-                    <a href="/" class="continue-btn">トップページに戻る</a>
+            return send_from_directory('public/web', 'main.html')
+        
+        # Web版がない場合はエラーメッセージを表示
+        return """
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>DodanPyxel - ゲーム準備中</title>
+            <style>
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background-color: #1a1a2e;
+                    color: #e6e6e6;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100vh;
+                    text-align: center;
+                    margin: 0;
+                    padding: 20px;
+                }
+                
+                .container {
+                    background-color: #222244;
+                    border-radius: 10px;
+                    padding: 30px;
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+                    max-width: 600px;
+                    width: 100%;
+                }
+                
+                h1 {
+                    color: #ff6b6b;
+                    margin-bottom: 20px;
+                }
+                
+                p {
+                    font-size: 18px;
+                    line-height: 1.6;
+                }
+                
+                .error-box {
+                    background-color: #3a2a3a;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin: 20px 0;
+                    text-align: left;
+                    color: #ffaaaa;
+                }
+                
+                .continue-btn {
+                    display: inline-block;
+                    background-color: #4ecdc4;
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 5px;
+                    text-decoration: none;
+                    font-weight: bold;
+                    margin-top: 30px;
+                    transition: all 0.3s;
+                }
+                
+                .continue-btn:hover {
+                    background-color: #44b8b1;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>DodanPyxel - シューティングゲーム</h1>
+                <p>申し訳ありませんが、Web版ゲームの準備中にエラーが発生しました。</p>
+                
+                <div class="error-box">
+                    <p>Webゲームファイルが見つかりません。</p>
                 </div>
-            </body>
-            </html>
-            """
-            
-            # ゲーム直接起動は行わない
-            # subprocess.Popen([sys.executable, "main.py"])
-            
-            return html_content
+                
+                <p>Web版の問題を解決しています。しばらくしてから再度お試しください。</p>
+                
+                <a href="/" class="continue-btn">トップページに戻る</a>
+            </div>
+        </body>
+        </html>
+        """
     except Exception as e:
         return f"""
         <html>
