@@ -90,6 +90,19 @@ def detect_mobile_mode():
         MOBILE_MODE = True
         return True
     
+    # WEB_MODEではJavaScriptから検出されるので、カスタムタグ用に対応
+    # Webブラウザからの実行の場合
+    try:
+        # Pyxelのグローバル変数にアクセスを試みる
+        mobile_detected = False
+        if hasattr(pyxel, "app") and hasattr(pyxel.app, "mobile_detected"):
+            mobile_detected = pyxel.app.mobile_detected
+            print(f"Mobile detection from Pyxel: {mobile_detected}")
+            MOBILE_MODE = mobile_detected
+            return mobile_detected
+    except Exception as e:
+        print(f"Error detecting mobile mode: {e}")
+    
     # UserAgentベースの検出は不可能なので、画面サイズベースの推測
     # Pyxelの低解像度ゲームなのでタッチコントロールは常に有効にするのが良い
     MOBILE_MODE = True

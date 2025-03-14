@@ -17,7 +17,7 @@ args = "Shooter Game"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "DirectWebServer"
+args = "MobileDirect"
 
 [[workflows.workflow]]
 name = "Shooter Game"
@@ -34,7 +34,7 @@ task = "shell.exec"
 args = "pip install pyxel && python main.py"
 
 [[workflows.workflow]]
-name = "DirectWebServer"
+name = "MobileDirect"
 author = "agent"
 
 [workflows.workflow.metadata]
@@ -45,7 +45,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python direct_serve.py"
+args = "python mobile_direct.py"
 waitForPort = 5000
 
 [deployment]
