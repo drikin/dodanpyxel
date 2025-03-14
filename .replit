@@ -17,7 +17,7 @@ args = "Shooter Game"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "MobileDirect"
+args = "Minimal Flask Server"
 
 [[workflows.workflow]]
 name = "Shooter Game"
@@ -34,7 +34,7 @@ task = "shell.exec"
 args = "pip install pyxel && python main.py"
 
 [[workflows.workflow]]
-name = "MobileDirect"
+name = "Minimal Flask Server"
 author = "agent"
 
 [workflows.workflow.metadata]
@@ -45,7 +45,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python mobile_direct.py"
+args = "python minimal_flask_server.py"
 waitForPort = 5000
 
 [deployment]
