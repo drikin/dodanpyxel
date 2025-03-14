@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DodanPyxel Game Frame</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        
+        #touch-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: transparent;
+        }
+        
+        #debug {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: yellow;
+            font-family: monospace;
+            font-size: 10px;
+            pointer-events: none;
+            z-index: 200;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Pyxelのキャンバスがここに挿入されます -->
+    <div id="game-canvas-container"></div>
+    
+    <!-- タッチ操作のためのオーバーレイ -->
+    <div id="touch-overlay"></div>
+    
+    <!-- デバッグ情報表示 -->
+    <div id="debug"></div>
+    
+    <script>
+        // タッチ操作を有効化（モバイルデバイス用）
+        let touchOverlay = document.getElementById('touch-overlay');
+        let debugElement = document.getElementById('debug');
+        
+        // タッチ状態の追跡
+        let touchActive = false;
+        let touchX = 0;
+        let touchY = 0;
+        let startTouchX = 0;
+        let startTouchY = 0;
+        
+        // ゲームへの入力を送信
+        function sendTouchToGame(x, y, pressed, action) {
+            // デバッグ情報を表示
+            debugElement.textContent = `X: ${x}, Y: ${y}, Pressed: ${pressed}, Action: ${action}`;
+            
+            // ウィンドウの親フレームにメッセージを送信
+            window.parent.postMessage({
+                type: 'touch',
+                x: x,
+                y: y,
+                pressed: pressed,
+                action: action
+            }, '*');
+        }
+        
+        // タッチイベントハンドラ
+        touchOverlay.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            
+            // マルチタッチ対応
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                let touch = e.changedTouches[i];
+                touchActive = true;
+                touchX = touch.clientX;
+                touchY = touch.clientY;
+                startTouchX = touchX;
+                startTouchY = touchY;
+                
+                // 上半分と下半分でアクションを変える
+                let action = (touchY < window.innerHeight / 2) ? 'shoot' : 'move';
+                sendTouchToGame(touchX, touchY, true, action);
+            }
+        });
+        
+        touchOverlay.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            
+            // マルチタッチ対応
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                let touch = e.changedTouches[i];
+                touchX = touch.clientX;
+                touchY = touch.clientY;
+                
+                // 上半分と下半分でアクションを変える
+                let action = (touchY < window.innerHeight / 2) ? 'shoot' : 'move';
+                sendTouchToGame(touchX, touchY, true, action);
+            }
+        });
+        
+        touchOverlay.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            
+            // マルチタッチ対応
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                let touch = e.changedTouches[i];
+                touchActive = false;
+                
+                // 上半分と下半分でアクションを変える
+                let action = (touchY < window.innerHeight / 2) ? 'shoot' : 'move';
+                sendTouchToGame(touchX, touchY, false, action);
+            }
+        });
+        
+        // マウス操作のサポート (デスクトップテスト用)
+        touchOverlay.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            touchActive = true;
+            touchX = e.clientX;
+            touchY = e.clientY;
+            startTouchX = touchX;
+            startTouchY = touchY;
+            
+            // 上半分と下半分でアクションを変える
+            let action = (touchY < window.innerHeight / 2) ? 'shoot' : 'move';
+            sendTouchToGame(touchX, touchY, true, action);
+        });
+        
+        touchOverlay.addEventListener('mousemove', function(e) {
+            e.preventDefault();
+            if (touchActive) {
+                touchX = e.clientX;
+                touchY = e.clientY;
+                
+                // 上半分と下半分でアクションを変える
+                let action = (touchY < window.innerHeight / 2) ? 'shoot' : 'move';
+                sendTouchToGame(touchX, touchY, true, action);
+            }
+        });
+        
+        touchOverlay.addEventListener('mouseup', function(e) {
+            e.preventDefault();
+            touchActive = false;
+            
+            // 上半分と下半分でアクションを変える
+            let action = (touchY < window.innerHeight / 2) ? 'shoot' : 'move';
+            sendTouchToGame(touchX, touchY, false, action);
+        });
+    </script>
+</body>
+</html>

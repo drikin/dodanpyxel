@@ -1,56 +1,30 @@
 from flask import Flask, send_from_directory
-import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="web_version")
 
+# URLルート: トップページ
 @app.route('/')
 def index():
-    return """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>シューティングゲームダウンロード</title>
-        <style>
-            body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; text-align: center; }
-            h1 { color: #333; }
-            .download-btn { 
-                display: inline-block; 
-                margin: 10px; 
-                padding: 15px 25px; 
-                background-color: #4CAF50; 
-                color: white; 
-                text-decoration: none; 
-                border-radius: 4px;
-                font-size: 18px;
-            }
-            .download-btn:hover { background-color: #45a049; }
-        </style>
-    </head>
-    <body>
-        <h1>シューティングゲームダウンロード</h1>
-        <p>以下のプラットフォーム用のゲームをダウンロードできます：</p>
-        <a href="/download/windows" class="download-btn">Windows版</a>
-        <a href="/download/mac" class="download-btn">Mac版</a>
-        <a href="/download/source" class="download-btn">ソースコード</a>
-    </body>
-    </html>
-    """
+    """ゲームのWebブラウザ版を提供"""
+    return send_from_directory('web_version', 'index.html')
 
-@app.route('/download/<platform>')
-def download(platform):
-    if platform == 'windows':
-        return send_from_directory('public/downloads', 'dodanpyxel-windows.zip', as_attachment=True)
-    elif platform == 'mac':
-        return send_from_directory('public/downloads', 'dodanpyxel-mac.zip', as_attachment=True)
-    elif platform == 'source':
-        return send_from_directory('public/downloads', 'dodanpyxel-source.zip', as_attachment=True)
-    else:
-        return "Invalid platform"
+# URLルート: 静的ファイル
+@app.route('/<path:path>')
+def static_files(path):
+    return send_from_directory('web_version', path)
 
+# URLルート: ヘルスチェック
 @app.route('/health')
 def health():
-    return "Server is running"
+    """サーバーの状態確認用エンドポイント"""
+    return "OK", 200
 
-if __name__ == '__main__':
-    print("Starting simple Flask server on port 5000...")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+if __name__ == "__main__":
+    # Replitで推奨されるポート5000を使用
+    port = 5000
+    
+    print(f"Starting web server on port {port}...")
+    print(f"Web game will be available at: http://localhost:{port}/")
+    
+    # Flaskサーバーを起動
+    app.run(host="0.0.0.0", port=port)

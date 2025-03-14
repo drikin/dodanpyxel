@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DodanPyxel Mobile</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background-color: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        #container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        h1 {
+            color: #ff9900;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        p {
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.5;
+            max-width: 600px;
+        }
+        
+        .button {
+            display: inline-block;
+            background-color: #ff9900;
+            color: black;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        
+        .button:active {
+            transform: scale(0.95);
+            background-color: #e68a00;
+        }
+        
+        #instructions {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            max-width: 600px;
+        }
+        
+        #instructions h2 {
+            color: #ff9900;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        
+        #instructions ul {
+            text-align: left;
+            padding-left: 25px;
+        }
+        
+        #instructions li {
+            margin-bottom: 10px;
+        }
+        
+        #footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>DodanPyxel Shooter</h1>
+        <p>スマートフォン対応 縦型シューティングゲーム</p>
+        
+        <a href="/game" class="button">ゲームをプレイ</a>
+        
+        <div id="instructions">
+            <h2>操作方法</h2>
+            <ul>
+                <li>画面の上半分をタップ: 弾を発射</li>
+                <li>画面の下半分をドラッグ: 自機を移動</li>
+                <li>画面を横向きにすると、より大きく表示されます</li>
+                <li>画面をタップで開始・再開します</li>
+            </ul>
+        </div>
+        
+        <div id="footer">
+            Powered by Pyxel &copy; 2025
+        </div>
+    </div>
+</body>
+</html>

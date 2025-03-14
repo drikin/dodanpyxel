@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DodanPyxel Mobile</title>
+    <link rel="stylesheet" href="/static/mobile.css">
+    <meta name="description" content="Pyxel vertical shooter game - Mobile version">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <div id="game-container">
+        <div id="loading">Loading game...</div>
+        
+        <div id="game-frame">
+            <!-- Canvas will be inserted by Python -->
+            <div id="vnc-container">
+                <iframe id="game-iframe" src="/game_iframe" allowfullscreen></iframe>
+            </div>
+        </div>
+        
+        <div id="mobile-controls">
+            <div id="mobile-message">
+                <h2>Mobile Controls</h2>
+                <p>Tap top half of screen to shoot</p>
+                <p>Drag bottom half to move your ship</p>
+            </div>
+        </div>
+        
+        <div id="game-info">
+            <h1>DodanPyxel Shooter</h1>
+            <p>A vertical scrolling shooter game made with Pyxel</p>
+        </div>
+    </div>
+    
+    <script src="/static/mobile.js"></script>
+</body>
+</html>

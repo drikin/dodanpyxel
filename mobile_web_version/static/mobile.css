@@ -1,0 +1,129 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-color: #000;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+#loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 20px;
+    z-index: 100;
+}
+
+#game-frame {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: 80vh;
+    margin: 0 auto;
+    background-color: #111;
+    border: 2px solid #555;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+
+#vnc-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#game-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    transform-origin: center top;
+}
+
+#mobile-controls {
+    width: 100%;
+    max-width: 600px;
+    background-color: #222;
+    padding: 10px;
+    border-radius: 0 0 10px 10px;
+    text-align: center;
+}
+
+#mobile-message {
+    font-size: 14px;
+}
+
+#mobile-message h2 {
+    margin: 5px 0;
+    color: #ff9900;
+}
+
+#mobile-message p {
+    margin: 5px 0;
+    color: #eee;
+}
+
+#game-info {
+    margin-top: 20px;
+    text-align: center;
+    max-width: 600px;
+}
+
+#game-info h1 {
+    color: #ff9900;
+    margin: 10px 0;
+    font-size: 24px;
+}
+
+#game-info p {
+    color: #ccc;
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+/* For landscape orientation */
+@media (orientation: landscape) {
+    #game-frame {
+        height: 80vh;
+    }
+    
+    #mobile-controls {
+        padding: 5px;
+    }
+    
+    #mobile-message {
+        display: flex;
+        justify-content: space-around;
+    }
+    
+    #mobile-message h2 {
+        font-size: 14px;
+    }
+    
+    #mobile-message p {
+        font-size: 12px;
+        margin: 2px 10px;
+    }
+}
+
+/* iPhone Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+    #game-frame {
+        height: 65vh;
+    }
+}
