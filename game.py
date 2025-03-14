@@ -147,6 +147,10 @@ class Game:
         # 外部のMOUSE_BUTTON_LEFT定数を使う
         from main import MOUSE_BUTTON_LEFT
         
+        # iPhone向け特殊処理 - タッチ機能を常に有効にする
+        if hasattr(self, 'mobile_mode') and self.mobile_mode:
+            self.touch_shoot = True  # モバイルでは常に自動発射
+        
         # タッチ/クリック開始の検出
         if pyxel.btnp(MOUSE_BUTTON_LEFT):
             self.touch_enabled = True
@@ -188,17 +192,16 @@ class Game:
             if self.state == STATE_PLAYING and hasattr(self, 'player') and self.player:
                 # モバイルモードでの制御
                 if hasattr(self, 'mobile_mode') and self.mobile_mode:
-                    # モバイル/タッチでのプレイヤー移動
-                    if self.touch_current_y > SCREEN_HEIGHT / 2:
-                        # 下半分のタッチ - プレイヤー移動モード
-                        if abs(touch_dx) > 0:
-                            # ドラッグによる移動 - ドラッグした分だけ移動
-                            self.player.x += touch_dx * 1.5  # 移動感度調整
-                        else:
-                            # 直接タップした位置に移動（緩やかに）
-                            target_x = self.touch_current_x
-                            dx = target_x - self.player.x
-                            self.player.x += dx * 0.3  # 移動の緩和係数
+                    # iPhoneでの操作性向上のため、タッチ位置に関わらずプレイヤー移動を可能に
+                    # タッチ位置に基づいて移動方法を切り替え
+                    if abs(touch_dx) > 1:  # 微小な動きは無視する
+                        # スワイプ操作 - ドラッグした分だけ移動
+                        self.player.x += touch_dx * 1.8  # 移動感度調整 (iPhone向けに強化)
+                    else:
+                        # 直接タップした位置に移動（緩やかに）
+                        target_x = self.touch_current_x
+                        dx = target_x - self.player.x
+                        self.player.x += dx * 0.4  # 移動の緩和係数 (iPhone向けに強化)
                 
                 # 画面からはみ出さないように調整
                 if self.player.x < 0:

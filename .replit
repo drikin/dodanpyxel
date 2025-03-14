@@ -17,7 +17,7 @@ args = "Shooter Game"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Minimal Flask Server"
+args = "Custom Tag Server"
 
 [[workflows.workflow]]
 name = "Shooter Game"
@@ -34,7 +34,7 @@ task = "shell.exec"
 args = "pip install pyxel && python main.py"
 
 [[workflows.workflow]]
-name = "Minimal Flask Server"
+name = "Custom Tag Server"
 author = "agent"
 
 [workflows.workflow.metadata]
@@ -45,7 +45,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python minimal_flask_server.py"
+args = "python custom_tag_server.py"
 waitForPort = 5000
 
 [deployment]
@@ -54,6 +54,10 @@ run = ["sh", "-c", "pip install pyxel && python main.py"]
 [[ports]]
 localPort = 5000
 externalPort = 5000
+
+[[ports]]
+localPort = 8000
+externalPort = 8000
 
 [[ports]]
 localPort = 8080
