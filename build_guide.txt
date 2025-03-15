@@ -1,35 +1,67 @@
-DodanPyxel - ビルドガイド
+# ゲームの新しいビルドを作成するためのガイド
 
-このガイドでは、ソースコードからWindows実行ファイル(.exe)やMacアプリケーション(.app)を作成する方法を説明します。
+## バージョン番号の更新
+まず、新しいビルドを作成する前に、`constants.py` ファイル内のバージョン番号を更新します：
 
-前提条件:
-1. Python 3.8以上がインストールされていること
-2. pipがインストールされていること
-
-ステップ1: 必要なパッケージをインストール
-```
-pip install pyxel pyinstaller
+```python
+# Version information
+VERSION = "1.0"
+BUILD_NUMBER = "YYYYMMDD.X"  # 日付とビルド番号（年月日.ビルド番号）
 ```
 
-ステップ2: Windows実行ファイルの作成
-```
-pyinstaller --name=DodanPyxel --onefile --windowed --clean --add-data="assets;assets" main.py
-```
-生成されたexeファイルは `dist` フォルダに保存されます。
+例えば、2025年3月15日の2番目のビルドは "25031525.2" などとします。
 
-ステップ3: Macアプリケーションの作成
+## ビルドの作成方法
+
+### 1. Pyxelアプリ(.pyxapp)の作成
+```bash
+python build_and_run_pyxapp.py
 ```
-pyinstaller --name=DodanPyxel --windowed --clean --add-data="assets:assets" main.py
+
+このコマンドは `temp_app.pyxapp` ファイルを生成します。
+
+### 2. HTMLファイルへの変換
+```bash
+python -m pyxel app2html temp_app.pyxapp
 ```
-生成されたappフォルダは `dist` フォルダに保存されます。
 
-注意事項:
-- ビルドするOSに応じて適切なコマンドを選択してください
-- Windowsではパスの区切り文字にセミコロン(;)、MacやLinuxではコロン(:)を使用します
-- アプリケーションの動作には必ずassetsフォルダが必要です
+このコマンドは `temp_app.html` ファイルを生成します。
 
-トラブルシューティング:
-- ビルドエラーが発生した場合は、pyinstallerのログを確認して必要なライブラリを追加インストールしてください
-- MacOSでセキュリティの警告が表示される場合は、システム環境設定からアプリケーションの実行を許可してください
+### 3. キャッシュバスティング用のタイムスタンプ付きHTMLファイルの作成
+バージョン管理とキャッシュ対策のため、現在の日時を含むファイル名でHTMLファイルを作成します：
 
-© 2025 DodanPyxel
+```bash
+python build_web_fresh.py
+```
+
+このスクリプトは以下の処理を行います：
+1. 最新のソースコードをtemp_appディレクトリにコピー
+2. Pyxelアプリ(.pyxapp)を作成
+3. HTMLに変換
+4. タイムスタンプを付けたファイル名でHTMLファイルを保存
+5. index.htmlを更新
+
+### 4. GitHubにプッシュ
+変更をGitHubリポジトリにプッシュする際、以下のファイルが含まれていることを確認してください：
+- 更新された `constants.py`
+- 新しく生成された `temp_app.html`
+- タイムスタンプ付きのHTMLファイル
+- 更新された `index.html`
+
+## キャッシュクリアの方法
+ブラウザでゲームを実行する際に古いバージョンが表示される場合は、以下の方法でキャッシュをクリアしてみてください：
+
+1. Chromeの場合：Ctrl+Shift+Rでハードリロード
+2. Firefoxの場合：Ctrl+F5でハードリロード
+3. Edgeの場合：Ctrl+F5でハードリロード
+
+または、ブラウザの開発者ツールを開き、「キャッシュを無効にする」オプションをオンにしてからリロードしてください。
+
+## モバイル版の更新
+モバイル版を更新する場合は、追加で以下のコマンドを実行してください：
+
+```bash
+python build_mobile_web.py
+```
+
+これにより、mobile_web_versionディレクトリが更新されます。

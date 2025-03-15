@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LAST DESCENT: THE FINAL HOPE</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    #gameContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+    #controlsInfo {
+      color: white;
+      margin-top: 10px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <iframe src="temp_app.html" allow="autoplay" id="gameFrame"></iframe>
+    <div id="controlsInfo">
+      <p>CONTROLS: ↑↓←→ = Move, Z = Shoot, SPACE = Start/Skip</p>
+    </div>
+  </div>
+  <script>
+    // Adjust iframe size to maintain aspect ratio
+    function resizeGameFrame() {
+      const gameFrame = document.getElementById('gameFrame');
+      const container = document.getElementById('gameContainer');
+      
+      // Target aspect ratio (160:240 = 2:3)
+      const targetRatio = 2/3;
+      
+      const maxHeight = window.innerHeight * 0.85; // 85% of the window height
+      const maxWidth = window.innerWidth * 0.95;  // 95% of window width
+      
+      let newWidth = maxHeight * targetRatio;
+      let newHeight = maxHeight;
+      
+      if (newWidth > maxWidth) {
+        newWidth = maxWidth;
+        newHeight = maxWidth / targetRatio;
+      }
+      
+      gameFrame.style.width = newWidth + 'px';
+      gameFrame.style.height = newHeight + 'px';
+      
+      // Update the controlsInfo position
+      const controlsInfo = document.getElementById('controlsInfo');
+      controlsInfo.style.width = newWidth + 'px';
+    }
+
+    // Initial resize and add event listener
+    window.onload = resizeGameFrame;
+    window.addEventListener('resize', resizeGameFrame);
+  </script>
+</body>
+</html>

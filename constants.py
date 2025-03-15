@@ -4,7 +4,7 @@ import datetime
 
 # Version information
 VERSION = "1.0"
-BUILD_NUMBER = "25032025.1"  # 日付とビルド番号（年月日.ビルド番号）
+BUILD_NUMBER = "25032025.2"  # 日付とビルド番号（年月日.ビルド番号）
 BUILD_DATE = datetime.datetime.now().strftime("%Y-%m-%d")
 VERSION_DISPLAY = f"v{VERSION} (Build {BUILD_NUMBER})"
 
