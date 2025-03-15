@@ -46,19 +46,23 @@ class Game:
         # Create background
         self.background = Background()
         
-        # イントロテキスト関連
+        # Intro text related
         self.show_intro = False
         self.intro_timer = 0
         self.intro_texts = [
-            "人類が滅び、一筋の希望も消えた未来。",
-            "しかし、君は最後の生存者として、遥か彼方の文明と遭遇する。",
-            "そのテクノロジーを手に、人類復活の鍵を探し出せ！",
+            "In a distant future where humanity has perished,",
+            "you are the last survivor, encountering a civilization",
+            "from the far reaches of the universe.",
             "",
-            "未知の敵が行く手を阻む中、君の選択が未来を決める。",
-            "この戦いの果てに、希望はあるのか？",
-            "今、最後の戦いが始まる──。",
+            "Armed with their technology, you must find the key",
+            "to humanity's revival while facing unknown enemies.",
             "",
-            "『LAST DESCENT: THE FINAL HOPE』"
+            "Your choices will determine the future.",
+            "Is there hope at the end of this battle?",
+            "",
+            "The final fight begins now...",
+            "",
+            "LAST DESCENT: THE FINAL HOPE"
         ]
         
         # キーボード操作専用モードに設定
@@ -147,32 +151,32 @@ class Game:
     # タッチ入力関連のメソッドを削除（キーボード操作のみに対応）
     
     def update_title_screen(self):
-        # イントロ表示のタイマー管理
+        # Intro display timer management
         self.intro_timer += 1
         
-        # タイトル画面で5秒経過でイントロ表示開始
+        # Show intro after 5 seconds on title screen
         if self.intro_timer > 300 and not self.show_intro:
             self.show_intro = True
         
-        # SPACEキーでイントロをスキップまたはゲーム開始
+        # SPACE key to skip intro or start game
         if pyxel.btnp(KEY_SPACE):
             if self.show_intro:
-                # イントロ表示中ならスキップしてタイトル画面に戻る
+                # If showing intro, skip and return to title screen
                 self.show_intro = False
                 self.intro_timer = 0
                 try:
-                    pyxel.play(0, 3)  # 効果音
+                    pyxel.play(0, 3)  # Sound effect
                 except:
                     pass
             else:
-                # 通常のタイトル画面ならゲーム開始
+                # On normal title screen, start the game
                 self.state = STATE_PLAYING
                 try:
                     pyxel.play(0, 2)  # Play start sound
                 except:
                     pass
                 
-                # タイトル画面から遷移時にBGMフラグをリセット
+                # Reset BGM flag when transitioning from title screen
                 self.bgm_playing = False
     
     def update_game(self):
@@ -737,43 +741,43 @@ class Game:
         pyxel.text(10, SCREEN_HEIGHT - 10, "AUTO-SHOOTING ENABLED!", ORANGE)
         
     def draw_intro_text(self):
-        """スターウォーズ風のイントロテキストを描画"""
-        # スクロール速度と表示速度の調整
+        """Star Wars style intro text animation"""
+        # Scroll speed and display time adjustment
         scroll_speed = 0.5
-        display_time = 500  # 表示時間（フレーム数）
+        display_time = 500  # Display time (frames)
         
-        # イントロテキストの表示が完了したらタイトル画面に戻る
+        # Return to title screen when intro animation is complete
         if self.intro_timer > len(self.intro_texts) * 60 + display_time:
             self.show_intro = False
             self.intro_timer = 0
             return
             
-        # 星空の背景
-        pyxel.cls(0)  # 黒背景
+        # Starry background
+        pyxel.cls(0)  # Black background
         
-        # ランダムな星を描画
+        # Draw random stars
         for i in range(100):
             x = (i * 13) % SCREEN_WIDTH
             y = (i * 17) % SCREEN_HEIGHT
-            col = 7 if i % 5 == 0 else 6  # 一部は白、その他は水色
+            col = 7 if i % 5 == 0 else 6  # Some white, others light blue
             pyxel.pset(x, y, col)
         
-        # テキストのY位置を計算（スクロール効果）
+        # Calculate text Y position (scrolling effect)
         base_y = SCREEN_HEIGHT + 50 - self.intro_timer * scroll_speed
         
-        # 各行のテキストを描画
+        # Draw each line of text
         for i, text in enumerate(self.intro_texts):
-            y = base_y + i * 15  # 行間隔
+            y = base_y + i * 15  # Line spacing
             
-            # 画面内のテキストのみ描画
+            # Only draw text visible on screen
             if 0 <= y < SCREEN_HEIGHT:
-                # センタリング
+                # Center text
                 x = SCREEN_WIDTH//2 - len(text) * 2
-                # 遠近感のある色（遠いほど暗く）
+                # Color with perspective (darker as it gets farther)
                 color = max(5, min(7, 7 - int((SCREEN_HEIGHT - y) / 30)))
                 pyxel.text(x, y, text, color)
                 
-        # SPACEキーでスキップ
+        # Skip with SPACE key (blinking text)
         if self.frame_count % 30 < 15:
             pyxel.text(SCREEN_WIDTH//2 - 25, SCREEN_HEIGHT - 10, "PRESS SPACE TO SKIP", 8)
         
