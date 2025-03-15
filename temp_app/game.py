@@ -98,6 +98,9 @@ class Game:
         self.enemies = []
         self.enemy_timer = 0
         
+        # 難易度進行関連
+        self.current_level = 1  # 現在のレベル（ボス撃破ごとに増加）
+        
         # Explosions
         self.explosions = []
         
@@ -328,6 +331,11 @@ class Game:
                     self.score += 1000 * self.boss.boss_number  # ボーナススコア
                     self.boss_clear_count += 1
                     
+                    # レベルを上げる - 難易度進行
+                    self.current_level += 1
+                    print(f"DEBUG: Level up! Current level: {self.current_level}")
+                    print(f"DEBUG: Enemy speed multiplier: {1.0 + (self.current_level - 1) * 0.05}x")
+                    
                     # 大規模な爆発エフェクト (ボス撃破演出)
                     from explosion import Explosion
                     
@@ -407,6 +415,7 @@ class Game:
                         self.boss_timer = BOSS_DISTANCE_INTERVAL
                         self.current_boss_number = 0
                         self.boss_clear_count = 0  # ボスカウントリセット
+                        # サイクル再開時もレベルは保持（難易度はリセットしない）
                         
                         # 祝福のメッセージを表示（5秒間表示）
                         self.show_cycle_message = True
@@ -629,12 +638,22 @@ class Game:
             enemy_type = random.randint(0, 2)
             x = random.randint(10, SCREEN_WIDTH - 10)
             
+            # 敵を作成
             if enemy_type == 0:
-                self.enemies.append(SmallEnemy(x, -10))
+                enemy = SmallEnemy(x, -10)
             elif enemy_type == 1:
-                self.enemies.append(MediumEnemy(x, -15))
+                enemy = MediumEnemy(x, -15)
             else:
-                self.enemies.append(LargeEnemy(x, -20))
+                enemy = LargeEnemy(x, -20)
+                
+            # レベルに応じた速度調整（レベルごとに5%ずつ増加）
+            # 1レベル目はそのまま、2レベル目以降で速度が上がる
+            if self.current_level > 1:
+                speed_multiplier = 1.0 + (self.current_level - 1) * 0.05
+                enemy.speed *= speed_multiplier
+            
+            # 敵リストに追加
+            self.enemies.append(enemy)
     
     def update_bullets(self):
         # Update player bullets

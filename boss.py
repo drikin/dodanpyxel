@@ -26,8 +26,10 @@ class Boss:
         self.width = int(SCREEN_WIDTH * size_percent / 100)
         self.height = int(SCREEN_HEIGHT * size_percent / 100)
         
-        # 体力はボス番号に比例して増加（最大HP = ボス番号 * 100）
-        self.max_health = boss_number * 100
+        # 体力はボス番号に応じて2倍ずつ増加
+        base_health = 100  # ボス1の基本体力
+        # 2^(boss_number-1) の計算で2倍ずつ増加
+        self.max_health = base_health * (2 ** (boss_number - 1))  
         self.health = self.max_health
         
         # 移動パターン用の変数
@@ -419,7 +421,8 @@ class Boss4(Boss):
     def __init__(self, x, y):
         super().__init__(x, y, 4)
         self.name = "Iron Fortress"
-        self.max_health = 500  # 通常より高い体力
+        # 基本体力に追加の係数を掛ける（すでに2^3=8倍になっているものを1.5倍に）
+        self.max_health = int(self.max_health * 1.5)  
         self.health = self.max_health
         
     def draw_boss_shape(self):
