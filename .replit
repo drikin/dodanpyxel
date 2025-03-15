@@ -15,6 +15,10 @@ author = "agent"
 task = "workflow.run"
 args = "Shooter Game"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Build Pyxel App"
+
 [[workflows.workflow]]
 name = "Shooter Game"
 author = "agent"
@@ -28,6 +32,20 @@ task = "packager.installForAll"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "pip install pyxel && python build_and_run_pyxapp.py"
+
+[[workflows.workflow]]
+name = "Build Pyxel App"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd temp_app && python build_and_run_pyxapp.py"
 
 [deployment]
 run = ["sh", "-c", "pip install pyxel && python build_and_run_pyxapp.py"]
