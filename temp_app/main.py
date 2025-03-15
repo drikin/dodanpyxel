@@ -96,29 +96,15 @@ def main():
     # Apply compatibility patches
     patch_pyxel_compatibility()
     
-    # モバイルモード検出
+    # キーボード専用モードに設定
     detect_mobile_mode()
     
-    # Initialize game
+    # ゲームを初期化
     game_instance = Game()
     
-    # モバイルモードの設定
-    if MOBILE_MODE or WEB_MODE:
-        print("Mobile mode detected - enabling touch controls")
-        game_instance.touch_enabled = True
-        game_instance.mobile_mode = True
-        
-        # モバイル用の調整を行う
-        try:
-            # マウス入力を有効にする
-            pyxel.mouse(True)
-        except Exception as e:
-            print(f"Error enabling mouse for touch: {e}")
-    
-    # トラブルシューティング: game_instanceが正しく設定されているか確認
+    # デバッグ情報
     print("DEBUG: game_instance initialized:", game_instance)
     print("DEBUG: Has player_bullets attribute:", hasattr(game_instance, 'player_bullets'))
-    print(f"DEBUG: Mobile mode: {MOBILE_MODE}, Web mode: {WEB_MODE}")
     
     # Start the game loop
     pyxel.run(game_instance.update, game_instance.draw)

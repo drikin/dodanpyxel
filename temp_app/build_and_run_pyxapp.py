@@ -158,6 +158,14 @@ def build_pyxapp():
 
 def run_pyxapp(pyxapp_file):
     """Pyxelアプリを実行する"""
+    # ソフトウェアレンダリング用の環境変数を設定
+    env = os.environ.copy()
+    # Vulkanを使わず、ソフトウェアレンダリングを強制する設定
+    env["LIBGL_ALWAYS_SOFTWARE"] = "1"    # Mesa/OpenGLをソフトウェアモードに
+    env["GALLIUM_DRIVER"] = "llvmpipe"    # Galliumドライバーをソフトウェアに
+    env["MESA_GL_VERSION_OVERRIDE"] = "3.3"  # OpenGL 3.3を使用
+    env["MESA_GLSL_VERSION_OVERRIDE"] = "330"  # GLSL 330を使用
+    
     if pyxapp_file == "direct":
         print("直接main.pyを実行します...")
         try:
@@ -168,7 +176,8 @@ def run_pyxapp(pyxapp_file):
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
+                env=env  # 環境変数を指定
             )
             
             print(f"Python main.pyを実行中 (PID: {process.pid})")
@@ -188,7 +197,8 @@ def run_pyxapp(pyxapp_file):
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
+                env=env  # 環境変数を指定
             )
             
             print(f"Pyxelアプリを実行中 (PID: {process.pid})")

@@ -92,51 +92,9 @@ class Player:
         if down_pressed and self.y < SCREEN_HEIGHT - self.height:
             self.y += self.speed
         
-        # Touch movement support - get game instance via global
-        from main import game_instance
-        
-        if game_instance and hasattr(game_instance, 'touch_enabled') and game_instance.touch_enabled:
-            # Web版（ブラウザ）実行の場合は、より自然なタッチ操作を提供
-            is_web_mode = hasattr(pyxel, 'app2html')
-            
-            if is_web_mode:
-                # ブラウザ版では、タッチポイントに向かって直接移動する方式に変更
-                if game_instance.touch_enabled and pyxel.btn(MOUSE_BUTTON_LEFT):
-                    # 画面下半分のみを操作可能エリアとする（上半分は敵の表示用）
-                    if pyxel.mouse_y > SCREEN_HEIGHT / 2:
-                        # 目標位置をマウス位置に設定（X座標のみ）
-                        target_x = pyxel.mouse_x - self.width / 2  # 中心を合わせる
-                        
-                        # ゆっくり目標位置に移動（スムーズに）
-                        dx = target_x - self.x
-                        self.x += dx * 0.2  # 補間係数
-                
-                # 常に画面下側1/3あたりに自機を固定（iPhone向け最適化）
-                optimal_y = SCREEN_HEIGHT * 0.75  # 画面の下から1/4の位置
-                dy = optimal_y - self.y
-                self.y += dy * 0.05  # ゆっくり理想位置に移動
-            else:
-                # 通常のPC版の場合は従来のドラッグ操作
-                # Calculate movement direction based on touch drag
-                dx = game_instance.touch_current_x - game_instance.touch_start_x
-                dy = game_instance.touch_current_y - game_instance.touch_start_y
-                
-                # Apply movement with deadzone
-                if abs(dx) > 5:  # Small deadzone for better control
-                    self.x += (dx / 10) * self.speed
-                if abs(dy) > 5:
-                    self.y += (dy / 10) * self.speed
-            
-            # Keep player within screen bounds
-            self.x = max(0, min(SCREEN_WIDTH - self.width, self.x))
-            self.y = max(0, min(SCREEN_HEIGHT - self.height, self.y))
-            
-            # Handle shooting with touch (both modes)
-            if game_instance.touch_shoot and self.shoot_timer <= 0:
-                self.shoot()
-                # 黄色パワーアップが適用されている場合、射撃間隔を調整
-                current_interval = self.shoot_interval if hasattr(self, 'shoot_interval') else PLAYER_SHOOT_INTERVAL
-                self.shoot_timer = current_interval
+        # キーボードモード専用 - 画面内に自機を維持
+        self.x = max(0, min(SCREEN_WIDTH - self.width, self.x))
+        self.y = max(0, min(SCREEN_HEIGHT - self.height, self.y))
         
         # Keyboard shooting - multiple methods for better compatibility
         print(f"DEBUG: self.shoot_timer before decrement: {self.shoot_timer}")
@@ -192,10 +150,10 @@ class Player:
             except:
                 pass
                 
-        # Method 6: Check for touch_shoot flag
+        # Method 6: Check for auto_shoot flag from game instance
         try:
             from main import game_instance
-            if game_instance and hasattr(game_instance, 'touch_shoot') and game_instance.touch_shoot:
+            if game_instance and hasattr(game_instance, 'auto_shoot') and game_instance.auto_shoot:
                 z_pressed = True
         except:
             pass

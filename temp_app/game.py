@@ -24,9 +24,9 @@ class Game:
                 # Absolute minimal initialization
                 pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT)
                 
-        # Enable mouse input for touch
+        # マウス入力を無効化（キーボードのみ）
         try:
-            pyxel.mouse(True)  # Enable mouse/touch input
+            pyxel.mouse(False)  # マウス入力を無効化
         except:
             pass  # Some versions don't have this
         
@@ -46,10 +46,7 @@ class Game:
         # Create background
         self.background = Background()
         
-        # タッチコントロールは無効化
-        self.touch_enabled = False
-        self.mobile_mode = False
-        self.show_touch_controls = False
+        # キーボード操作専用モードに設定
         
         # Initialize high scores
         self.high_scores = HighScores()
@@ -117,8 +114,8 @@ class Game:
         # 遅延エフェクト用の配列
         self.delayed_effects = []
         
-        # 自動発射は常に有効にする
-        self.touch_shoot = True
+        # 自動発射機能を設定（キーボード専用）
+        self.auto_shoot = True
     
     def update(self):
         # Update based on game state
@@ -144,8 +141,8 @@ class Game:
             self.bgm_playing = False
     
     def update_game(self):
-        # 自動発射フラグを確認して更新
-        self.touch_shoot = True
+        # 自動発射フラグを更新（キーボード用）
+        self.auto_shoot = True
         
         # BGMの再生と管理（毎フレーム確認）
         # ボス戦とノーマル戦で異なるBGM
