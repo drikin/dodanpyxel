@@ -92,6 +92,13 @@ class Game:
         pass
     
     def reset_game(self):
+        # BGMが再生中なら停止
+        try:
+            pyxel.stop()  # すべてのサウンドを停止
+            print("DEBUG: Stopped all sounds for game reset")
+        except Exception as e:
+            print(f"ERROR stopping sounds: {e}")
+            
         # Initialize bullet lists first (so they exist before player creation)
         self.player_bullets = []
         self.enemy_bullets = []
@@ -297,11 +304,20 @@ class Game:
                     self.boss.entry_phase = False
             elif self.boss.exit_phase:
                 # 退場フェーズに入ったらBGM切り替えのフラグを設定（通常BGMに戻す準備）
-                if not self.boss.exit_bgm_changed and self.boss.exit_phase:
-                    print("DEBUG: Boss defeat detected - preparing to switch back to normal BGM")
+                if not self.boss.exit_bgm_changed:
+                    print("DEBUG: Boss defeat detected - immediately switching back to normal BGM")
                     self.boss.exit_bgm_changed = True
-                    self.current_bgm = 0  # 通常BGMに切り替え準備
-                    self.bgm_playing = False  # BGM再生をリセット
+                    
+                    # BGMを強制的に停止して通常BGMをすぐに再生
+                    try:
+                        pyxel.stop()  # 現在のBGMを停止
+                        self.current_bgm = 0  # 通常BGMに切り替え
+                        pyxel.playm(self.current_bgm, loop=True)  # 通常BGMをすぐに再生
+                        print(f"DEBUG: Started playing normal BGM {self.current_bgm}")
+                        self.bgm_playing = True
+                    except Exception as e:
+                        print(f"ERROR switching to normal BGM: {e}")
+                        self.bgm_playing = False
                 
                 self.boss.y -= 2  # 上に退場
                 if self.boss.y + self.boss.height < 0:  # 画面外に出たら
@@ -517,6 +533,15 @@ class Game:
             self.state = STATE_GAME_OVER
     
     def update_game_over(self):
+        # ゲームオーバー時にBGMを停止（最初の1回のみ）
+        if self.bgm_playing:
+            try:
+                pyxel.stop()  # BGMを停止
+                self.bgm_playing = False
+                print("DEBUG: Game over - stopping BGM")
+            except Exception as e:
+                print(f"Error stopping BGM: {e}")
+        
         # ハイスコア判定と入力処理
         if not self.new_high_score:
             # スコアがハイスコアなら名前入力モードに

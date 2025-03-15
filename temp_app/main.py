@@ -8,7 +8,7 @@ import os
 game_instance = None
 
 # 純粋なPyxelアプリケーションとして実行
-TITLE = "LAST DESCENT: THE FINAL HOPE v1.0.0.18"
+TITLE = "LAST DESCENT: THE FINAL HOPE v1.0.0.21"
 MOBILE_MODE = False
 WEB_MODE = False
 
