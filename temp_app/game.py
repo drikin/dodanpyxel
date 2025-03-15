@@ -19,17 +19,10 @@ except ImportError:
 
 class Game:
     def __init__(self):
-        try:
-            # Try current API (newer Pyxel versions)
-            pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="DodanPyxel", fps=60, display_scale=3, 
-                      capture_scale=1, capture_sec=0, quit_key=pyxel.KEY_NONE)
-        except:
-            try:
-                # Try older API
-                pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, caption="DodanPyxel", fps=60, scale=3)
-            except:
-                # Absolute minimal initialization
-                pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT)
+        # Pyxelの初期化はmain.pyで行われるため、ここでは不要
+        # Pyxelの初期化状態を確認
+        if not hasattr(pyxel, 'width') or not pyxel.width:
+            print("WARNING: Pyxel not initialized properly. This should be done in main.py")
                 
         # マウス入力を無効化（キーボードのみ）
         try:
@@ -37,12 +30,7 @@ class Game:
         except:
             pass  # Some versions don't have this
         
-        # Initialize sounds
-        try:
-            init_sounds()
-        except Exception as e:
-            print(f"Error initializing sounds: {e}")
-            # Continue without sounds if there's an error
+        # サウンドの初期化はmain.pyで行うので、ここでは不要
         
         # Load resources
         self.load_resources()
@@ -182,6 +170,14 @@ class Game:
         # Show intro after 5 seconds on title screen
         if self.intro_timer > 300 and not self.show_intro:
             self.show_intro = True
+            # イントロ開始時にイントロBGMを再生
+            try:
+                # 既存の音楽を停止して、イントロBGM（音楽インデックス2）を再生
+                pyxel.stop()
+                pyxel.playm(2, loop=False)  # イントロBGMはループさせない
+                print("DEBUG: Started playing INTRO BGM")
+            except Exception as e:
+                print(f"ERROR playing intro BGM: {e}")
             
         # イントロ画面表示中の追加更新処理
         if self.show_intro:
@@ -230,9 +226,12 @@ class Game:
                 self.intro_timer = 0
                 self.shooting_stars = []  # 流れ星をクリア
                 try:
+                    # イントロBGMを停止し、効果音を再生
+                    pyxel.stop()
                     pyxel.play(0, 3)  # Sound effect
-                except:
-                    pass
+                    print("DEBUG: Stopped INTRO BGM and returning to title")
+                except Exception as e:
+                    print(f"ERROR stopping intro BGM: {e}")
             else:
                 # On normal title screen, start the game
                 self.state = STATE_PLAYING

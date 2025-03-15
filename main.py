@@ -94,11 +94,22 @@ def detect_mobile_mode():
 def main():
     global game_instance, MOBILE_MODE, WEB_MODE, MOUSE_BUTTON_LEFT
     
+    # Pyxel初期化（ここでウィンドウサイズとフレームレートを設定）
+    pyxel.init(160, 240, title=TITLE, fps=60, quit_key=pyxel.KEY_NONE)
+    
     # Apply compatibility patches
     patch_pyxel_compatibility()
     
     # キーボード専用モードに設定
     detect_mobile_mode()
+    
+    # サウンドの初期化を明示的に行う
+    from assets.sounds import init_sounds
+    try:
+        init_sounds()
+        print("DEBUG: Sounds initialized successfully")
+    except Exception as e:
+        print(f"ERROR initializing sounds: {e}")
     
     # ゲームを初期化
     game_instance = Game()
