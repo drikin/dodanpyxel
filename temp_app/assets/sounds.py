@@ -26,82 +26,82 @@ def init_sounds():
     
     # ここからBGMパート
     
-    # BGM - メインメロディー (5)
+    # BGM - メインメロディー (5) - ユーロビート風
     pyxel.sounds[5] = pyxel.Sound()
     pyxel.sounds[5].set(
-        "F3F3F3F3G3G3A3A3C4C4A3A3G3G3F3F3" +  # メインフレーズ1
-        "E3E3E3E3F3F3G3G3A3A3G3G3F3F3E3E3" +  # メインフレーズ2
-        "D3D3D3D3E3E3F3F3G3G3F3F3E3E3D3D3" +  # メインフレーズ3
-        "F3F3G3G3A3A3C4C4D4D4C4C4A3A3G3G3",   # クライマックス
-        "T",  # トーンタイプ: Triangle wave
+        "A3A3A3A3G3G3G3G3F3F3E3E3F3F3G3G3" +  # ユーロビート風メロディ1
+        "A3A3A3A3G3G3G3G3C4C4C4C4A3A3G3G3" +  # ユーロビート風メロディ2
+        "F3F3F3F3E3E3E3E3D3D3D3D3C3C3D3E3" +  # ユーロビート風メロディ3
+        "F3F3F3F3A3A3A3A3C4C4C4C4D4D4E4E4",   # ユーロビート風クライマックス
+        "S",  # トーンタイプ: Square wave - よりシャープな音色
         "6",  # ボリューム
         "N",  # エフェクト: None
-        25    # スピード - 数値が大きいほど遅く
+        12    # スピード - 高速化
     )
     
-    # BGM - ベースライン (6)
+    # BGM - ベースライン (6) - 16ビートベース
     pyxel.sounds[6] = pyxel.Sound()
     pyxel.sounds[6].set(
-        "F2RF2C2RC2F2RF2C2RC2" +  # ベースライン1: -を休符Rに置き換え
-        "E2RE2C2RC2E2RE2C2RC2" +  # ベースライン2: -を休符Rに置き換え
-        "D2RD2A1RA1D2RD2A1RA1" +  # ベースライン3: -を休符Rに置き換え
-        "F2RF2C2RC2F2RF2G2RG2",   # ベースライン4: -を休符Rに置き換え
-        "S",  # トーンタイプ: Square wave
-        "5",  # ボリューム
-        "F",  # エフェクト: Fade out
-        25    # スピード
-    )
-    
-    # BGM - ドラム/パーカッション (7)
-    pyxel.sounds[7] = pyxel.Sound()
-    pyxel.sounds[7].set(
-        "C1RRC1RRC1RRC1RR" +   # キック
-        "RRRA3RRRA3RRRA3RRRA3" +   # ハイハット（'H'→'A3'に置き換え）
-        "RRRRB3RRRRRRB3RRRR" +   # スネア（'S'→'B3'に置き換え）
-        "C1RRC1RRC1B3RRC1RR",    # キック+スネア（'S'→'B3'に置き換え）
-        "N",  # トーンタイプ: Noise
-        "6743",  # ボリューム (各音符ごとに設定)
-        "F",  # エフェクト: Fade out
-        20    # スピード - リズムセクション
-    )
-    
-    # ボス戦BGM - メインメロディー (8)
-    pyxel.sounds[8] = pyxel.Sound()
-    pyxel.sounds[8].set(
-        "C3RC3RC3RD3RD3RD3RE3RE3RF3RF3RE3RD3R" + # 緊張感のあるメロディ1
-        "C3RC3RC3RD3RD3RD3RF3RF3RG3RG3RF3RE3R" + # 緊張感のあるメロディ2
-        "E3RE3RE3RF3RF3RF3RG3RG3RA3RA3RG3RF3R" + # 上昇するメロディ
-        "C4RC4RB3RB3RA3RA3RG3RG3RF3RF3RE3RD3R",  # 緊張の頂点 (C5→C4に変更)
-        "P",  # トーンタイプ: Pulse wave
-        "7",  # ボリューム
-        "N",  # エフェクト: None
-        15    # スピード - 数値が小さいほど速い
-    )
-    
-    # ボス戦BGM - ベース (9)
-    pyxel.sounds[9] = pyxel.Sound()
-    pyxel.sounds[9].set(
-        "C2RRG2RRC2RRG2RR" +  # 重いベースライン1
-        "B1RRF2RRB1RRF2RR" +  # 重いベースライン2
-        "A1RRE2RRA1RRE2RR" +  # 重いベースライン3
-        "F1RRC2RRF1RRG1RR",   # 重いベースライン4
+        "F2F2F2F2F2F2F2F2C2C2C2C2C2C2C2C2" +  # 16ビートベース1
+        "E2E2E2E2E2E2E2E2C2C2C2C2C2C2C2C2" +  # 16ビートベース2
+        "D2D2D2D2D2D2D2D2A1A1A1A1A1A1A1A1" +  # 16ビートベース3
+        "F2F2F2F2F2F2F2F2G2G2G2G2A2A2A2A2",   # 16ビートベース4
         "T",  # トーンタイプ: Triangle wave
         "5",  # ボリューム
-        "F",  # エフェクト: Fade out
-        15    # スピード
+        "N",  # エフェクト: なし - ユーロビートの特徴である持続的なベース
+        12    # スピード - 高速化
     )
     
-    # ボス戦BGM - リズム (10)
+    # BGM - ドラム/パーカッション (7) - 16ビートドラム
+    pyxel.sounds[7] = pyxel.Sound()
+    pyxel.sounds[7].set(
+        "C1RA3C1RA3B3RA3C1RA3C1RA3B3RA3" +  # 16ビートキック、ハイハット、スネアパターン1
+        "C1RA3C1RA3B3RA3C1RA3C1RA3B3RA3" +  # 16ビートパターン2
+        "C1RA3C1RA3B3RA3C1RA3C1RA3B3RA3" +  # 16ビートパターン3
+        "C1RC1RB3RC1RC1RC1RB3RB3RC1RC1R",   # クライマックス16ビート
+        "N",  # トーンタイプ: Noise
+        "6753",  # ボリューム (各音符ごとに設定)
+        "N",  # エフェクト: None - クリアで力強い音
+        12    # スピード - 高速化
+    )
+    
+    # ボス戦BGM - メインメロディー (8) - 16ビートユーロビート風
+    pyxel.sounds[8] = pyxel.Sound()
+    pyxel.sounds[8].set(
+        "C4C4C4C4A3A3A3A3F3F3F3F3G3G3G3G3" + # 16ビートユーロビート風メロディ1
+        "D4D4D4D4B3B3B3B3G3G3G3G3A3A3A3A3" + # 16ビートユーロビート風メロディ2
+        "E4E4E4E4C4C4C4C4A3A3A3A3B3B3B3B3" + # 16ビートユーロビート風メロディ3
+        "F4F4F4F4E4E4E4E4D4D4D4D4C4C4C4C4",  # 16ビートユーロビート風クライマックス
+        "S",  # トーンタイプ: Square wave - より電子的
+        "7",  # ボリューム
+        "N",  # エフェクト: None
+        10    # スピード - さらに高速化
+    )
+    
+    # ボス戦BGM - ベース (9) - 16ビートユーロビート風
+    pyxel.sounds[9] = pyxel.Sound()
+    pyxel.sounds[9].set(
+        "C2C2C2C2G2G2G2G2C2C2C2C2G2G2G2G2" +  # 16ビートボスベース1
+        "B1B1B1B1F2F2F2F2B1B1B1B1F2F2F2F2" +  # 16ビートボスベース2
+        "A1A1A1A1E2E2E2E2A1A1A1A1E2E2E2E2" +  # 16ビートボスベース3
+        "F1F1F1F1C2C2C2C2F1F1F1F1G1G1G1G1",   # 16ビートボスベース4
+        "T",  # トーンタイプ: Triangle wave
+        "6",  # ボリューム - 少し大きく
+        "N",  # エフェクト: None - 持続的なベース
+        10    # スピード - さらに高速化
+    )
+    
+    # ボス戦BGM - リズム (10) - 16ビートユーロビート風
     pyxel.sounds[10] = pyxel.Sound()
     pyxel.sounds[10].set(
-        "C1RA3RB3RA3RC1RA3RB3RA3R" +  # キック-ハイハット-スネア-ハイハット
-        "C1RA3RB3RA3RC1RA3RB3RA3R" +  # 繰り返し
-        "C1RA3RB3RA3RC1RA3RB3RA3R" +  # 繰り返し
-        "C1RC1RB3RB3RC1RC1RB3RB3R",  # クライマックス (H→A3, S→B3に置き換え)
+        "C1A3B3A3C1A3B3A3C1A3B3A3C1A3B3A3" +  # 16ビートドラムパターン1
+        "C1A3B3A3C1A3B3A3C1A3B3A3C1A3B3A3" +  # 16ビートドラムパターン2
+        "C1A3C1A3B3A3B3A3C1A3C1A3B3A3B3A3" +  # 16ビートドラムパターン3変化形
+        "C1C1B3B3C1C1B3B3C1C1B3B3C1C1C1C1",   # 16ビートクライマックス
         "N",  # トーンタイプ: Noise
-        "7775",  # ボリューム (各音符ごとに設定)
+        "7664",  # ボリューム (各音符ごとに設定)
         "N",  # エフェクト: None
-        15    # スピード - リズムセクション (速い)
+        10    # スピード - さらに高速化
     )
     
     # 通常BGMの設定
