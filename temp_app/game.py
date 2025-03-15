@@ -22,7 +22,7 @@ class Game:
         # Pyxelの初期化はmain.pyで行われるため、ここでは不要
         # Pyxelの初期化状態を確認
         if not hasattr(pyxel, 'width') or not pyxel.width:
-                
+        
         # マウス入力を無効化（キーボードのみ）
         try:
             pyxel.mouse(False)  # マウス入力を無効化
