@@ -22,7 +22,8 @@ class Game:
         # Pyxelの初期化はmain.pyで行われるため、ここでは不要
         # Pyxelの初期化状態を確認
         if not hasattr(pyxel, 'width') or not pyxel.width:
-            print("WARNING: Pyxel not initialized properly. This should be done in main.py")
+            # 警告メッセージを出力（デバッグプリントをパスするように変更）
+            pass  # Pyxel should be initialized in main.py
         
         # マウス入力を無効化（キーボードのみ）
         try:
@@ -83,7 +84,6 @@ class Game:
         # BGMが再生中なら停止
         try:
             pyxel.stop()  # すべてのサウンドを停止
-            print("DEBUG: Stopped all sounds for game reset")
         except Exception as e:
             print(f"ERROR stopping sounds: {e}")
             
@@ -175,13 +175,15 @@ class Game:
             self.show_intro = True
             # イントロ開始時にイントロBGMを再生
             try:
-                # 既存の音楽を停止して、イントロBGM（音楽インデックス2）を再生
+                # 既存の音楽を停止して、通常BGM（音楽インデックス0）を再生
+                # イントロBGMの代わりに安定した通常BGMを使用
                 pyxel.stop()
-                pyxel.playm(2, loop=True)  # イントロBGMをループさせる（長く再生するため）
+                # BGM再生エラーが起きやすいため処理を統一
+                self.current_bgm = 0
+                pyxel.playm(0, loop=True)  # 通常BGMをループ再生
                 self.bgm_playing = True  # BGM再生中フラグを設定
-                print("DEBUG: Started playing INTRO BGM (looped)")
             except Exception as e:
-                print(f"ERROR playing intro BGM: {e}")
+                # BGMエラーはゲームプレイに致命的ではないため、静かに例外を処理
                 self.bgm_playing = False
             
         # イントロ画面表示中の追加更新処理
@@ -231,19 +233,22 @@ class Game:
                 self.intro_timer = 0
                 self.shooting_stars = []  # 流れ星をクリア
                 try:
-                    # イントロBGMを停止し、効果音を再生
+                    # BGM停止
                     pyxel.stop()
+                    # 効果音再生
                     pyxel.play(0, 3)  # Sound effect
-                    print("DEBUG: Stopped INTRO BGM and returning to title")
+                    # BGM未再生状態にリセット
+                    self.bgm_playing = False
                 except Exception as e:
-                    print(f"ERROR stopping intro BGM: {e}")
+                    # エラーは静かに処理
+                    pass
             else:
                 # On normal title screen, start the game
                 self.state = STATE_PLAYING
                 try:
                     pyxel.play(0, 2)  # Play start sound
-                except:
-                    pass
+                except Exception:  # 例外を明示
+                    pass  # 明示的にpassを記述（ビルド時のdebug除去対策）
                 
                 # Reset BGM flag when transitioning from title screen
                 self.bgm_playing = False
@@ -259,19 +264,16 @@ class Game:
             if self.current_bgm != 1:
                 self.current_bgm = 1
                 self.bgm_playing = False
-                print("DEBUG: Switching to BOSS BGM")
         else:
             # 通常BGM（インデックス0）に切り替え
             if self.current_bgm != 0:
                 self.current_bgm = 0
                 self.bgm_playing = False
-                print("DEBUG: Switching to NORMAL BGM")
         
         # BGMの再生（停止していたら再開）
         if not self.bgm_playing:
             try:
                 pyxel.playm(self.current_bgm, loop=True)
-                print(f"DEBUG: Started playing BGM {self.current_bgm}")
                 self.bgm_playing = True
             except Exception as e:
                 print(f"ERROR playing BGM {self.current_bgm}: {e}")
@@ -309,7 +311,6 @@ class Game:
             elif self.boss.exit_phase:
                 # 退場フェーズに入ったらBGM切り替えのフラグを設定（通常BGMに戻す準備）
                 if not self.boss.exit_bgm_changed:
-                    print("DEBUG: Boss defeat detected - immediately switching back to normal BGM")
                     self.boss.exit_bgm_changed = True
                     
                     # BGMを強制的に停止して通常BGMをすぐに再生
@@ -317,7 +318,6 @@ class Game:
                         pyxel.stop()  # 現在のBGMを停止
                         self.current_bgm = 0  # 通常BGMに切り替え
                         pyxel.playm(self.current_bgm, loop=True)  # 通常BGMをすぐに再生
-                        print(f"DEBUG: Started playing normal BGM {self.current_bgm}")
                         self.bgm_playing = True
                     except Exception as e:
                         print(f"ERROR switching to normal BGM: {e}")
@@ -333,8 +333,6 @@ class Game:
                     
                     # レベルを上げる - 難易度進行
                     self.current_level += 1
-                    print(f"DEBUG: Level up! Current level: {self.current_level}")
-                    print(f"DEBUG: Enemy speed multiplier: {1.0 + (self.current_level - 1) * 0.05}x")
                     
                     # 大規模な爆発エフェクト (ボス撃破演出)
                     from explosion import Explosion
@@ -400,15 +398,14 @@ class Game:
                             'channel': 0,
                             'sound': 1
                         })
-                    except:
-                        pass
+                    except Exception:  # 例外を明示
+                        pass  # 明示的にpassを記述（ビルド時のdebug除去対策）
                     
                     # 次のボスの準備または全ボスクリア処理
                     next_boss_cycle = self.boss_cycle_enabled and self.boss_clear_count >= self.max_boss_in_cycle
                     
                     if next_boss_cycle:
                         # ボスサイクル完了 - 新しいサイクルを開始
-                        print(f"DEBUG: Boss cycle completed! Starting new cycle.")
                         cycle_bonus = BOSS_CLEAR_BONUS * 2  # サイクル完了ボーナスは通常の2倍
                         self.score += cycle_bonus  # ボーナス得点
                         self.boss = None
@@ -454,7 +451,6 @@ class Game:
                 if not self.boss_warning_triggered:
                     self.boss_warning_triggered = True
                     self.boss_warning_count = 0
-                    print("DEBUG: Boss warning activated!")
                 
                 # 警告音を定期的に再生（30フレームごと）
                 if self.boss_warning_count % 30 == 0 and not self.warning_sound_played:
@@ -502,7 +498,6 @@ class Game:
                     self.boss.active = True
                     
                     # ボス出現メッセージ
-                    print(f"DEBUG: Boss {self.current_boss_number} appears!")
                     
                     # 効果音
                     try:
@@ -545,12 +540,12 @@ class Game:
     def update_game_over(self):
         # ゲームオーバー時にBGMを停止（最初の1回のみ）
         if self.bgm_playing:
+            # BGM停止（エラーが発生しても無視）
             try:
                 pyxel.stop()  # BGMを停止
                 self.bgm_playing = False
-                print("DEBUG: Game over - stopping BGM")
-            except Exception as e:
-                print(f"Error stopping BGM: {e}")
+            except Exception:  # エラーを静かに処理
+                pass  # 明示的にpassを記述（ビルド時のdebug除去対策）
         
         # ハイスコア判定と入力処理
         if not self.new_high_score:
@@ -559,7 +554,6 @@ class Game:
                 self.new_high_score = True
                 self.keyboard.activate()
                 # デバッグ表示
-                print("DEBUG: High score detected, activating keyboard")
         else:
             # ゲーム全体でのタッチイベントを先にチェックし、
             # キーボード表示中はキーボード外のタッチを無視する
@@ -581,7 +575,6 @@ class Game:
                 
                 # キーボード領域外のタッチは処理しない（デバッグ出力）
                 if not keyboard_area:
-                    print("DEBUG: Touch outside keyboard area ignored")
                     return
             
             # キーボード操作を更新
@@ -594,7 +587,6 @@ class Game:
                     player_name = "PLAYER"
                 
                 # デバッグ表示
-                print(f"DEBUG: Name input complete: '{player_name}'")
                 
                 # ハイスコアに追加して保存
                 self.high_scores.add_score(player_name, self.score)
@@ -606,13 +598,12 @@ class Game:
                 # 効果音再生
                 try:
                     pyxel.play(0, 3)  # ハイスコア登録音
-                except:
-                    pass
+                except Exception:  # 例外を明示
+                    pass  # 明示的にpassを記述（ビルド時のdebug除去対策）
                     
                 # ハイスコア確定後にタイトル画面に戻る
                 self.reset_game()
                 self.state = STATE_TITLE
-                print("DEBUG: High score submitted, returning to title screen")
                 return  # 処理終了
         
         # 名前入力中は以下の処理をスキップ
@@ -884,30 +875,24 @@ class Game:
         scroll_speed = 0.2  # より遅いスクロール速度
         display_time = 800  # より長い表示時間 (フレーム数)
         
-        # イントロBGM再生（初回のみ）
-        if self.intro_timer == 1:
-            try:
-                # イントロBGM再生 - 通常BGMを再生
-                # イントロ専用BGMが問題を起こすのでインデックス0（通常BGM）を使用
-                pyxel.playm(0, loop=True)  # 通常BGMを代替として使用
-                print("DEBUG: Started playing normal BGM as intro BGM (music 0)")
-                self.bgm_playing = True  # BGM再生フラグを設定
-            except Exception as e:
-                print(f"Error playing intro BGM: {e}")
-                self.bgm_playing = False
+        # イントロBGM再生処理を省略
+        # 通常のBGM管理システムを使用するため、特別なBGM再生は行わない
+        # update_title_screenで既にBGMが開始されているので冗長な処理を省く
         
         # Return to title screen when intro animation is complete
         if self.intro_timer > len(self.intro_texts) * 100 + display_time:
             self.show_intro = False
             self.intro_timer = 0
             
-            # イントロBGMを停止して通常の状態に戻す
+            # BGM管理を単純化（イントロ終了時）
             try:
-                # BGM停止 (停止して通常状態に戻す)
+                # BGM停止
                 pyxel.stop()
-                print("DEBUG: Stopped INTRO BGM and returning to title")
+                # BGM未再生状態にリセット
+                self.bgm_playing = False
             except Exception as e:
-                print(f"Error stopping intro BGM: {e}")
+                # エラーは静かに処理
+                pass
                 
             return
             
@@ -961,25 +946,36 @@ class Game:
                 pyxel.rect(x, y, size, size, col)
         
         # 流れ星の描画
-        for star in self.shooting_stars:
-            # 主要な流れ星（頭部）
-            pyxel.rect(star['x'], star['y'], star['size'], star['size'], star['color'])
-            
-            # 尾の描画（先端に行くほど薄く小さく）
-            for i, (trail_x, trail_y) in enumerate(star['trail']):
-                # 尾の長さに応じて色と大きさを変える
-                trail_brightness = max(0, 7 - i // 3)  # 7→6→5→...と徐々に暗く
-                trail_size = max(1, star['size'] - i // 5)  # 少しずつ小さく
+        # 流れ星の描画処理（エラー防止のため安全なループ処理に変更）
+        for star in self.shooting_stars[:]:  # リストのコピーでループ
+            try:
+                # 主要な流れ星（頭部）
+                pyxel.rect(star['x'], star['y'], star['size'], star['size'], star['color'])
                 
-                # 長さに応じてだんだん薄くなる
-                if i < 5:  # 最初の部分は明るい
-                    pyxel.rect(trail_x, trail_y, trail_size, trail_size, trail_brightness)
-                elif i < 10:  # 中間部分
-                    if i % 2 == 0:  # 飛び飛びで表示して薄く見せる
-                        pyxel.rect(trail_x, trail_y, 1, 1, trail_brightness)
-                else:  # 末端部分
-                    if i % 3 == 0:  # さらに間隔を空けて描画
-                        pyxel.pset(trail_x, trail_y, trail_brightness)
+                # 尾の描画（先端に行くほど薄く小さく）
+                for i, trail_point in enumerate(star['trail']):
+                    if len(trail_point) != 2:  # 無効なデータは飛ばす
+                        continue
+                        
+                    trail_x, trail_y = trail_point
+                    
+                    # 尾の長さに応じて色と大きさを変える
+                    trail_brightness = max(0, 7 - i // 3)  # 7→6→5→...と徐々に暗く
+                    trail_size = max(1, star['size'] - i // 5)  # 少しずつ小さく
+                    
+                    # 長さに応じてだんだん薄くなる
+                    if i < 5:  # 最初の部分は明るい
+                        pyxel.rect(trail_x, trail_y, trail_size, trail_size, trail_brightness)
+                    elif i < 10:  # 中間部分
+                        if i % 2 == 0:  # 飛び飛びで表示して薄く見せる
+                            pyxel.rect(trail_x, trail_y, 1, 1, trail_brightness)
+                    else:  # 末端部分
+                        if i % 3 == 0:  # さらに間隔を空けて描画
+                            pyxel.pset(trail_x, trail_y, trail_brightness)
+            except Exception as e:
+                # エラーが発生した場合は問題のある流れ星を削除
+                if star in self.shooting_stars:
+                    self.shooting_stars.remove(star)
         
         # Calculate text Y position (scrolling effect)
         base_y = SCREEN_HEIGHT + 50 - self.intro_timer * scroll_speed
