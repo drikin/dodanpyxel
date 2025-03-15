@@ -51,7 +51,6 @@ class Player:
         if self.shoot_timer <= 0:
             current_interval = self.shoot_interval if hasattr(self, 'shoot_interval') else PLAYER_SHOOT_INTERVAL
             self.shoot_timer = current_interval
-            print(f"DEBUG: Using shoot interval: {current_interval}")
         
         # Keyboard movement with multiple method detection for better compatibility
         left_pressed = False

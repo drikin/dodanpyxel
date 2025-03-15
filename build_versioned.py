@@ -128,6 +128,62 @@ BUILD_DATE = "{version_info['last_build_date']}"
     print(f"  生成: version.py")
     shutil.copy("version.py", os.path.join(TEMP_DIR, "version.py"))
     
+    # デバッグ出力を削除する
+    def remove_debug_prints(file_path):
+        """ファイル内のprintデバッグ文を削除する"""
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        
+        # 'print("DEBUG'や'print(f"DEBUG'などのデバッグ出力行を削除
+        import re
+        # printデバッグ行を正規表現で検出して削除
+        debug_patterns = [
+            r'^\s*print\s*\(\s*f?[\'"]DEBUG:.*$',
+            r'^\s*print\s*\(\s*f?[\'"]Error.*$',
+            r'^\s*print\s*\(\s*[\'"].*デバッグ.*[\'"].*\).*$',
+            r'^\s*print\s*\(\s*f?[\'"].*initialized.*[\'"].*\).*$',
+            r'^\s*print\s*\(\s*[\'"]Loaded.*[\'"].*\).*$',
+            r'^\s*print\s*\(\s*[\'"]Started.*[\'"].*\).*$',
+            r'^\s*print\s*\(\s*[\'"]Stopped.*[\'"].*\).*$',
+            r'^\s*print\s*\(\s*[\'"]Created.*[\'"].*\).*$',
+            r'^\s*print\s*\(\s*f?[\'"].*debug.*[\'"].*\).*$',
+            r'^\s*print\s*\(\s*f?[\'"]Has .*[\'"].*\).*$'
+        ]
+        
+        # 行ごとに処理
+        lines = content.split('\n')
+        filtered_lines = []
+        removed_count = 0
+        
+        for line in lines:
+            should_remove = False
+            # すべてのパターンをチェック
+            for pattern in debug_patterns:
+                if re.match(pattern, line):
+                    should_remove = True
+                    break
+                
+            if should_remove:
+                removed_count += 1
+                continue
+            filtered_lines.append(line)
+        
+        # デバッグ出力の削除結果を表示
+        if removed_count > 0:
+            print(f"  {file_path}から{removed_count}件のデバッグ出力を削除しました")
+        
+        # 内容を書き戻す
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write('\n'.join(filtered_lines))
+    
+    # すべてのPyファイルからデバッグ出力を削除
+    print("\nデバッグ出力を削除しています...")
+    for root, _, files in os.walk(TEMP_DIR):
+        for file in files:
+            if file.endswith(".py"):
+                file_path = os.path.join(root, file)
+                remove_debug_prints(file_path)
+            
     # main.pyにバージョン情報を追加
     main_py_path = os.path.join(TEMP_DIR, "main.py")
     with open(main_py_path, "r") as f:

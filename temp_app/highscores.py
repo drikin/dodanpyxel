@@ -15,7 +15,6 @@ class HighScores:
         """ハイスコアを全てリセット"""
         self.scores = []
         self.save_scores()
-        print("DEBUG: High scores have been reset")
         
     def load_scores(self):
         """ハイスコアをファイルから読み込み"""
@@ -228,14 +227,12 @@ class SoftwareKeyboard:
             # 確定音を再生
             pyxel.play(0, 12)  # 音声チャンネル0、効果音12を再生
             self.complete = True
-            print("DEBUG: Confirm button activated with keyboard")
             
         # 確定（キーボードのエンターキーまたはXキー）
         if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.KEY_X):
             # 確定音を再生
             pyxel.play(0, 12)  # 音声チャンネル0、効果音12を再生
             self.complete = True
-            print("DEBUG: Confirm activated with Return or X key")
             
     def draw(self):
         """キーボードの描画"""

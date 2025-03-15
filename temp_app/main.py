@@ -8,7 +8,7 @@ import os
 game_instance = None
 
 # 純粋なPyxelアプリケーションとして実行
-TITLE = "LAST DESCENT: THE FINAL HOPE v1.0.0.39"
+TITLE = "LAST DESCENT: THE FINAL HOPE v1.0.0.41"
 MOBILE_MODE = False
 WEB_MODE = False
 
@@ -108,7 +108,6 @@ def main():
     from assets.sounds import init_sounds
     try:
         init_sounds()
-        print("DEBUG: Sounds initialized successfully")
     except Exception as e:
         print(f"ERROR initializing sounds: {e}")
     
@@ -116,8 +115,6 @@ def main():
     game_instance = Game()
     
     # デバッグ情報
-    print("DEBUG: game_instance initialized:", game_instance)
-    print("DEBUG: Has player_bullets attribute:", hasattr(game_instance, 'player_bullets'))
     
     # Start the game loop
     pyxel.run(game_instance.update, game_instance.draw)

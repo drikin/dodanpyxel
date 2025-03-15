@@ -72,5 +72,4 @@ def create_random_powerup(x, y):
         # 残りは他のパワーアップからランダム選択
         powerup_type = random.choice([POWERUP_POWER, POWERUP_SPEED, POWERUP_SHIELD])
     
-    print(f"DEBUG: Powerup created of type {powerup_type}")
     return PowerUp(x, y, powerup_type)

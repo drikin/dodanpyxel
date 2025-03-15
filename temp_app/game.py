@@ -22,7 +22,6 @@ class Game:
         # Pyxelの初期化はmain.pyで行われるため、ここでは不要
         # Pyxelの初期化状態を確認
         if not hasattr(pyxel, 'width') or not pyxel.width:
-            print("WARNING: Pyxel not initialized properly. This should be done in main.py")
                 
         # マウス入力を無効化（キーボードのみ）
         try:
@@ -83,7 +82,6 @@ class Game:
         # BGMが再生中なら停止
         try:
             pyxel.stop()  # すべてのサウンドを停止
-            print("DEBUG: Stopped all sounds for game reset")
         except Exception as e:
             print(f"ERROR stopping sounds: {e}")
             
@@ -179,7 +177,6 @@ class Game:
                 pyxel.stop()
                 pyxel.playm(2, loop=True)  # イントロBGMをループさせる（長く再生するため）
                 self.bgm_playing = True  # BGM再生中フラグを設定
-                print("DEBUG: Started playing INTRO BGM (looped)")
             except Exception as e:
                 print(f"ERROR playing intro BGM: {e}")
                 self.bgm_playing = False
@@ -234,7 +231,6 @@ class Game:
                     # イントロBGMを停止し、効果音を再生
                     pyxel.stop()
                     pyxel.play(0, 3)  # Sound effect
-                    print("DEBUG: Stopped INTRO BGM and returning to title")
                 except Exception as e:
                     print(f"ERROR stopping intro BGM: {e}")
             else:
@@ -259,19 +255,16 @@ class Game:
             if self.current_bgm != 1:
                 self.current_bgm = 1
                 self.bgm_playing = False
-                print("DEBUG: Switching to BOSS BGM")
         else:
             # 通常BGM（インデックス0）に切り替え
             if self.current_bgm != 0:
                 self.current_bgm = 0
                 self.bgm_playing = False
-                print("DEBUG: Switching to NORMAL BGM")
         
         # BGMの再生（停止していたら再開）
         if not self.bgm_playing:
             try:
                 pyxel.playm(self.current_bgm, loop=True)
-                print(f"DEBUG: Started playing BGM {self.current_bgm}")
                 self.bgm_playing = True
             except Exception as e:
                 print(f"ERROR playing BGM {self.current_bgm}: {e}")
@@ -309,7 +302,6 @@ class Game:
             elif self.boss.exit_phase:
                 # 退場フェーズに入ったらBGM切り替えのフラグを設定（通常BGMに戻す準備）
                 if not self.boss.exit_bgm_changed:
-                    print("DEBUG: Boss defeat detected - immediately switching back to normal BGM")
                     self.boss.exit_bgm_changed = True
                     
                     # BGMを強制的に停止して通常BGMをすぐに再生
@@ -317,7 +309,6 @@ class Game:
                         pyxel.stop()  # 現在のBGMを停止
                         self.current_bgm = 0  # 通常BGMに切り替え
                         pyxel.playm(self.current_bgm, loop=True)  # 通常BGMをすぐに再生
-                        print(f"DEBUG: Started playing normal BGM {self.current_bgm}")
                         self.bgm_playing = True
                     except Exception as e:
                         print(f"ERROR switching to normal BGM: {e}")
@@ -333,8 +324,6 @@ class Game:
                     
                     # レベルを上げる - 難易度進行
                     self.current_level += 1
-                    print(f"DEBUG: Level up! Current level: {self.current_level}")
-                    print(f"DEBUG: Enemy speed multiplier: {1.0 + (self.current_level - 1) * 0.05}x")
                     
                     # 大規模な爆発エフェクト (ボス撃破演出)
                     from explosion import Explosion
@@ -408,7 +397,6 @@ class Game:
                     
                     if next_boss_cycle:
                         # ボスサイクル完了 - 新しいサイクルを開始
-                        print(f"DEBUG: Boss cycle completed! Starting new cycle.")
                         cycle_bonus = BOSS_CLEAR_BONUS * 2  # サイクル完了ボーナスは通常の2倍
                         self.score += cycle_bonus  # ボーナス得点
                         self.boss = None
@@ -454,7 +442,6 @@ class Game:
                 if not self.boss_warning_triggered:
                     self.boss_warning_triggered = True
                     self.boss_warning_count = 0
-                    print("DEBUG: Boss warning activated!")
                 
                 # 警告音を定期的に再生（30フレームごと）
                 if self.boss_warning_count % 30 == 0 and not self.warning_sound_played:
@@ -502,7 +489,6 @@ class Game:
                     self.boss.active = True
                     
                     # ボス出現メッセージ
-                    print(f"DEBUG: Boss {self.current_boss_number} appears!")
                     
                     # 効果音
                     try:
@@ -548,9 +534,7 @@ class Game:
             try:
                 pyxel.stop()  # BGMを停止
                 self.bgm_playing = False
-                print("DEBUG: Game over - stopping BGM")
             except Exception as e:
-                print(f"Error stopping BGM: {e}")
         
         # ハイスコア判定と入力処理
         if not self.new_high_score:
@@ -559,7 +543,6 @@ class Game:
                 self.new_high_score = True
                 self.keyboard.activate()
                 # デバッグ表示
-                print("DEBUG: High score detected, activating keyboard")
         else:
             # ゲーム全体でのタッチイベントを先にチェックし、
             # キーボード表示中はキーボード外のタッチを無視する
@@ -581,7 +564,6 @@ class Game:
                 
                 # キーボード領域外のタッチは処理しない（デバッグ出力）
                 if not keyboard_area:
-                    print("DEBUG: Touch outside keyboard area ignored")
                     return
             
             # キーボード操作を更新
@@ -594,7 +576,6 @@ class Game:
                     player_name = "PLAYER"
                 
                 # デバッグ表示
-                print(f"DEBUG: Name input complete: '{player_name}'")
                 
                 # ハイスコアに追加して保存
                 self.high_scores.add_score(player_name, self.score)
@@ -612,7 +593,6 @@ class Game:
                 # ハイスコア確定後にタイトル画面に戻る
                 self.reset_game()
                 self.state = STATE_TITLE
-                print("DEBUG: High score submitted, returning to title screen")
                 return  # 処理終了
         
         # 名前入力中は以下の処理をスキップ
@@ -890,10 +870,8 @@ class Game:
                 # イントロBGM再生 - 通常BGMを再生
                 # イントロ専用BGMが問題を起こすのでインデックス0（通常BGM）を使用
                 pyxel.playm(0, loop=True)  # 通常BGMを代替として使用
-                print("DEBUG: Started playing normal BGM as intro BGM (music 0)")
                 self.bgm_playing = True  # BGM再生フラグを設定
             except Exception as e:
-                print(f"Error playing intro BGM: {e}")
                 self.bgm_playing = False
         
         # Return to title screen when intro animation is complete
@@ -905,9 +883,7 @@ class Game:
             try:
                 # BGM停止 (停止して通常状態に戻す)
                 pyxel.stop()
-                print("DEBUG: Stopped INTRO BGM and returning to title")
             except Exception as e:
-                print(f"Error stopping intro BGM: {e}")
                 
             return
             
