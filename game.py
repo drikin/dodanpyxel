@@ -738,6 +738,10 @@ class Game:
         # Draw keyboard instructions
         pyxel.text(10, SCREEN_HEIGHT - 30, "ARROWS/WASD: MOVE", pyxel.COLOR_WHITE)
         pyxel.text(10, SCREEN_HEIGHT - 20, "Z: SHOOT", pyxel.COLOR_WHITE)
+        
+        # ビルド番号を右下に表示
+        version_text = VERSION_DISPLAY
+        pyxel.text(SCREEN_WIDTH - len(version_text) * 4 - 5, SCREEN_HEIGHT - 10, version_text, pyxel.COLOR_GRAY)
         pyxel.text(10, SCREEN_HEIGHT - 10, "AUTO-SHOOTING ENABLED!", ORANGE)
         
     def draw_intro_text(self):
