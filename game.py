@@ -842,8 +842,9 @@ class Game:
         # イントロBGM再生（初回のみ）
         if self.intro_timer == 1:
             try:
-                # イントロBGM再生
-                pyxel.play(3, 15)  # チャンネル3にイントロBGM割り当て
+                # イントロBGM再生 - playmを使用してミュージックを再生
+                pyxel.playm(2, loop=True)  # インデックス2のイントロBGM再生
+                print("DEBUG: Started playing INTRO BGM (music 2)")
             except Exception as e:
                 print(f"Error playing intro BGM: {e}")
         
@@ -851,6 +852,15 @@ class Game:
         if self.intro_timer > len(self.intro_texts) * 100 + display_time:
             self.show_intro = False
             self.intro_timer = 0
+            
+            # イントロBGMを停止して通常の状態に戻す
+            try:
+                # BGM停止 (停止して通常状態に戻す)
+                pyxel.stop()
+                print("DEBUG: Stopped INTRO BGM and returning to title")
+            except Exception as e:
+                print(f"Error stopping intro BGM: {e}")
+                
             return
             
         # Starry background
