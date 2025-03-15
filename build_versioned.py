@@ -212,7 +212,9 @@ BUILD_DATE = "{version_info['last_build_date']}"
         temp_pyxapp_files = glob.glob(os.path.join(TEMP_DIR, "*.pyxapp"))
         if temp_pyxapp_files:
             # バージョン付きのファイル名を生成
-            versioned_filename = f"{PROJECT_NAME}_v{version_string}.pyxapp"
+            # バージョン文字列のドットをアンダースコアに置換（URL互換性のため）
+            version_display = version_string.replace(".", "_")
+            versioned_filename = f"{PROJECT_NAME}_v{version_display}.pyxapp"
             target_pyxapp = versioned_filename
             
             # distディレクトリにコピー
@@ -280,9 +282,12 @@ def list_builds():
     # ビルドバージョンをパースして数値化する関数
     def get_version_number(build_path):
         try:
-            # ファイル名からバージョン部分を抽出 (例: last_descent_v1.0.0.12.pyxapp)
+            # ファイル名からバージョン部分を抽出 (例: last_descent_v1_0_0_12.pyxapp または last_descent_v1.0.0.12.pyxapp)
             filename = os.path.basename(build_path)
-            version_str = filename.split('_v')[1].split('.pyxapp')[0]  # 1.0.0.12 部分を取得
+            version_str = filename.split('_v')[1].split('.pyxapp')[0]  # 1_0_0_12 または 1.0.0.12 部分を取得
+            
+            # アンダースコアをドットに置換してから分割（両方の形式に対応）
+            version_str = version_str.replace("_", ".")
             
             # バージョン番号をドットで分割して数値配列に変換
             version_parts = [int(x) for x in version_str.split('.')]
