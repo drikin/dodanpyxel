@@ -10,6 +10,13 @@ from powerup import PowerUp, create_random_powerup
 from boss import create_boss
 from highscores import HighScores, SoftwareKeyboard
 
+# バージョン情報をインポート
+try:
+    from version import VERSION, BUILD_DATE
+except ImportError:
+    VERSION = "DEV"
+    BUILD_DATE = "DEBUG BUILD"
+
 class Game:
     def __init__(self):
         try:
@@ -816,7 +823,7 @@ class Game:
         self.draw_title_high_scores()
         
         # ビルド番号を右上（タイトルの下）に表示
-        version_text = VERSION_DISPLAY
+        version_text = f"v{VERSION}"
         pyxel.text(SCREEN_WIDTH - len(version_text) * 4 - 5, SCREEN_HEIGHT//6 + 25, version_text, pyxel.COLOR_GRAY)
         
         # Draw keyboard instructions（左下）

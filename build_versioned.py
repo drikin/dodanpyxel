@@ -277,13 +277,44 @@ def list_builds():
         print("ビルドが見つかりません")
         return
     
-    print("\n利用可能なビルド:")
-    for build in sorted(builds):
-        filename = os.path.basename(build)
-        filesize = os.path.getsize(build) / 1024  # KBに変換
-        mod_time = os.path.getmtime(build)
-        mod_time_str = datetime.datetime.fromtimestamp(mod_time).strftime("%Y-%m-%d %H:%M:%S")
-        print(f"  {filename} ({filesize:.1f} KB) - 作成日時: {mod_time_str}")
+    # ビルドバージョンをパースして数値化する関数
+    def get_version_number(build_path):
+        try:
+            # ファイル名からバージョン部分を抽出 (例: last_descent_v1.0.0.12.pyxapp)
+            filename = os.path.basename(build_path)
+            version_str = filename.split('_v')[1].split('.pyxapp')[0]  # 1.0.0.12 部分を取得
+            
+            # バージョン番号をドットで分割して数値配列に変換
+            version_parts = [int(x) for x in version_str.split('.')]
+            
+            # 比較のために一つの数値に変換（Major*1000000 + Minor*10000 + Patch*100 + Build）
+            version_num = 0
+            for i, part in enumerate(version_parts):
+                version_num += part * (10 ** (6 - i * 2))
+            return version_num
+        except:
+            return 0  # パースできない場合は0を返す
+    
+    # バージョン番号でソートして最新を取得
+    sorted_builds = sorted(builds, key=get_version_number)
+    newest_build = sorted_builds[-1]
+    
+    # 最新ビルドの情報表示
+    filename = os.path.basename(newest_build)
+    filesize = os.path.getsize(newest_build) / 1024  # KBに変換
+    mod_time = os.path.getmtime(newest_build)
+    mod_time_str = datetime.datetime.fromtimestamp(mod_time).strftime("%Y-%m-%d %H:%M:%S")
+    print(f"\n最新のビルド:")
+    print(f"  {filename} ({filesize:.1f} KB) - 作成日時: {mod_time_str}")
+    
+    # 古いビルドを削除（最新ビルドは除く）
+    for build in builds:
+        if build != newest_build:
+            try:
+                os.remove(build)
+                print(f"古いビルドを削除しました: {os.path.basename(build)}")
+            except Exception as e:
+                print(f"ビルド削除エラー: {e}")
 
 def cleanup_temp_files():
     """一時ファイルを削除する"""
