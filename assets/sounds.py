@@ -24,6 +24,14 @@ def init_sounds():
     pyxel.sounds[4] = pyxel.Sound()
     pyxel.sounds[4].set("C3E3G3C4E4G4", "T", "7", "S", 10)
     
+    # Sound effect 20: ボス警告音 (アラーム風サイレン)
+    pyxel.sounds[20] = pyxel.Sound()
+    pyxel.sounds[20].set("C4F4C4F4", "S", "7", "F", 8)
+    
+    # Sound effect 21: ボス出現音 (ドラマチック)
+    pyxel.sounds[21] = pyxel.Sound()
+    pyxel.sounds[21].set("C3G3C4E4G4B4", "T", "7", "F", 6)
+    
     # Sound effect 11: キーボード入力音
     pyxel.sounds[11] = pyxel.Sound()
     pyxel.sounds[11].set("C4", "P", "4", "N", 30) # 短く軽い音

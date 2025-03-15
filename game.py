@@ -133,6 +133,12 @@ class Game:
         # 遅延エフェクト用の配列
         self.delayed_effects = []
         
+        # ボス警告システム用の変数
+        self.boss_warning_triggered = False
+        self.boss_warning_flash = False
+        self.boss_warning_count = 0
+        self.warning_sound_played = False
+        
         # 自動発射機能を設定（キーボード専用）
         self.auto_shoot = True
     
@@ -364,8 +370,37 @@ class Game:
         elif not self.all_boss_cleared:
             self.boss_timer -= 1
             
-            # ボスの出現チェック
+            # ボス出現警告の処理（ボスタイマーが一定値以下になったら警告を表示）
+            if self.boss_timer <= 180 and self.boss_timer > 0:  # 約3秒前から警告開始
+                # 警告フラグがまだ設定されていなければ設定
+                if not self.boss_warning_triggered:
+                    self.boss_warning_triggered = True
+                    self.boss_warning_count = 0
+                    print("DEBUG: Boss warning activated!")
+                
+                # 警告音を定期的に再生（30フレームごと）
+                if self.boss_warning_count % 30 == 0 and not self.warning_sound_played:
+                    try:
+                        pyxel.play(0, 20)  # 警告音を再生
+                        self.warning_sound_played = True
+                    except Exception as e:
+                        print(f"ERROR playing warning sound: {e}")
+                
+                # 1秒ごとに点滅の切り替え（視覚的な警告効果）
+                if self.boss_warning_count % 60 == 0:
+                    self.boss_warning_flash = not self.boss_warning_flash
+                    self.warning_sound_played = False  # 次の警告音のために再設定
+                
+                # 警告カウンターを増やす
+                self.boss_warning_count += 1
+            
+            # 警告状態のリセット（ボスタイマーがゼロになったらリセット）
             if self.boss_timer <= 0:
+                self.boss_warning_triggered = False
+                self.boss_warning_flash = False
+                self.boss_warning_count = 0
+                
+                # ボスの出現チェック
                 # 次のボス番号を設定し、ボスを生成
                 self.current_boss_number += 1
                 if self.current_boss_number <= 10:
@@ -393,9 +428,9 @@ class Game:
                     
                     # 効果音
                     try:
-                        pyxel.play(0, 4)  # ボス登場音
-                    except:
-                        pass
+                        pyxel.play(0, 21)  # 新しいボス登場音
+                    except Exception as e:
+                        print(f"ERROR playing boss appearance sound: {e}")
         
         # Spawn enemies
         self.update_enemy_spawning()
@@ -878,6 +913,30 @@ class Game:
         # ボスの描画（アクティブなボスがいる場合）
         if self.boss and self.boss.active:
             self.boss.draw()
+            
+        # ボス出現警告の表示（警告フラグが立っている場合のみ）
+        if self.boss_warning_triggered and self.boss_warning_flash:
+            # 画面全体に薄い赤色のオーバーレイを表示（警告効果）
+            for y in range(0, SCREEN_HEIGHT, 4):
+                for x in range(0, SCREEN_WIDTH, 4):
+                    pyxel.pset(x, y, RED)
+            
+            # "WARNING"メッセージを表示（中央上部、点滅）
+            warning_text = "! WARNING !"
+            text_width = len(warning_text) * 4  # 4ピクセル/文字
+            text_x = SCREEN_WIDTH//2 - text_width//2
+            text_y = SCREEN_HEIGHT//4
+            
+            # 点滅するテキスト色
+            text_color = WHITE if (self.frame_count // 3) % 2 == 0 else YELLOW
+            pyxel.text(text_x, text_y, warning_text, text_color)
+            
+            # ボス接近メッセージ
+            boss_text = "BOSS APPROACHING"
+            boss_width = len(boss_text) * 4
+            boss_x = SCREEN_WIDTH//2 - boss_width//2
+            boss_y = text_y + 10
+            pyxel.text(boss_x, boss_y, boss_text, RED)
         
         # Draw bullets
         for bullet in self.player_bullets:

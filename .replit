@@ -13,14 +13,14 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Shooter Game"
+args = "LAST DESCENT"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Build Pyxel App"
+args = "LAST DESCENT VNC"
 
 [[workflows.workflow]]
-name = "Shooter Game"
+name = "LAST DESCENT"
 author = "agent"
 
 [workflows.workflow.metadata]
@@ -31,10 +31,10 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pip install pyxel && python build_and_run_pyxapp.py"
+args = "python build_versioned.py"
 
 [[workflows.workflow]]
-name = "Build Pyxel App"
+name = "LAST DESCENT VNC"
 author = "agent"
 
 [workflows.workflow.metadata]
@@ -45,7 +45,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd temp_app && python build_and_run_pyxapp.py"
+args = "DISPLAY=:0 python main.py"
 
 [deployment]
 run = ["sh", "-c", "pip install pyxel && python build_and_run_pyxapp.py"]

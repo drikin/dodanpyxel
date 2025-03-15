@@ -6,7 +6,8 @@ import os
 # Global game instance for module access
 game_instance = None
 
-# モバイルモード判定
+# 純粋なPyxelアプリケーションとして実行
+TITLE = "LAST DESCENT: THE FINAL HOPE"
 MOBILE_MODE = False
 WEB_MODE = False
 
