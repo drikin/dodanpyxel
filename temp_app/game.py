@@ -735,13 +735,13 @@ class Game:
         # Draw high scores in the middle of the title screen
         self.draw_title_high_scores()
         
-        # Draw keyboard instructions（左側）
+        # ビルド番号を右上（タイトルの下）に表示
+        version_text = VERSION_DISPLAY
+        pyxel.text(SCREEN_WIDTH - len(version_text) * 4 - 5, SCREEN_HEIGHT//6 + 25, version_text, pyxel.COLOR_GRAY)
+        
+        # Draw keyboard instructions（左下）
         pyxel.text(10, SCREEN_HEIGHT - 30, "ARROWS/WASD: MOVE", pyxel.COLOR_WHITE)
         pyxel.text(10, SCREEN_HEIGHT - 20, "Z: SHOOT", pyxel.COLOR_WHITE)
-        
-        # ビルド番号を右下に表示（右側）
-        version_text = VERSION_DISPLAY
-        pyxel.text(SCREEN_WIDTH - len(version_text) * 4 - 5, SCREEN_HEIGHT - 30, version_text, pyxel.COLOR_GRAY)
         
         # 自動発射の通知（左下）
         pyxel.text(10, SCREEN_HEIGHT - 10, "AUTO-SHOOTING ENABLED", ORANGE)
