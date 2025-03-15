@@ -24,6 +24,14 @@ def init_sounds():
     pyxel.sounds[4] = pyxel.Sound()
     pyxel.sounds[4].set("C3E3G3C4E4G4", "T", "7", "S", 10)
     
+    # Sound effect 11: キーボード入力音
+    pyxel.sounds[11] = pyxel.Sound()
+    pyxel.sounds[11].set("C4", "P", "4", "N", 30) # 短く軽い音
+    
+    # Sound effect 12: 確定ボタン音
+    pyxel.sounds[12] = pyxel.Sound()
+    pyxel.sounds[12].set("C4E4G4", "T", "5", "N", 20) # 確定音
+    
     # ここからBGMパート
     
     # BGM - メインメロディー (5) - ユーロビート風

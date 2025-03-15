@@ -147,6 +147,9 @@ class SoftwareKeyboard:
                         
                         # クリックしたキーを入力
                         if len(self.text) < self.max_length:
+                            # キー入力音を再生
+                            pyxel.play(0, 11)  # 音声チャンネル0、効果音11を再生
+                            
                             if key == '_':
                                 self.text += ' '  # スペース
                             elif key == '.':
@@ -165,6 +168,8 @@ class SoftwareKeyboard:
             if (confirm_button_x <= mouse_x <= confirm_button_x + confirm_button_width and
                 confirm_button_y <= mouse_y <= confirm_button_y + confirm_button_height):
                 # 決定ボタンがクリックされた
+                # 確定音を再生
+                pyxel.play(0, 12)  # 音声チャンネル0、効果音12を再生
                 self.complete = True
                 return
             
@@ -204,6 +209,9 @@ class SoftwareKeyboard:
         # 文字入力（キーボード）
         if (pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.KEY_Z)) and not confirm_button_focus:
             if len(self.text) < self.max_length:
+                # キー入力音を再生
+                pyxel.play(0, 11)  # 音声チャンネル0、効果音11を再生
+                
                 key = self.keys[self.cursor_row][self.cursor_col]
                 if key == '_':
                     self.text += ' '  # スペース
@@ -217,11 +225,15 @@ class SoftwareKeyboard:
         # 確定ボタン押下またはキーボード確定キー
         if confirm_button_focus and (pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.KEY_Z)):
             # 確定ボタンにフォーカスがある状態でスペースまたはZキーが押された
+            # 確定音を再生
+            pyxel.play(0, 12)  # 音声チャンネル0、効果音12を再生
             self.complete = True
             print("DEBUG: Confirm button activated with keyboard")
             
         # 確定（キーボードのエンターキーまたはXキー）
         if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.KEY_X):
+            # 確定音を再生
+            pyxel.play(0, 12)  # 音声チャンネル0、効果音12を再生
             self.complete = True
             print("DEBUG: Confirm activated with Return or X key")
             
