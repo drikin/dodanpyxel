@@ -174,10 +174,12 @@ class Game:
             try:
                 # 既存の音楽を停止して、イントロBGM（音楽インデックス2）を再生
                 pyxel.stop()
-                pyxel.playm(2, loop=False)  # イントロBGMはループさせない
-                print("DEBUG: Started playing INTRO BGM")
+                pyxel.playm(2, loop=True)  # イントロBGMをループさせる（長く再生するため）
+                self.bgm_playing = True  # BGM再生中フラグを設定
+                print("DEBUG: Started playing INTRO BGM (looped)")
             except Exception as e:
                 print(f"ERROR playing intro BGM: {e}")
+                self.bgm_playing = False
             
         # イントロ画面表示中の追加更新処理
         if self.show_intro:
