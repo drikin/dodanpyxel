@@ -134,6 +134,15 @@ BUILD_DATE = "{version_info['last_build_date']}"
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
         
+        # Python構文の安全性確認
+        try:
+            import ast
+            # 元のファイルが構文的に正しいか確認
+            ast.parse(content)
+        except SyntaxError as e:
+            print(f"  警告: {file_path}に構文エラーがあります: {e}")
+            return  # 構文エラーがある場合は処理をスキップ
+        
         # 'print("DEBUG'や'print(f"DEBUG'などのデバッグ出力行を削除
         import re
         # printデバッグ行を正規表現で検出して削除
@@ -168,13 +177,22 @@ BUILD_DATE = "{version_info['last_build_date']}"
                 continue
             filtered_lines.append(line)
         
+        # 修正後のコードが構文的に正しいか確認
+        modified_content = '\n'.join(filtered_lines)
+        try:
+            ast.parse(modified_content)
+        except SyntaxError as e:
+            print(f"  エラー: {file_path}のデバッグ出力削除後に構文エラーが発生しました: {e}")
+            print(f"  元のファイルを保持します")
+            return  # 構文エラーが発生した場合は元のファイルを維持
+        
         # デバッグ出力の削除結果を表示
         if removed_count > 0:
             print(f"  {file_path}から{removed_count}件のデバッグ出力を削除しました")
         
         # 内容を書き戻す
         with open(file_path, "w", encoding="utf-8") as f:
-            f.write('\n'.join(filtered_lines))
+            f.write(modified_content)
     
     # すべてのPyファイルからデバッグ出力を削除
     print("\nデバッグ出力を削除しています...")
