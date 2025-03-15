@@ -46,17 +46,10 @@ class Game:
         # Create background
         self.background = Background()
         
-        # Touch controls for mobile
+        # タッチコントロールは無効化
         self.touch_enabled = False
         self.mobile_mode = False
-        self.touch_start_x = 0
-        self.touch_start_y = 0
-        self.touch_current_x = 0
-        self.touch_current_y = 0
-        self.touch_shoot = True  # 自動発射をデフォルトで有効
-        
-        # For virtual touch controls display
-        self.show_touch_controls = True
+        self.show_touch_controls = False
         
         # Initialize high scores
         self.high_scores = HighScores()
@@ -128,9 +121,6 @@ class Game:
         self.touch_shoot = True
     
     def update(self):
-        # Handle touch input for mobile devices
-        self.process_touch_input()
-            
         # Update based on game state
         if self.state == STATE_TITLE:
             self.update_title_screen()
@@ -142,78 +132,7 @@ class Game:
         # Increment frame counter
         self.frame_count += 1
         
-    def process_touch_input(self):
-        """タッチ入力を処理する (iPhoneブラウザ対応)"""
-        # 外部のMOUSE_BUTTON_LEFT定数を使う
-        from main import MOUSE_BUTTON_LEFT
-        
-        # iPhone向け特殊処理 - タッチ機能を常に有効にする
-        if hasattr(self, 'mobile_mode') and self.mobile_mode:
-            self.touch_shoot = True  # モバイルでは常に自動発射
-        
-        # タッチ/クリック開始の検出
-        if pyxel.btnp(MOUSE_BUTTON_LEFT):
-            self.touch_enabled = True
-            self.touch_start_x = pyxel.mouse_x
-            self.touch_start_y = pyxel.mouse_y
-            self.touch_current_x = pyxel.mouse_x
-            self.touch_current_y = pyxel.mouse_y
-            
-            # モバイル/タッチでは自動発射を常に有効
-            self.touch_shoot = True
-            
-            # タッチによる状態遷移
-            if self.state == STATE_TITLE:
-                # タイトル画面タップでゲーム開始
-                self.state = STATE_PLAYING
-                try:
-                    pyxel.play(0, 2)  # 開始音を再生
-                except:
-                    pass  # サウンドエラーを無視
-            elif self.state == STATE_GAME_OVER:
-                # ゲームオーバー画面タップでリスタート
-                self.reset_game()
-                self.state = STATE_PLAYING
-            elif self.state == STATE_PLAYING and hasattr(self, 'mobile_mode') and self.mobile_mode:
-                # ゲームプレイ中のタップ処理 (モバイル特化機能)
-                # 画面の上半分タップ: 弾発射（既に自動発射されている）
-                # 画面の下半分タップ: プレイヤー移動
-                pass  # 移動は継続的な処理で行う
-            
-        # タッチ/ドラッグ中の処理
-        elif pyxel.btn(MOUSE_BUTTON_LEFT) and self.touch_enabled:
-            # タッチ位置の更新
-            prev_x = self.touch_current_x
-            self.touch_current_x = pyxel.mouse_x
-            self.touch_current_y = pyxel.mouse_y
-            touch_dx = self.touch_current_x - prev_x  # 前フレームからの移動量
-            
-            # モバイル向けの特別な処理
-            if self.state == STATE_PLAYING and hasattr(self, 'player') and self.player:
-                # モバイルモードでの制御
-                if hasattr(self, 'mobile_mode') and self.mobile_mode:
-                    # iPhoneでの操作性向上のため、タッチ位置に関わらずプレイヤー移動を可能に
-                    # タッチ位置に基づいて移動方法を切り替え
-                    if abs(touch_dx) > 1:  # 微小な動きは無視する
-                        # スワイプ操作 - ドラッグした分だけ移動
-                        self.player.x += touch_dx * 1.8  # 移動感度調整 (iPhone向けに強化)
-                    else:
-                        # 直接タップした位置に移動（緩やかに）
-                        target_x = self.touch_current_x
-                        dx = target_x - self.player.x
-                        self.player.x += dx * 0.4  # 移動の緩和係数 (iPhone向けに強化)
-                
-                # 画面からはみ出さないように調整
-                if self.player.x < 0:
-                    self.player.x = 0
-                elif self.player.x > SCREEN_WIDTH - self.player.width:
-                    self.player.x = SCREEN_WIDTH - self.player.width
-            
-        # タッチ/クリック終了の検出
-        elif pyxel.btnr(MOUSE_BUTTON_LEFT):
-            self.touch_enabled = False
-            # 自動発射は常に有効にしておく (モバイル向け)
-            self.touch_shoot = True
+    # タッチ入力関連のメソッドを削除（キーボード操作のみに対応）
     
     def update_title_screen(self):
         # Start game when SPACE is pressed
@@ -542,8 +461,8 @@ class Game:
         if self.keyboard.active:
             return
             
-        # Restart game when SPACE is pressed or screen is touched
-        if pyxel.btnp(KEY_SPACE) or pyxel.btnp(MOUSE_BUTTON_LEFT):
+        # Restart game when SPACE is pressed
+        if pyxel.btnp(KEY_SPACE):
             self.reset_game()
             self.state = STATE_TITLE  # タイトル画面に戻る
     
@@ -771,24 +690,17 @@ class Game:
         # Draw title
         pyxel.text(SCREEN_WIDTH//2 - 30, SCREEN_HEIGHT//6, "DODANPYXEL", pyxel.COLOR_YELLOW)
         
-        # Blink "PRESS SPACE or TAP SCREEN" text
+        # Blink "PRESS SPACE" text
         if self.frame_count % 30 < 15:
-            pyxel.text(SCREEN_WIDTH//2 - 50, SCREEN_HEIGHT//2 + 30, "PRESS SPACE or TAP SCREEN", pyxel.COLOR_WHITE)
+            pyxel.text(SCREEN_WIDTH//2 - 30, SCREEN_HEIGHT//2 + 30, "PRESS SPACE TO START", pyxel.COLOR_WHITE)
         
         # Draw high scores in the middle of the title screen
         self.draw_title_high_scores()
         
-        # Draw instructions
-        pyxel.text(10, SCREEN_HEIGHT - 40, "ARROWS/WASD: MOVE", pyxel.COLOR_WHITE)
-        pyxel.text(10, SCREEN_HEIGHT - 30, "AUTO-SHOOTING ENABLED!", ORANGE)
-        
-        # Mobile instructions
-        pyxel.text(10, SCREEN_HEIGHT - 20, "TOUCH & DRAG: MOVE", pyxel.COLOR_YELLOW)
-        pyxel.text(10, SCREEN_HEIGHT - 10, "AUTO-SHOOTING ACTIVE", pyxel.COLOR_YELLOW)
-        
-        # Draw auto-shoot button preview
-        pyxel.circ(SCREEN_WIDTH - 15, SCREEN_HEIGHT - 15, 10, ORANGE)
-        pyxel.text(SCREEN_WIDTH - 27, SCREEN_HEIGHT - 17, "AUTO", pyxel.COLOR_WHITE)
+        # Draw keyboard instructions
+        pyxel.text(10, SCREEN_HEIGHT - 30, "ARROWS/WASD: MOVE", pyxel.COLOR_WHITE)
+        pyxel.text(10, SCREEN_HEIGHT - 20, "Z: SHOOT", pyxel.COLOR_WHITE)
+        pyxel.text(10, SCREEN_HEIGHT - 10, "AUTO-SHOOTING ENABLED!", ORANGE)
         
     def draw_title_high_scores(self):
         """タイトル画面にハイスコア表示"""
@@ -1012,56 +924,7 @@ class Game:
                 if 1 <= next_boss <= 10:
                     pyxel.text(x - 20, y + 10, f"NEXT: BOSS {next_boss}", YELLOW)
             
-        # モバイルモード用のタッチコントロールを表示
-        if self.show_touch_controls and hasattr(self, 'mobile_mode') and self.mobile_mode:
-            # 横分割線（上半分は射撃、下半分は移動）
-            pyxel.line(0, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT // 2, LIGHT_BLUE)
-            
-            # ショット制御表示（右下）
-            shot_circle_radius = 12
-            pyxel.circ(SCREEN_WIDTH - 15, SCREEN_HEIGHT - 15, shot_circle_radius, ORANGE)
-            pyxel.text(SCREEN_WIDTH - 23, SCREEN_HEIGHT - 17, "AUTO", WHITE)
-            
-            # 移動エリア表示（下半分中央）
-            # 移動コントロールエリアを示す点線の矩形
-            rect_width = SCREEN_WIDTH - 40
-            rect_height = (SCREEN_HEIGHT // 2) - 10
-            rect_x = 20
-            rect_y = (SCREEN_HEIGHT // 2) + 5
-            
-            # 点線の矩形（移動可能エリア）を描画
-            for i in range(0, rect_width, 4):
-                pyxel.pset(rect_x + i, rect_y, LIGHT_BLUE)
-                pyxel.pset(rect_x + i, rect_y + rect_height, LIGHT_BLUE)
-            for i in range(0, rect_height, 4):
-                pyxel.pset(rect_x, rect_y + i, LIGHT_BLUE)
-                pyxel.pset(rect_x + rect_width, rect_y + i, LIGHT_BLUE)
-            
-            # ヘルプテキスト（初めの数秒間のみ表示）
-            if self.frame_count < 300 and self.state == STATE_PLAYING:  # 最初の5秒間だけ表示
-                # 上半分のヘルプテキスト
-                pyxel.text(10, SCREEN_HEIGHT // 2 - 20, "TAP HERE TO SHOOT", WHITE)
-                # 下半分のヘルプテキスト
-                pyxel.text(10, SCREEN_HEIGHT // 2 + 10, "DRAG HERE TO MOVE", WHITE)
-            
-            # タッチ位置の視覚化（アクティブな場合）
-            if self.touch_enabled:
-                # タッチ開始位置
-                if self.touch_start_y > SCREEN_HEIGHT // 2:  # 下半分でのタッチのみ視覚化
-                    # 少し大きめの円でタッチ開始点を表示
-                    pyxel.circ(self.touch_start_x, self.touch_start_y, 5, YELLOW)
-                    
-                    # 現在のタッチ位置
-                    pyxel.circ(self.touch_current_x, self.touch_current_y, 7, WHITE)
-                    
-                    # タッチの軌跡を線で表示
-                    pyxel.line(
-                        self.touch_start_x, 
-                        self.touch_start_y, 
-                        self.touch_current_x, 
-                        self.touch_current_y, 
-                        YELLOW
-                    )
+        # タッチコントロール表示を削除（キーボード操作のみ対応）
     
     def draw_game_over(self):
         # 暗めの半透明オーバーレイ（市松模様）
@@ -1133,7 +996,7 @@ class Game:
                 text_color = 10 if (self.frame_count // 5) % 2 == 0 else 9
                 pyxel.text(msg_x, 160, message, text_color)
         
-        # リスタートのためのタッチガイダンス（より大きく、目立つボタン風）
+        # リスタートのためのガイダンス
         restart_y = SCREEN_HEIGHT - 25
         # ボタンの背景
         pyxel.rect(SCREEN_WIDTH//2 - 60, restart_y - 2, 120, 15, 5)
@@ -1141,4 +1004,4 @@ class Game:
         
         # 点滅するテキスト
         if self.frame_count % 30 < 20:
-            pyxel.text(SCREEN_WIDTH//2 - 52, restart_y + 3, "PRESS SPACE or TAP HERE", 0)
+            pyxel.text(SCREEN_WIDTH//2 - 40, restart_y + 3, "PRESS SPACE TO RESTART", 0)

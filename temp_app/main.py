@@ -84,42 +84,10 @@ def detect_mobile_mode():
     """モバイルデバイスかどうかを検出する"""
     global MOBILE_MODE
     
-    # 環境変数でモバイルモードを強制的に設定可能
-    if os.environ.get('FORCE_MOBILE_MODE') == '1':
-        print("Mobile mode forced by environment variable")
-        MOBILE_MODE = True
-        return True
-    
-    # iPhone向け特殊処理 - 常にモバイルモードを有効にする環境変数
-    if os.environ.get('IPHONE_MODE') == '1':
-        print("iPhone specific mode enabled by environment variable")
-        MOBILE_MODE = True
-        return True
-    
-    # WEB_MODEではJavaScriptから検出されるので、カスタムタグ用に対応
-    # Webブラウザからの実行の場合
-    try:
-        # Pyxelのグローバル変数にアクセスを試みる
-        mobile_detected = False
-        if hasattr(pyxel, "app") and hasattr(pyxel.app, "mobile_detected"):
-            mobile_detected = pyxel.app.mobile_detected
-            print(f"Mobile detection from Pyxel: {mobile_detected}")
-            MOBILE_MODE = mobile_detected
-            return mobile_detected
-            
-        # 2023年以降のPyxelではis_mobileインジケータがある可能性がある
-        if hasattr(pyxel, "is_mobile") and pyxel.is_mobile:
-            print("Mobile detection from pyxel.is_mobile: True")
-            MOBILE_MODE = True
-            return True
-    except Exception as e:
-        print(f"Error detecting mobile mode: {e}")
-    
-    # 互換モード: UserAgentベースの検出は不可能なので、常にタッチ対応
-    # タッチ対応が必要なデバイスではモバイルモードを常に有効に
-    print("No explicit mobile detection - enabling touch controls by default")
-    MOBILE_MODE = True
-    return True
+    # キーボード操作をメインにするため、モバイルモードをオフに設定
+    print("Mobile mode disabled - keyboard controls only")
+    MOBILE_MODE = False
+    return False
 
 # Initialize and run the game
 def main():
