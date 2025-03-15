@@ -485,9 +485,6 @@ class Game:
                 self.enemies.append(LargeEnemy(x, -20))
     
     def update_bullets(self):
-        # デバッグ: 弾のカウントを表示
-        print(f"DEBUG: Player bullets count: {len(self.player_bullets)}")
-        
         # Update player bullets
         for bullet in self.player_bullets[:]:
             bullet.update()
@@ -564,7 +561,6 @@ class Game:
                                 enemy.y + enemy.height // 2
                             )
                             self.powerups.append(powerup)
-                            print(f"DEBUG: Powerup created of type {powerup.powerup_type}")
                         
                         # Remove enemy
                         if enemy in self.enemies:
@@ -787,9 +783,7 @@ class Game:
             self.boss.draw()
         
         # Draw bullets
-        print(f"DEBUG: Number of player bullets to draw: {len(self.player_bullets)}")
         for bullet in self.player_bullets:
-            print(f"DEBUG: Drawing bullet at ({bullet.x}, {bullet.y})")
             bullet.draw()
         
         for bullet in self.enemy_bullets:
@@ -902,7 +896,6 @@ class Game:
                         bar_color = GREEN
                 except Exception as e:
                     # エラーが発生した場合はデフォルト色に
-                    print(f"DEBUG: Error setting bar color: {e}")
                     bar_color = WHITE
                     
                 # 進行バー

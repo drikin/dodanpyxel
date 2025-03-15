@@ -97,9 +97,7 @@ class Player:
         self.y = max(0, min(SCREEN_HEIGHT - self.height, self.y))
         
         # Keyboard shooting - multiple methods for better compatibility
-        print(f"DEBUG: self.shoot_timer before decrement: {self.shoot_timer}")
         self.shoot_timer -= 1
-        print(f"DEBUG: self.shoot_timer after decrement: {self.shoot_timer}")
         
         # Use our unified key detection method if available
         z_pressed = False
@@ -159,15 +157,11 @@ class Player:
             pass
         
         # AUTO-SHOOT: Always fire when ready + normal trigger
-        print(f"DEBUG: auto_shoot flag: {self.auto_shoot}, z_pressed: {z_pressed}, timer: {self.shoot_timer}")
         if self.shoot_timer <= 0 and (self.auto_shoot or z_pressed):
-            print("DEBUG: Shooting condition met, calling shoot()")
             self.shoot()
             # 黄色パワーアップが適用されている場合、射撃間隔を調整
             current_interval = self.shoot_interval if hasattr(self, 'shoot_interval') else PLAYER_SHOOT_INTERVAL
             self.shoot_timer = current_interval
-        else:
-            print("DEBUG: Shooting condition NOT met")
         
         # Invulnerability after being hit
         if self.invulnerable:
@@ -184,21 +178,17 @@ class Player:
         if powerup_type == POWERUP_YELLOW:
             # 黄色アイテム: 射撃レベルか方向数を増加
             self.apply_yellow_powerup()
-            print(f"DEBUG: YELLOW POWERUP - Level {self.yellow_level}, Directions {self.shot_direction}")
             
         elif powerup_type == POWERUP_POWER:
             self.has_power_shot = True
-            print("DEBUG: POWERUP - POWER SHOT activated")
             
         elif powerup_type == POWERUP_SPEED:
             self.speed = self.base_speed * 1.5  # 速度1.5倍
-            print("DEBUG: POWERUP - SPEED BOOST activated")
             
         elif powerup_type == POWERUP_SHIELD:
             self.has_shield = True
             self.invulnerable = True
             self.invulnerable_timer = POWERUP_DURATION
-            print("DEBUG: POWERUP - SHIELD activated")
             
     def apply_yellow_powerup(self):
         """黄色パワーアップの段階的処理"""
@@ -210,7 +200,6 @@ class Player:
             # レベルをリセットして弾の方向数を増やす
             self.yellow_level = 0
             self.shot_direction += 1
-            print(f"DEBUG: Shot directions increased to {self.shot_direction}")
             
             # 射撃間隔を初期値に戻す
             self.shoot_interval = self.base_shoot_interval
@@ -219,7 +208,6 @@ class Player:
             # レベル0で基本値、レベル2で最速（基本値の1/3）
             factor = 1.0 - (self.yellow_level / (self.max_yellow_level + 1) * 0.7)
             self.shoot_interval = int(self.base_shoot_interval * factor)
-            print(f"DEBUG: Shoot interval decreased to {self.shoot_interval} (factor: {factor:.2f})")
     
     def reset_powerups(self):
         """パワーアップ効果をリセットする"""
@@ -228,10 +216,8 @@ class Player:
         self.has_shield = False
         self.speed = self.base_speed
         # 黄色パワーアップの段階はリセットしない（永続的効果）
-        print("DEBUG: Powerups reset")
     
     def shoot(self):
-        print("DEBUG: shoot() method called!") # 追加デバッグ
         try:
             bullet_x = self.x + self.width // 2 - 1
             bullet_y = self.y - 5
@@ -241,10 +227,7 @@ class Player:
             
             # ゲームインスタンスの参照があるか確認
             if not (self.game_ref and hasattr(self.game_ref, 'player_bullets')):
-                print("DEBUG: game_ref is None or doesn't have player_bullets attribute")
                 return
-                
-            print(f"DEBUG: Shot direction count: {self.shot_direction}")
                 
             # 複数方向弾発射の場合（黄色パワーアップ）
             if self.shot_direction > 1:
@@ -275,7 +258,6 @@ class Player:
                 # 弾を追加
                 self.game_ref.player_bullets.append(forward_bullet)
                 bullets_created = 1  # 必ず1発は発射される
-                print("DEBUG: Added forward shot")
                 
                 # 方向数が2以上なら追加の方向にも発射
                 if self.shot_direction > 1:
@@ -327,8 +309,6 @@ class Player:
                         bullets_created += 1
                     # 追加コードは不要（ループ内で処理済み）
                 
-                print(f"DEBUG: Multi-directional shot fired ({bullets_created} bullets)")
-                
             else:
                 # 通常の弾を発射（単一方向）
                 bullet = PlayerBullet(bullet_x, bullet_y)
@@ -338,16 +318,12 @@ class Player:
                     bullet.damage = 2  # 通常の2倍のダメージ
                     bullet.width = 4   # 弾のサイズを大きく
                     bullet.color = RED # 色を変える
-                    print("DEBUG: Power shot fired")
                 
                 # 弾を追加
-                print(f"DEBUG: Player bullets before append: {len(self.game_ref.player_bullets)}")
                 self.game_ref.player_bullets.append(bullet)
-                print(f"DEBUG: Player bullets after append: {len(self.game_ref.player_bullets)}")
-                print("DEBUG: Single shot fired")
                 
-        except Exception as e:
-            print(f"DEBUG: Exception in shoot(): {e}")  # 例外をキャッチして表示
+        except Exception:
+            pass
     
     def hit(self):
         # シールドか無敵状態ならダメージを受けない
