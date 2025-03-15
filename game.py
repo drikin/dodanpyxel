@@ -735,14 +735,16 @@ class Game:
         # Draw high scores in the middle of the title screen
         self.draw_title_high_scores()
         
-        # Draw keyboard instructions
+        # Draw keyboard instructions（左側）
         pyxel.text(10, SCREEN_HEIGHT - 30, "ARROWS/WASD: MOVE", pyxel.COLOR_WHITE)
         pyxel.text(10, SCREEN_HEIGHT - 20, "Z: SHOOT", pyxel.COLOR_WHITE)
         
-        # ビルド番号を右下に表示
+        # ビルド番号を右下に表示（右側）
         version_text = VERSION_DISPLAY
-        pyxel.text(SCREEN_WIDTH - len(version_text) * 4 - 5, SCREEN_HEIGHT - 10, version_text, pyxel.COLOR_GRAY)
-        pyxel.text(10, SCREEN_HEIGHT - 10, "AUTO-SHOOTING ENABLED!", ORANGE)
+        pyxel.text(SCREEN_WIDTH - len(version_text) * 4 - 5, SCREEN_HEIGHT - 30, version_text, pyxel.COLOR_GRAY)
+        
+        # 自動発射の通知（左下）
+        pyxel.text(10, SCREEN_HEIGHT - 10, "AUTO-SHOOTING ENABLED", ORANGE)
         
     def draw_intro_text(self):
         """Star Wars style intro text animation"""
@@ -794,10 +796,10 @@ class Game:
         title_y = SCREEN_HEIGHT // 3
         
         # 半透明の背景パネル（ハイスコア表示用）
-        panel_padding = 5
-        panel_x = title_x - panel_padding
+        panel_padding = 8
+        panel_x = SCREEN_WIDTH // 2 - 70  # 幅を固定してセンターに配置
         panel_y = title_y - panel_padding
-        panel_width = title_width + panel_padding * 2
+        panel_width = 140  # パネル幅を固定
         panel_height = 68  # タイトル + 上位5位分 + 余白
         
         # 背景パネルを描画（半透明効果）
@@ -822,8 +824,13 @@ class Game:
             return
         
         # スコア表示の開始位置
-        score_x = title_x - 10  # 左寄せ
+        start_x = panel_x + 10  # 左余白
         score_y = title_y + 10  # タイトルの下
+        
+        # スコア情報のカラム幅を設定
+        rank_width = 15   # ランク表示用
+        name_width = 70   # 名前表示用
+        score_width = 45  # スコア表示用
         
         # 上位5スコアを表示
         for i, score_data in enumerate(scores):
@@ -844,13 +851,13 @@ class Game:
             name = score_data["name"]
             score = score_data["score"]
             
-            # 表示を単純化（省スペース表示用）
-            rank_x = score_x
-            name_x = score_x + 15
+            # 位置を計算
+            rank_x = start_x
+            name_x = start_x + rank_width
             
             # スコアは右寄せ
             score_text = f"{score}"
-            score_x_pos = score_x + panel_width - 20 - len(score_text) * 4
+            score_x_pos = panel_x + panel_width - 15 - len(score_text) * 4
             
             # 各行を表示
             pyxel.text(rank_x, score_y + i * 10, prefix, color)
