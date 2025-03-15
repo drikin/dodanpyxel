@@ -27,10 +27,10 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pip install pyxel && python main.py"
+args = "pip install pyxel && python build_and_run_pyxapp.py"
 
 [deployment]
-run = ["sh", "-c", "pip install pyxel && python main.py"]
+run = ["sh", "-c", "pip install pyxel && python build_and_run_pyxapp.py"]
 
 [[ports]]
 localPort = 5000
