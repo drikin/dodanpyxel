@@ -867,11 +867,14 @@ class Game:
         # イントロBGM再生（初回のみ）
         if self.intro_timer == 1:
             try:
-                # イントロBGM再生 - playmを使用してミュージックを再生
-                pyxel.playm(2, loop=True)  # インデックス2のイントロBGM再生
-                print("DEBUG: Started playing INTRO BGM (music 2)")
+                # イントロBGM再生 - 通常BGMを再生
+                # イントロ専用BGMが問題を起こすのでインデックス0（通常BGM）を使用
+                pyxel.playm(0, loop=True)  # 通常BGMを代替として使用
+                print("DEBUG: Started playing normal BGM as intro BGM (music 0)")
+                self.bgm_playing = True  # BGM再生フラグを設定
             except Exception as e:
                 print(f"Error playing intro BGM: {e}")
+                self.bgm_playing = False
         
         # Return to title screen when intro animation is complete
         if self.intro_timer > len(self.intro_texts) * 100 + display_time:
