@@ -66,6 +66,7 @@ ENEMY_LARGE_SCORE = 300
 STATE_TITLE = 0
 STATE_PLAYING = 1
 STATE_GAME_OVER = 2
+STATE_INTRO = 3  # イントロアニメーション用の状態追加
 
 # パワーアップタイプ
 POWERUP_YELLOW = 0  # 黄色アイテム（連射速度アップ→複数方向発射）
