@@ -29,7 +29,7 @@ class Game:
         try:
             self.volume = DEFAULT_VOLUME  # 初期音量（constants.pyで定義）
             self.volume_change_cooldown = 0
-            pyxel.sound_volume = self.volume / MAX_VOLUME  # 音量を0.0～1.0の範囲に変換
+            pyxel.volume = self.volume  # Pyxelの音量を直接設定（0～7の整数値）
         except Exception:
             pass  # サイレントに処理（エラーがあっても続行）
             
@@ -172,22 +172,50 @@ class Game:
         # マイナスキーで音量を下げる
         if pyxel.btnp(KEY_MINUS) and self.volume_change_cooldown == 0:
             self.volume = max(MIN_VOLUME, self.volume - 1)
-            pyxel.sound_volume = self.volume / MAX_VOLUME  # 音量を0.0～1.0の範囲に変換
+            # Pyxelのボリューム設定（0～7の整数値を直接設定）
+            pyxel.volume = self.volume
             self.volume_change_cooldown = VOLUME_CHANGE_COOLDOWN
+            
+            # BGMが停止しないように現在の再生状態を記憶
+            bgm_was_playing = self.bgm_playing
+            current_bgm_idx = self.current_bgm
+            
+            # 効果音のみを再生
             try:
-                pyxel.play(0, 2)  # 音量変更を確認する効果音
+                pyxel.play(3, 2)  # 音量変更を確認する効果音（チャンネル3を使用）
             except Exception:
                 pass
+            
+            # BGMが停止した場合は再開
+            if bgm_was_playing and not pyxel.playm(current_bgm_idx, is_loop=True, check_is_playing=True):
+                try:
+                    pyxel.playm(current_bgm_idx, loop=True)
+                except Exception:
+                    pass
         
         # プラスキーまたはイコールキーで音量を上げる
         if (pyxel.btnp(KEY_PLUS) or pyxel.btnp(KEY_EQUAL)) and self.volume_change_cooldown == 0:
             self.volume = min(MAX_VOLUME, self.volume + 1)
-            pyxel.sound_volume = self.volume / MAX_VOLUME  # 音量を0.0～1.0の範囲に変換
+            # Pyxelのボリューム設定（0～7の整数値を直接設定）
+            pyxel.volume = self.volume
             self.volume_change_cooldown = VOLUME_CHANGE_COOLDOWN
+            
+            # BGMが停止しないように現在の再生状態を記憶
+            bgm_was_playing = self.bgm_playing
+            current_bgm_idx = self.current_bgm
+            
+            # 効果音のみを再生
             try:
-                pyxel.play(0, 2)  # 音量変更を確認する効果音
+                pyxel.play(3, 2)  # 音量変更を確認する効果音（チャンネル3を使用）
             except Exception:
                 pass
+            
+            # BGMが停止した場合は再開
+            if bgm_was_playing and not pyxel.playm(current_bgm_idx, is_loop=True, check_is_playing=True):
+                try:
+                    pyxel.playm(current_bgm_idx, loop=True)
+                except Exception:
+                    pass
         
         # Update based on game state
         if self.state == STATE_TITLE:
