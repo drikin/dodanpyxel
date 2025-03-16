@@ -274,8 +274,7 @@ class Game:
         # Show intro after 5 seconds on title screen
         if self.intro_timer > 300 and not self.show_intro:
             self.show_intro = True
-            # イントロ開始時にイントロBGM再生（一時的に無効化）
-            """
+            # イントロ開始時にイントロBGMを再生
             try:
                 # 既存の音楽を停止して、通常BGM（音楽インデックス0）を再生
                 # イントロBGMの代わりに安定した通常BGMを使用
@@ -284,13 +283,11 @@ class Game:
                 self.current_bgm = 0
                 pyxel.playm(0, loop=True)  # 通常BGMをループ再生
                 self.bgm_playing = True  # BGM再生中フラグを設定
+                print("DEBUG: Title screen BGM started playing")
             except Exception as e:
                 # BGMエラーはゲームプレイに致命的ではないため、静かに例外を処理
-                pass
-            """
-            # BGM再生無効化のログ
-            print("DEBUG: Title screen BGM playback disabled for testing")
-            self.bgm_playing = False
+                print(f"DEBUG: Error playing title BGM: {e}")
+                self.bgm_playing = False
             
         # イントロ画面表示中の追加更新処理
         if self.show_intro:
@@ -363,9 +360,7 @@ class Game:
         # 自動発射フラグを更新（キーボード用）
         self.auto_shoot = True
         
-        # BGMの再生と管理（一時的に無効化）
-        # デバッグ目的でBGM部分をコメントアウト
-        """
+        # BGMの再生と管理（毎フレーム確認）
         # ボス戦とノーマル戦で異なるBGM
         if self.boss and self.boss.active and not self.boss.exit_phase:
             # ボス戦BGM（インデックス1）に切り替え
@@ -390,11 +385,6 @@ class Game:
                 print(f"ERROR playing BGM {self.current_bgm}: {e}")
                 # エラー発生時は次のフレームで再試行
                 self.bgm_playing = False
-        """
-        # BGMを無効化していることをログに残す
-        if not hasattr(self, '_bgm_disabled_logged'):
-            print("DEBUG: BGM playback disabled for testing")
-            self._bgm_disabled_logged = True
         
         # Update background
         self.background.update()
