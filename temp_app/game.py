@@ -292,11 +292,18 @@ class Game:
             if self.cycle_message_timer <= 0:
                 self.show_cycle_message = False
                 
+                # サイクル完了メッセージが消えるタイミングでもBGMを確認
+                self.bgm_playing = False  # BGM再生フラグをリセットして再生を保証
+                
         # ボスクリアメッセージのタイマー更新
         if self.show_boss_clear_message:
             self.boss_clear_message_timer -= 1
             if self.boss_clear_message_timer <= 0:
                 self.show_boss_clear_message = False
+                
+                # ボスクリアメッセージが消えるタイミングでBGMを明示的に再起動
+                # これにより次のステージでもBGMが再生され続ける
+                self.bgm_playing = False  # 強制的に再生フラグをリセット
         
         # 距離カウンターの更新（1フレームごとに距離を加算）
         self.boss_distance += 1
@@ -499,6 +506,9 @@ class Game:
                     self.boss.active = True
                     
                     # ボス出現メッセージ
+                    
+                    # ボス出現時にBGMを確実に再生
+                    self.bgm_playing = False  # BGM再生フラグをリセットして次のフレームで再生
                     
                     # 効果音
                     try:
