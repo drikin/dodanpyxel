@@ -2,6 +2,7 @@ import pyxel
 from game import Game
 import platform
 import os
+from constants import DEFAULT_VOLUME, MIN_VOLUME, MAX_VOLUME
 
 # Global game instance for module access
 game_instance = None
@@ -102,6 +103,14 @@ def main():
     
     # キーボード専用モードに設定
     detect_mobile_mode()
+    
+    # 初期音量を設定 - プロパティを直接使用
+    try:
+        # 直接音量プロパティを設定
+        pyxel.volume = DEFAULT_VOLUME  # 0-7の範囲で音量を設定
+        print(f"DEBUG: Volume property set to {DEFAULT_VOLUME}")
+    except Exception as e:
+        print(f"ERROR setting volume: {e}")
     
     # サウンドの初期化を明示的に行う
     from assets.sounds import init_sounds

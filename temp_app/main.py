@@ -3,12 +3,13 @@ import version
 from game import Game
 import platform
 import os
+from constants import DEFAULT_VOLUME, MIN_VOLUME, MAX_VOLUME
 
 # Global game instance for module access
 game_instance = None
 
 # 純粋なPyxelアプリケーションとして実行
-TITLE = "LAST DESCENT: THE FINAL HOPE v1.0.0.60"
+TITLE = "LAST DESCENT: THE FINAL HOPE v1.0.0.63"
 MOBILE_MODE = False
 WEB_MODE = False
 
@@ -103,6 +104,13 @@ def main():
     
     # キーボード専用モードに設定
     detect_mobile_mode()
+    
+    # 初期音量を設定 - プロパティを直接使用
+    try:
+        # 直接音量プロパティを設定
+        pyxel.volume = DEFAULT_VOLUME  # 0-7の範囲で音量を設定
+    except Exception as e:
+        print(f"ERROR setting volume: {e}")
     
     # サウンドの初期化を明示的に行う
     from assets.sounds import init_sounds

@@ -171,14 +171,20 @@ class Game:
         
         # マイナスキーで音量を下げる
         if pyxel.btnp(KEY_MINUS) and self.volume_change_cooldown == 0:
+            # 音量を1段階下げる（最小0まで）
             self.volume = max(MIN_VOLUME, self.volume - 1)
-            # Pyxelのボリューム設定（0～7の整数値を直接設定）
-            pyxel.volume = self.volume
             self.volume_change_cooldown = VOLUME_CHANGE_COOLDOWN
             
             # BGMが停止しないように現在の再生状態を記憶
             bgm_was_playing = self.bgm_playing
             current_bgm_idx = self.current_bgm
+            
+            # 音量設定 - プロパティとして設定
+            try:
+                # 直接プロパティを設定
+                pyxel.volume = self.volume
+            except Exception as e:
+                print(f"ERROR: Could not set volume: {e}")
             
             # 効果音のみを再生
             try:
@@ -195,14 +201,20 @@ class Game:
         
         # プラスキーまたはイコールキーで音量を上げる
         if (pyxel.btnp(KEY_PLUS) or pyxel.btnp(KEY_EQUAL)) and self.volume_change_cooldown == 0:
+            # 音量を1段階上げる（最大7まで）
             self.volume = min(MAX_VOLUME, self.volume + 1)
-            # Pyxelのボリューム設定（0～7の整数値を直接設定）
-            pyxel.volume = self.volume
             self.volume_change_cooldown = VOLUME_CHANGE_COOLDOWN
             
             # BGMが停止しないように現在の再生状態を記憶
             bgm_was_playing = self.bgm_playing
             current_bgm_idx = self.current_bgm
+            
+            # 音量設定 - プロパティとして設定
+            try:
+                # 直接プロパティを設定
+                pyxel.volume = self.volume
+            except Exception as e:
+                print(f"ERROR: Could not set volume: {e}")
             
             # 効果音のみを再生
             try:
