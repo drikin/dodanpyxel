@@ -25,6 +25,14 @@ class Game:
             # 警告メッセージを出力（デバッグプリントをパスするように変更）
             pass  # Pyxel should be initialized in main.py
         
+        # 音量の初期設定
+        try:
+            self.volume = DEFAULT_VOLUME  # 初期音量（constants.pyで定義）
+            self.volume_change_cooldown = 0
+            pyxel.sound_volume = self.volume / MAX_VOLUME  # 音量を0.0～1.0の範囲に変換
+        except Exception:
+            pass  # サイレントに処理（エラーがあっても続行）
+            
         # マウス入力を無効化（キーボードのみ）
         try:
             pyxel.mouse(False)  # マウス入力を無効化
@@ -115,6 +123,10 @@ class Game:
         self.current_bgm = 0  # 0=通常BGM、1=ボス戦BGM
         self.bgm_playing = False
         
+        # 音量設定 (0-7の範囲、初期値4)
+        self.volume = 4  # 初期音量は中間値
+        self.volume_change_cooldown = 0  # 音量変更の連続入力を防止するクールダウン
+        
         # Game variables
         self.frame_count = 0
         
@@ -154,6 +166,30 @@ class Game:
         self.auto_shoot = True
     
     def update(self):
+        # 音量調整の処理（どのゲーム状態でも動作させる）
+        if self.volume_change_cooldown > 0:
+            self.volume_change_cooldown -= 1
+        
+        # マイナスキーで音量を下げる
+        if pyxel.btnp(KEY_MINUS) and self.volume_change_cooldown == 0:
+            self.volume = max(MIN_VOLUME, self.volume - 1)
+            pyxel.sound_volume = self.volume / MAX_VOLUME  # 音量を0.0～1.0の範囲に変換
+            self.volume_change_cooldown = VOLUME_CHANGE_COOLDOWN
+            try:
+                pyxel.play(0, 2)  # 音量変更を確認する効果音
+            except Exception:
+                pass
+        
+        # プラスキーまたはイコールキーで音量を上げる
+        if (pyxel.btnp(KEY_PLUS) or pyxel.btnp(KEY_EQUAL)) and self.volume_change_cooldown == 0:
+            self.volume = min(MAX_VOLUME, self.volume + 1)
+            pyxel.sound_volume = self.volume / MAX_VOLUME  # 音量を0.0～1.0の範囲に変換
+            self.volume_change_cooldown = VOLUME_CHANGE_COOLDOWN
+            try:
+                pyxel.play(0, 2)  # 音量変更を確認する効果音
+            except Exception:
+                pass
+        
         # Update based on game state
         if self.state == STATE_TITLE:
             self.update_title_screen()
@@ -1210,9 +1246,13 @@ class Game:
         # Draw score
         pyxel.text(5, 5, f"SCORE: {self.score}", pyxel.COLOR_WHITE)
         
+        # 音量表示（右上）
+        volume_text = f"VOL: {self.volume}/{MAX_VOLUME}"
+        pyxel.text(SCREEN_WIDTH - 50, 5, volume_text, pyxel.COLOR_YELLOW)
+        
         # Draw lives
         for i in range(self.player.lives):
-            pyxel.rect(SCREEN_WIDTH - 10 - i * 8, 5, 6, 6, pyxel.COLOR_RED)
+            pyxel.rect(SCREEN_WIDTH - 10 - i * 8, 15, 6, 6, pyxel.COLOR_RED)
             
         # ボスステータスと距離の表示
         if self.state == STATE_PLAYING:

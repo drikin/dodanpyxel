@@ -87,3 +87,12 @@ POWERUP_SPREAD = POWERUP_YELLOW  # 下位互換性のため
 # パワーアップ設定
 POWERUP_DURATION = 600    # パワーアップの効果持続時間（フレーム数）
 POWERUP_DROP_CHANCE = 0.2  # 敵を倒した時にアイテムが出る確率
+
+# 音量設定
+MIN_VOLUME = 0            # 最小音量
+MAX_VOLUME = 7            # 最大音量
+DEFAULT_VOLUME = 4        # 初期音量（中間）
+VOLUME_CHANGE_COOLDOWN = 10  # 音量変更の連続入力を防止するクールダウン（フレーム数）
+KEY_MINUS = pyxel.KEY_MINUS if hasattr(pyxel, 'KEY_MINUS') else 45  # ASCII for minus '-'
+KEY_PLUS = pyxel.KEY_PLUS if hasattr(pyxel, 'KEY_PLUS') else 43     # ASCII for plus '+'
+KEY_EQUAL = pyxel.KEY_EQUAL if hasattr(pyxel, 'KEY_EQUAL') else 61   # ASCII for equal '='（プラスキーの代わりに使用可能）
