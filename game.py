@@ -315,18 +315,19 @@ class Game:
             elif self.boss.exit_phase:
                 # 退場フェーズに入ったらBGM切り替えのフラグを設定（通常BGMに戻す準備）
                 if not self.boss.exit_bgm_changed:
-                    print("DEBUG: Boss defeat detected - immediately switching back to normal BGM")
+                    print("DEBUG: Boss defeat detected - preparing to switch back to normal BGM")
                     self.boss.exit_bgm_changed = True
                     
-                    # BGMを強制的に停止して通常BGMをすぐに再生
+                    # BGMを一時的に停止するのではなく、フラグを設定して次のフレームで切り替え
+                    # これによりBGMの途切れを防ぐ
                     try:
-                        pyxel.stop()  # 現在のBGMを停止
                         self.current_bgm = 0  # 通常BGMに切り替え
-                        pyxel.playm(self.current_bgm, loop=True)  # 通常BGMをすぐに再生
-                        print(f"DEBUG: Started playing normal BGM {self.current_bgm}")
-                        self.bgm_playing = True
+                        # BGMの停止と再開をメインの条件分岐（bgm_playingフラグ）に任せる
+                        # ここで強制的に停止すると、メッセージ表示中にBGMが途切れる
+                        self.bgm_playing = False  # 次のフレームで再生されるようにフラグをリセット
+                        print("DEBUG: Normal BGM will be played on next frame")
                     except Exception as e:
-                        print(f"ERROR switching to normal BGM: {e}")
+                        print(f"ERROR preparing BGM switch: {e}")
                         self.bgm_playing = False
                 
                 self.boss.y -= 2  # 上に退場
