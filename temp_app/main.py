@@ -9,7 +9,7 @@ from constants import DEFAULT_VOLUME, MIN_VOLUME, MAX_VOLUME
 game_instance = None
 
 # 純粋なPyxelアプリケーションとして実行
-TITLE = "LAST DESCENT: THE FINAL HOPE v1.0.0.63"
+TITLE = "LAST DESCENT: THE FINAL HOPE v1.0.0.67"
 MOBILE_MODE = False
 WEB_MODE = False
 
